@@ -1,0 +1,5 @@
+# Optional GPU helpers for Windows (cublas64_12.dll / cuDNN for CTranslate2).
+# Installed by setup.bat when an NVIDIA GPU is detected.
+nvidia-cublas-cu12
+nvidia-cudnn-cu12
+nvidia-cuda-runtime-cu12

@@ -53,10 +53,97 @@ def configure_hub() -> None:
         log(f"HTTP(S)_PROXY is set ({proxy.split('@')[-1] if '@' in proxy else proxy})")
 
 
+def prepare_cuda_dlls() -> None:
+    """On Windows, register CUDA 12 bin dirs so cublas64_12.dll can load."""
+    if sys.platform != "win32":
+        return
+    if not hasattr(os, "add_dll_directory"):
+        return
+
+    candidates: list[str] = []
+    for key in (
+        "CUDA_PATH",
+        "CUDA_HOME",
+        "CUDA_PATH_V12_9",
+        "CUDA_PATH_V12_8",
+        "CUDA_PATH_V12_6",
+        "CUDA_PATH_V12_4",
+        "CUDA_PATH_V12_3",
+        "CUDA_PATH_V12_2",
+        "CUDA_PATH_V12_1",
+        "CUDA_PATH_V12_0",
+    ):
+        root = (os.environ.get(key) or "").strip().strip('"')
+        if root:
+            candidates.append(os.path.join(root, "bin"))
+
+    toolkit = r"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA"
+    if os.path.isdir(toolkit):
+        try:
+            versions = sorted(
+                (n for n in os.listdir(toolkit) if n.lower().startswith("v12")),
+                reverse=True,
+            )
+        except OSError:
+            versions = []
+        for ver in versions:
+            candidates.append(os.path.join(toolkit, ver, "bin"))
+
+    # Optional pip wheels: nvidia-cublas-cu12, etc.
+    try:
+        import site
+        import glob
+
+        for sp in site.getsitepackages() + ([site.getusersitepackages()] if site.getusersitepackages() else []):
+            if not sp:
+                continue
+            for pattern in (
+                os.path.join(sp, "nvidia", "cublas", "bin"),
+                os.path.join(sp, "nvidia", "cudnn", "bin"),
+                os.path.join(sp, "nvidia", "cuda_runtime", "bin"),
+            ):
+                candidates.append(pattern)
+            for match in glob.glob(os.path.join(sp, "nvidia", "*", "bin")):
+                candidates.append(match)
+    except Exception:  # noqa: BLE001
+        pass
+
+    extra = (os.environ.get("WHISPER_CUDA_BIN") or "").strip().strip('"')
+    if extra:
+        candidates.insert(0, extra)
+
+    seen: set[str] = set()
+    registered = 0
+    for raw in candidates:
+        path = os.path.normpath(raw)
+        key = path.lower()
+        if not path or key in seen or not os.path.isdir(path):
+            continue
+        seen.add(key)
+        try:
+            os.add_dll_directory(path)
+            registered += 1
+            marker = os.path.join(path, "cublas64_12.dll")
+            if os.path.isfile(marker):
+                log(f"CUDA DLLs: {path} (found cublas64_12.dll)")
+            else:
+                log(f"CUDA DLLs: {path}")
+        except OSError as exc:
+            log(f"CUDA DLLs skip {path}: {exc}")
+
+    if registered == 0:
+        log(
+            "CUDA DLLs: none found. For GPU Whisper install CUDA Toolkit 12.x "
+            "from https://developer.nvidia.com/cuda-downloads "
+            "(or set WHISPER_DEVICE=cpu)."
+        )
+
+
 def load_model(model_size: str):
     from faster_whisper import WhisperModel
 
     configure_hub()
+    prepare_cuda_dlls()
 
     prefer = (os.environ.get("WHISPER_DEVICE") or "auto").strip().lower()
     download_root = (os.environ.get("WHISPER_DOWNLOAD_ROOT") or "").strip() or None
@@ -84,7 +171,19 @@ def load_model(model_size: str):
             return model, device
         except Exception as exc:  # noqa: BLE001
             last_err = exc
+            msg = str(exc)
             log(f"Whisper load failed ({device}/{compute_type}): {exc}")
+            if device == "cuda" and (
+                "cublas" in msg.lower()
+                or "cudnn" in msg.lower()
+                or "cuda" in msg.lower()
+                and "not found" in msg.lower()
+            ):
+                log(
+                    "Hint: install NVIDIA CUDA Toolkit 12.x, reboot/reopen terminal, "
+                    "ensure cublas64_12.dll is under CUDA\\v12.*\\bin. "
+                    "Temp workaround: WHISPER_DEVICE=cpu in .env"
+                )
 
     raise RuntimeError(f"Could not load Whisper model: {last_err}")
 

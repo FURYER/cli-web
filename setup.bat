@@ -6,7 +6,9 @@ rem ============================================================================
 rem  WebCLI — one-shot setup for a friend's Windows PC
 rem
 rem  Installs: Git, Node.js 22, Python, ffmpeg, CloudPub CLI (clo),
-rem            npm deps, Whisper (faster-whisper), creates .env
+rem            npm deps, Whisper (faster-whisper),
+rem            CUDA Toolkit 12.x (if NVIDIA GPU) for Whisper GPU,
+rem            creates .env + default MCP
 rem
 rem  Friend still needs to:
 rem    1) clo login   (or clo set token <token from cloudpub.ru)
@@ -22,8 +24,12 @@ set "CLO_VERSION=3.2.2"
 set "CLO_ZIP=clo-%CLO_VERSION%-stable-windows-x86_64.zip"
 set "CLO_URL=https://cloudpub.ru/download/stable/%CLO_ZIP%"
 set "CLO_DIR=%LOCALAPPDATA%\Programs\cloudpub-cli"
+set "CUDA_WINGET_ID=Nvidia.CUDA"
+rem CTranslate2/faster-whisper need CUDA 12 (cublas64_12.dll) — not 13.x
+set "CUDA_WINGET_VER=12.9"
 set "NEED_PATH_REFRESH=0"
 set "PS=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
+set "HAS_NVIDIA_GPU=0"
 
 echo.
 echo ========================================
@@ -173,7 +179,7 @@ if exist "%REPO_DIR%\scripts\write-default-mcp.ps1" (
   echo [WARN] write-default-mcp.ps1 missing — MCP will seed on first server start.
 )
 
-rem --- Python / Whisper -------------------------------------------------------
+rem --- Python / Whisper / CUDA ------------------------------------------------
 echo.
 echo Installing Whisper ^(faster-whisper^) ...
 set "PY="
@@ -192,6 +198,16 @@ if not defined PY (
   ) else (
     echo Whisper Python packages OK.
     echo First voice use downloads the model ^(large-v3, several GB^).
+  )
+  call :ensure_cuda
+  if "!HAS_NVIDIA_GPU!"=="1" (
+    echo Installing CUDA Python runtime wheels ^(cublas/cudnn^) ...
+    %PY% -m pip install -r "packages\server\scripts\requirements-whisper-cuda.txt"
+    if errorlevel 1 (
+      echo [WARN] CUDA pip wheels failed — GPU Whisper may need CUDA Toolkit only.
+    ) else (
+      echo CUDA Python wheels OK.
+    )
   )
 )
 
@@ -254,6 +270,67 @@ if errorlevel 1 (
   echo [WARN] winget install reported an error for %PKG_NAME% — continuing; may already be present.
 ) else (
   set "NEED_PATH_REFRESH=1"
+)
+goto :eof
+
+:ensure_cuda
+rem Install CUDA Toolkit 12.x for Whisper GPU when an NVIDIA GPU is present.
+rem Skip with: set WEBCLI_SKIP_CUDA=1
+if /i "%WEBCLI_SKIP_CUDA%"=="1" (
+  echo CUDA install skipped ^(WEBCLI_SKIP_CUDA=1^).
+  goto :eof
+)
+set "HAS_NVIDIA_GPU=0"
+where nvidia-smi >nul 2>&1
+if not errorlevel 1 (
+  nvidia-smi -L >nul 2>&1
+  if not errorlevel 1 set "HAS_NVIDIA_GPU=1"
+)
+if "!HAS_NVIDIA_GPU!"=="0" (
+  "%PS%" -NoProfile -ExecutionPolicy Bypass -Command ^
+    "if (Get-CimInstance Win32_VideoController -ErrorAction SilentlyContinue | Where-Object { $_.Name -match 'NVIDIA' }) { exit 0 } else { exit 1 }"
+  if not errorlevel 1 set "HAS_NVIDIA_GPU=1"
+)
+if "!HAS_NVIDIA_GPU!"=="0" (
+  echo No NVIDIA GPU detected — skip CUDA Toolkit. Whisper will use CPU.
+  echo   To force CPU later: WHISPER_DEVICE=cpu in .env
+  goto :eof
+)
+echo NVIDIA GPU detected.
+
+rem Already have cublas64_12.dll somewhere under CUDA v12?
+set "CUBLAS_FOUND=0"
+if exist "%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA" (
+  for /d %%D in ("%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v12*") do (
+    if exist "%%~D\bin\cublas64_12.dll" set "CUBLAS_FOUND=1"
+  )
+)
+if "!CUBLAS_FOUND!"=="1" (
+  echo CUDA 12 toolkit already present ^(cublas64_12.dll found^).
+  goto :eof
+)
+
+echo.
+echo Installing NVIDIA CUDA Toolkit %CUDA_WINGET_VER% via winget ...
+echo   This is a LARGE download ^(several GB^) and may need admin approval.
+echo   Package: %CUDA_WINGET_ID% version %CUDA_WINGET_VER%
+echo   ^(Whisper needs CUDA 12 / cublas64_12.dll — not CUDA 13^)
+echo.
+winget install --id "%CUDA_WINGET_ID%" -e --version %CUDA_WINGET_VER% --source winget --accept-package-agreements --accept-source-agreements --disable-interactivity
+if errorlevel 1 (
+  echo [WARN] winget CUDA %CUDA_WINGET_VER% failed — trying without exact version pin...
+  winget install --id "%CUDA_WINGET_ID%" -e --version %CUDA_WINGET_VER% --accept-package-agreements --accept-source-agreements --disable-interactivity
+)
+if errorlevel 1 (
+  echo [WARN] CUDA Toolkit install failed.
+  echo   Install manually: https://developer.nvidia.com/cuda-downloads
+  echo   Pick CUDA 12.x ^(not 13^), then reopen terminal and restart WebCLI.
+  echo   Temporary: WHISPER_DEVICE=cpu in .env
+) else (
+  echo CUDA Toolkit %CUDA_WINGET_VER% installed.
+  echo   Close this window when setup finishes and open a NEW terminal before GPU Whisper.
+  set "NEED_PATH_REFRESH=1"
+  call :refresh_path
 )
 goto :eof
 

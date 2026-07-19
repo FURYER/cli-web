@@ -140,6 +140,16 @@ download-whisper.bat
 
 Or set a proxy in `.env` (`HTTPS_PROXY=…`) / use the official hub (`HF_ENDPOINT=https://huggingface.co`). Needs `ffmpeg` on PATH for webm/m4a from the phone browser.
 
+### Whisper on NVIDIA GPU (Windows)
+
+`setup.bat` will try to install **CUDA Toolkit 12.9** via winget when an NVIDIA GPU is detected (large download; needs admin). It also installs pip wheels `nvidia-cublas-cu12` / `nvidia-cudnn-cu12`.
+
+Skip CUDA in setup: `set WEBCLI_SKIP_CUDA=1` before running `setup.bat`.
+
+Manual install: https://developer.nvidia.com/cuda-downloads → **CUDA 12.x** (not 13 — Whisper needs `cublas64_12.dll`). Then reopen the terminal and restart WebCLI.
+
+Optional `.env`: `WHISPER_DEVICE=cuda` (default `auto` tries CUDA then CPU). Temporary CPU: `WHISPER_DEVICE=cpu`.
+
 ## MCP (Context7 + board)
 
 On first run / `setup.bat`, WebCLI seeds `~/.webcli/mcp.json` with:
