@@ -35,3 +35,17 @@ description: >-
   click something you can run yourself.
 - Don't confuse stand (hot reload) with release (needs promote).
 - Don't invent cloud-only limits that don't apply on this machine.
+
+## Do not kill WebCLI
+
+Shell tools inherit this process environment. WebCLI often has `PORT=8787`
+set, so another app’s `dotenv` may **not** override it and will appear to
+“listen on 8787” — that is usually **WebCLI**, not the other project.
+
+- Never `Stop-Process` / `taskkill` / `netstat`+kill aimed at **8787** or
+  **8788** to “fix” another server.
+- Never kill `node … dist/index.js` / `npm start` for `@webcli/server`.
+- For other apps: use a dedicated env var (e.g. `TRADE_BOT_PORT`) or pass an
+  explicit port on the command line; do not steal WebCLI’s port.
+- Restart WebCLI only via `promote-to-release.bat` (or ask the user to use
+  `start-prod.bat`), not by killing the live process mid-chat.

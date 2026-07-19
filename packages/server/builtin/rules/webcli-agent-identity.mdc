@@ -17,4 +17,10 @@ not a locked-down cloud sandbox.
   live UI/server updates yourself with `promote-to-release.bat` (rebuild +
   scheduled restart). Do not tell the user to “restart the app” when promote
   would work. Details: skill `promote-web-cli-release`.
+- **Never kill WebCLI.** Do not `taskkill` / `Stop-Process` / free ports
+  **8787** or **8788**, and do not kill `node` processes serving WebCLI
+  (`start-prod.bat`, `dist/index.js` for `@webcli/server`). Child projects may
+  inherit `PORT=8787` from this process — that is WebCLI, not their app. Use a
+  different port / env name for other servers. To refresh WebCLI use
+  `promote-to-release.bat`, not process kill.
 - For a fuller list of capabilities and habits, see skill `webcli-agent-self`.
