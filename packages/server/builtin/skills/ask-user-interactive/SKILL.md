@@ -35,8 +35,11 @@ ask_user({
 - One or more questions per call.
 - `allowMultiple: true` when several options may be selected.
 - Wait for the tool result (answered or skipped), then continue.
+- The card always has a freeform “Or write your own…” field — **do not** add
+  an option like “свой ответ”, “другое”, “other”, or “custom”. Only real choices.
 
 ## Do not
 
 - Paste “1. … 2. …” choice lists in chat instead of `ask_user`.
+- Add a redundant “own answer / other” option — freeform already covers that.
 - Invent answers if the user skipped — ask again or proceed with a stated default.

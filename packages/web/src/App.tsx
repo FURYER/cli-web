@@ -379,7 +379,7 @@ export default function App() {
 
       if (opts?.reloadActive !== false) {
         const detail = await getSession(auth, id);
-        setMessages(detail.messages);
+        setMessages((prev) => mergeServerMessages(detail.messages, prev));
         const keepLocalBusy = sendingRef.current.has(id);
         markBusy(id, Boolean(detail.busy) || keepLocalBusy);
         if (!detail.busy && !keepLocalBusy) {
@@ -738,6 +738,21 @@ export default function App() {
                 ];
               });
               break;
+            case "user_message":
+              setMessages((prev) => {
+                const msg = event.message;
+                const withoutLocal = prev.filter(
+                  (m) =>
+                    !(
+                      String(m.id).startsWith("local-") &&
+                      m.role === "user" &&
+                      m.content === msg.content
+                    ),
+                );
+                if (withoutLocal.some((m) => m.id === msg.id)) return withoutLocal;
+                return [...withoutLocal, msg];
+              });
+              break;
             case "activity":
               if (event.id === "working" || event.id === "planning") {
                 setActivities((prev) => {
@@ -776,14 +791,24 @@ export default function App() {
                 );
                 const idx = withoutPlanning.findIndex((item) => item.id === event.id);
                 const prevItem = idx >= 0 ? withoutPlanning[idx] : undefined;
+                const startedAt =
+                  event.status === "running"
+                    ? prevItem?.startedAt ?? Date.now()
+                    : prevItem?.startedAt;
+                const durationMs =
+                  typeof event.durationMs === "number"
+                    ? event.durationMs
+                    : prevItem?.durationMs != null
+                      ? prevItem.durationMs
+                      : event.status !== "running" && typeof startedAt === "number"
+                        ? Math.max(0, Date.now() - startedAt)
+                        : undefined;
                 const next: LiveActivity = {
                   ...event,
                   // Don't wipe streamed thinking text when a later event omits detail.
                   detail: event.detail ?? prevItem?.detail,
-                  startedAt:
-                    event.status === "running"
-                      ? prevItem?.startedAt ?? Date.now()
-                      : prevItem?.startedAt,
+                  startedAt,
+                  durationMs,
                 };
                 if (idx >= 0) {
                   const copy = [...withoutPlanning];
@@ -973,11 +998,27 @@ export default function App() {
     }
   }
 
+  function mergeServerMessages(
+    server: ChatMessage[],
+    prev: ChatMessage[],
+  ): ChatMessage[] {
+    const pending = prev.filter((m) => {
+      if (m.role !== "user" || !String(m.id).startsWith("local-")) return false;
+      return !server.some(
+        (s) =>
+          s.role === "user" &&
+          s.content === m.content &&
+          Math.abs((s.createdAt || 0) - (m.createdAt || 0)) < 180_000,
+      );
+    });
+    return pending.length ? [...server, ...pending] : server;
+  }
+
   async function refreshActive() {
     if (!activeIdRef.current) return;
     try {
       const detail = await getSession(auth, activeIdRef.current);
-      setMessages(detail.messages);
+      setMessages((prev) => mergeServerMessages(detail.messages, prev));
     } catch {
       /* ignore race */
     }
@@ -1152,29 +1193,36 @@ export default function App() {
     images: SendImagePayload[] = [],
     opts?: { mode?: "agent" | "plan" },
   ) {
-    if (!activeId || sendingRef.current.has(activeId) || busyIds.has(activeId)) return;
+    if (!activeId || sendingRef.current.has(activeId)) return;
     const sendMode = opts?.mode ?? mode;
-    sendingRef.current.add(activeId);
-    markBusy(activeId, true);
+    const sessionId = activeId;
+    const alreadyBusy = busyIdsRef.current.has(sessionId);
+    sendingRef.current.add(sessionId);
+    markBusy(sessionId, true);
     setError(null);
-    setStreamingText("");
-    setPendingQuestions([]);
-    setAskSubmittingId(null);
-    setActivities([
-      {
-        type: "activity",
-        sessionId: activeId,
-        id: "planning",
-        kind: "thinking",
-        label: "Planning next moves",
-        status: "running",
-        startedAt: Date.now(),
-      },
-    ]);
+    // If a run is already in flight (e.g. sub-agent wake), only queue — do not
+    // wipe the live stream/activities of the current turn.
+    if (!alreadyBusy) {
+      setStreamingText("");
+      setPendingQuestions([]);
+      setAskSubmittingId(null);
+      setActivities([
+        {
+          type: "activity",
+          sessionId,
+          id: "planning",
+          kind: "thinking",
+          label: "Planning next moves",
+          status: "running",
+          startedAt: Date.now(),
+        },
+      ]);
+    }
+    const localId = `local-${Date.now()}`;
     setMessages((prev) => [
       ...prev,
       {
-        id: `local-${Date.now()}`,
+        id: localId,
         role: "user",
         content: text,
         mode: sendMode,
@@ -1186,12 +1234,19 @@ export default function App() {
       },
     ]);
     try {
-      await sendMessage(auth, activeId, text, { model, mode: sendMode, images });
+      await sendMessage(auth, sessionId, text, { model, mode: sendMode, images });
+      setComposerDraft("");
     } catch (err) {
-      clearSending(activeId);
-      markBusy(activeId, false);
-      setActivities([]);
+      clearSending(sessionId);
+      if (!alreadyBusy) {
+        markBusy(sessionId, false);
+        setActivities([]);
+      }
+      setMessages((prev) => prev.filter((m) => m.id !== localId));
+      setComposerDraft(text);
+      setComposerDraftKey((k) => k + 1);
       setError(err instanceof Error ? err.message : String(err));
+      throw err;
     }
   }
 
@@ -1583,10 +1638,7 @@ export default function App() {
                 onModelChange={handleModelChange}
                 onModeChange={handleModeChange}
                 onStop={() => void handleStop()}
-                onSend={(text, images) => {
-                  setComposerDraft("");
-                  void handleSend(text, images);
-                }}
+                onSend={(text, images) => handleSend(text, images)}
               />
             </>
           )}

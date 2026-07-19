@@ -28,6 +28,8 @@ import {
   answerAskQuestion as resolveAskQuestion,
   beginAskSession,
   cancelAskQuestionsForSession,
+  clearAskWaitPause,
+  askWaitPausedMs,
   endAskSession,
   type AskQuestionAnswer,
   type AskQuestionHandlerResult,
@@ -140,8 +142,12 @@ const BUSY_PREPARE_GRACE_MS = 5 * 60 * 1000;
 
 function setSessionBusy(session: SessionRecord, busy: boolean): void {
   session.busy = busy;
-  if (busy) session.busyStartedAt = Date.now();
-  else delete session.busyStartedAt;
+  if (busy) {
+    session.busyStartedAt = Date.now();
+  } else {
+    delete session.busyStartedAt;
+    clearAskWaitPause(session.id);
+  }
 }
 
 type ParentWakeItem = {
@@ -153,6 +159,27 @@ type ParentWakeItem = {
 const parentWakeQueue = new Map<string, ParentWakeItem[]>();
 const parentWakeTimers = new Map<string, ReturnType<typeof setTimeout>>();
 const parentWakeInFlight = new Set<string>();
+
+type SessionSendSource = "user" | "wake" | "system";
+
+type SessionSendRequest = {
+  text: string;
+  options?: {
+    modelId?: string;
+    mode?: AgentModeOption;
+    images?: SendImageInput[];
+  };
+  source: SessionSendSource;
+  resolve?: () => void;
+  reject?: (err: Error) => void;
+};
+
+/**
+ * FIFO send queue per session. User messages jump ahead of pending wake/system
+ * items so a human turn is not lost behind auto-orchestration.
+ */
+const sessionSendQueues = new Map<string, SessionSendRequest[]>();
+const sessionSendPumping = new Set<string>();
 
 function markChildRunFinished(session: SessionRecord, status: string): void {
   if (!session.parentSessionId) return;
@@ -280,17 +307,17 @@ async function flushParentWake(parentSessionId: string): Promise<void> {
   // Wait until the whole parallel batch is idle, so one wake covers everyone.
   if (parentHasRunningChildren(parent)) return;
 
-  if (parent.busy) return; // retry from sendMessage finally
+  if (parent.busy) return; // retry from send queue pump / sendMessage finally
 
   const items = [...queued];
   parentWakeQueue.set(parentSessionId, []);
   parentWakeInFlight.add(parentSessionId);
   try {
     const prompt = await buildParentWakePrompt(parent, items);
-    await sendMessage(parentSessionId, prompt, {
+    enqueueSessionSend(parentSessionId, prompt, {
       modelId: parent.model,
       mode: parent.mode === "plan" ? "plan" : "agent",
-    });
+    }, "wake");
   } catch (err) {
     console.error("[subagents] parent auto-wake failed:", err);
     // Put back so a later idle flush can retry.
@@ -304,7 +331,8 @@ async function flushParentWake(parentSessionId: string): Promise<void> {
       left?.length &&
       fresh &&
       !fresh.busy &&
-      !parentHasRunningChildren(fresh)
+      !parentHasRunningChildren(fresh) &&
+      !(sessionSendQueues.get(parentSessionId)?.length)
     ) {
       void flushParentWake(parentSessionId);
     }
@@ -323,6 +351,13 @@ export type StreamEvent =
       toolName?: string;
       /** Wall-clock ms from busy start to this commit. */
       durationMs?: number;
+    }
+  | {
+      type: "user_message";
+      sessionId: string;
+      message: ChatMessage;
+      /** True when the run will start after the current one finishes. */
+      queued?: boolean;
     }
   | {
       type: "activity";
@@ -876,7 +911,8 @@ export async function deleteSession(id: string): Promise<boolean> {
 function busyElapsedMs(session: SessionRecord, at = Date.now()): number | undefined {
   const started = session.busyStartedAt;
   if (typeof started !== "number" || started <= 0) return undefined;
-  return Math.max(0, at - started);
+  const paused = askWaitPausedMs(session.id, at);
+  return Math.max(0, at - started - paused);
 }
 
 function appendMessage(
@@ -916,6 +952,13 @@ function appendMessage(
     session.title = content.slice(0, 48) || session.title;
   }
   schedulePersist();
+  if (role === "user") {
+    broadcast({
+      type: "user_message",
+      sessionId: session.id,
+      message,
+    });
+  }
   return message;
 }
 
@@ -1087,27 +1130,77 @@ function persistActivity(
   schedulePersist();
 }
 
+/** sessionId → activityId → wall-clock start (for duration when SDK omits it). */
+const activityStartedAt = new Map<string, Map<string, number>>();
+
+function rememberActivityStart(sessionId: string, activityId: string): void {
+  let map = activityStartedAt.get(sessionId);
+  if (!map) {
+    map = new Map();
+    activityStartedAt.set(sessionId, map);
+  }
+  if (!map.has(activityId)) map.set(activityId, Date.now());
+}
+
+function resolveActivityDurationMs(
+  sessionId: string,
+  activityId: string,
+  provided?: number,
+): number | undefined {
+  if (typeof provided === "number" && provided >= 0 && Number.isFinite(provided)) {
+    activityStartedAt.get(sessionId)?.delete(activityId);
+    return provided;
+  }
+  const start = activityStartedAt.get(sessionId)?.get(activityId);
+  activityStartedAt.get(sessionId)?.delete(activityId);
+  if (typeof start !== "number" || start <= 0) return undefined;
+  return Math.max(0, Date.now() - start);
+}
+
+function clearActivityStarts(sessionId: string): void {
+  activityStartedAt.delete(sessionId);
+}
+
 function emitActivity(
   session: SessionRecord,
   activity: Extract<StreamEvent, { type: "activity" }>,
 ): void {
-  broadcast(activity);
+  // Fill duration before broadcast so the client can persist the same value.
+  let durationMs = activity.durationMs;
+  if (activity.id !== "working" && activity.id !== "planning") {
+    if (activity.status === "running") {
+      rememberActivityStart(session.id, activity.id);
+    } else if (activity.status === "completed" || activity.status === "error") {
+      durationMs = resolveActivityDurationMs(
+        session.id,
+        activity.id,
+        activity.durationMs,
+      );
+    }
+  }
+
+  const event: Extract<StreamEvent, { type: "activity" }> = {
+    ...activity,
+    ...(typeof durationMs === "number" ? { durationMs } : {}),
+  };
+  broadcast(event);
+
   // Transient bootstrap indicator — don't keep "Working" in history.
-  if (activity.id === "working") return;
-  if (activity.status === "completed" || activity.status === "error") {
+  if (activity.id === "working" || activity.id === "planning") return;
+  if (event.status === "completed" || event.status === "error") {
     persistActivity(session, {
-      id: activity.id,
-      kind: activity.kind,
-      label: activity.label,
-      status: activity.status,
-      durationMs: activity.durationMs,
-      detail: activity.detail,
-      usage: activity.usage,
-      toolName: activity.toolName,
-      filePath: activity.filePath,
-      linesAdded: activity.linesAdded,
-      linesRemoved: activity.linesRemoved,
-      linesCreated: activity.linesCreated,
+      id: event.id,
+      kind: event.kind,
+      label: event.label,
+      status: event.status,
+      durationMs: event.durationMs,
+      detail: event.detail,
+      usage: event.usage,
+      toolName: event.toolName,
+      filePath: event.filePath,
+      linesAdded: event.linesAdded,
+      linesRemoved: event.linesRemoved,
+      linesCreated: event.linesCreated,
     });
   }
 }
@@ -1517,6 +1610,113 @@ function textFromAssistantEvent(event: Extract<SDKMessage, { type: "assistant" }
 }
 
 export async function sendMessage(
+  sessionId: string,
+  text: string,
+  options?: {
+    modelId?: string;
+    mode?: AgentModeOption;
+    images?: SendImageInput[];
+  },
+): Promise<void> {
+  const session = sessions.get(sessionId);
+  if (!session) throw new Error("Session not found");
+
+  const queuedAhead = sessionSendQueues.get(sessionId)?.length ?? 0;
+  if (session.busy || sessionSendPumping.has(sessionId) || queuedAhead > 0) {
+    return new Promise((resolve, reject) => {
+      pushSessionSend(sessionId, {
+        text,
+        options,
+        source: "system",
+        resolve,
+        reject,
+      });
+      void pumpSessionSendQueue(sessionId);
+    });
+  }
+
+  return sendMessageNow(sessionId, text, options);
+}
+
+/**
+ * Queue a message for the session. User source jumps ahead of pending wake items.
+ * Starts the run immediately when the session is idle.
+ */
+export function enqueueSessionSend(
+  sessionId: string,
+  text: string,
+  options: {
+    modelId?: string;
+    mode?: AgentModeOption;
+    images?: SendImageInput[];
+  } | undefined,
+  source: SessionSendSource,
+): { queued: boolean } {
+  const session = sessions.get(sessionId);
+  if (!session) throw new Error("Session not found");
+
+  const prompt = text.trim();
+  const images = options?.images?.filter((img) => img.data && img.mimeType) ?? [];
+  if (!prompt && images.length === 0) {
+    throw new Error("Message text is required");
+  }
+
+  const wasBusy =
+    session.busy ||
+    sessionSendPumping.has(sessionId) ||
+    (sessionSendQueues.get(sessionId)?.length ?? 0) > 0;
+
+  pushSessionSend(sessionId, { text, options, source });
+  void pumpSessionSendQueue(sessionId);
+  return { queued: wasBusy };
+}
+
+function pushSessionSend(sessionId: string, item: SessionSendRequest): void {
+  const q = sessionSendQueues.get(sessionId) ?? [];
+  if (item.source === "user") {
+    const wakeIdx = q.findIndex((x) => x.source === "wake");
+    if (wakeIdx >= 0) q.splice(wakeIdx, 0, item);
+    else q.push(item);
+  } else {
+    q.push(item);
+  }
+  sessionSendQueues.set(sessionId, q);
+}
+
+async function pumpSessionSendQueue(sessionId: string): Promise<void> {
+  if (sessionSendPumping.has(sessionId)) return;
+  const session = sessions.get(sessionId);
+  if (!session) {
+    sessionSendQueues.delete(sessionId);
+    return;
+  }
+  if (session.busy) return;
+
+  const q = sessionSendQueues.get(sessionId);
+  if (!q?.length) {
+    void flushParentWake(sessionId);
+    return;
+  }
+
+  const next = q.shift()!;
+  if (q.length) sessionSendQueues.set(sessionId, q);
+  else sessionSendQueues.delete(sessionId);
+
+  sessionSendPumping.add(sessionId);
+  try {
+    await sendMessageNow(sessionId, next.text, next.options);
+    next.resolve?.();
+  } catch (err) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    if (next.reject) next.reject(error);
+    else console.error("[send-queue] run failed:", error);
+  } finally {
+    sessionSendPumping.delete(sessionId);
+    void pumpSessionSendQueue(sessionId);
+  }
+}
+
+async function sendMessageNow(
   sessionId: string,
   text: string,
   options?: {
@@ -2279,9 +2479,10 @@ export async function sendMessage(
     setSessionBusy(session, false);
     session.activeRun = null;
     endAskSession(sessionId);
+    clearActivityStarts(sessionId);
     notifyDeployIdleCheck();
-    // Parent may have been busy while children finished — drain wake queue.
-    void flushParentWake(sessionId);
+    // Drain queued user/wake sends; if empty, flush parent auto-wake.
+    void pumpSessionSendQueue(sessionId);
   }
   });
 }

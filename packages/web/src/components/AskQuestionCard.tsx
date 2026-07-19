@@ -12,6 +12,24 @@ type Props = {
   onSkip?: () => void;
 };
 
+/** Options that only mean "I'll type my own" — redundant with the freeform field. */
+function isRedundantOwnAnswerOption(label: string, id: string): boolean {
+  const text = `${id} ${label}`.toLowerCase().replace(/\s+/g, " ").trim();
+  return (
+    /^(custom|other|own|freeform|свободн)/i.test(text) ||
+    /\b(свой|своя|сво[её]|другое|другой|напиши|написать|свой вариант|own answer|write your own|something else)\b/i.test(
+      text,
+    ) ||
+    /^(свой|другое|other|custom)$/i.test(label.trim())
+  );
+}
+
+function visibleOptions(question: AskQuestionItem) {
+  return (question.options ?? []).filter(
+    (option) => !isRedundantOwnAnswerOption(option.label, option.id),
+  );
+}
+
 function labelFor(
   question: AskQuestionItem,
   selectedIds: string[],
@@ -57,7 +75,7 @@ export function AskQuestionCard({
     status === "pending" &&
     !submitting &&
     questions.every((question) => {
-      const opts = question.options ?? [];
+      const opts = visibleOptions(question);
       const hasSelection = (selected[question.id]?.length ?? 0) > 0;
       const hasFreeform = Boolean(freeform[question.id]?.trim());
       // No preset choices → freeform optional; Continue always ok.
@@ -110,12 +128,13 @@ export function AskQuestionCard({
           const chosen = selected[question.id] ?? [];
           const answered = answeredMap.get(question.id);
           const customValue = freeform[question.id] ?? "";
+          const options = visibleOptions(question);
           return (
             <div key={question.id} className="space-y-1.5">
               <p className="text-sm leading-snug text-ink">{question.prompt}</p>
               {status === "pending" ? (
                 <div className="flex flex-col gap-1.5">
-                  {(question.options ?? []).map((option) => {
+                  {options.map((option) => {
                     const active = chosen.includes(option.id);
                     return (
                       <button

@@ -759,12 +759,24 @@ function isExploreStep(step: StepItem): boolean {
 }
 
 function messageToStep(message: ChatMessage): StepItem {
+  const durationMs = message.durationMs;
+  // Persist path has no live startedAt — infer from createdAt so Work stays wall-clock.
+  const startedAt =
+    typeof durationMs === "number" &&
+    durationMs >= 0 &&
+    typeof message.createdAt === "number"
+      ? Math.max(0, message.createdAt - durationMs)
+      : typeof message.createdAt === "number"
+        ? message.createdAt
+        : undefined;
+
   if (message.role === "tool") {
     return {
       id: message.id,
       label: message.toolName || message.content,
       status: "completed",
-      durationMs: message.durationMs,
+      durationMs,
+      startedAt,
       detail: message.detail,
       kind: "tool",
       toolName: message.toolName,
@@ -778,7 +790,8 @@ function messageToStep(message: ChatMessage): StepItem {
     id: message.activityId || message.id,
     label: message.content,
     status: message.activityStatus || "completed",
-    durationMs: message.durationMs,
+    durationMs,
+    startedAt,
     detail: message.detail,
     kind: message.activityKind,
     toolName: message.toolName,
@@ -922,31 +935,29 @@ function isThinkingStep(step: StepItem): boolean {
   return step.kind === "thinking" || /^think/i.test(step.label);
 }
 
-function workDurationMs(steps: StepItem[], now: number): number | undefined {
-  // Wall-clock for the whole work block — don't reset when nested steps start.
+/** Wall-clock span for a work block — never sum of step durations. */
+function workDurationMs(
+  steps: StepItem[],
+  now: number,
+  live: boolean,
+): number | undefined {
   const startedAts = steps
     .map((s) => s.startedAt)
     .filter((t): t is number => typeof t === "number" && t > 0);
-  if (startedAts.length > 0) {
-    const start = Math.min(...startedAts);
-    if (steps.some((s) => s.status === "running")) {
-      return Math.max(0, now - start);
-    }
-    let end = start;
-    for (const s of steps) {
-      if (typeof s.startedAt === "number" && typeof s.durationMs === "number") {
-        end = Math.max(end, s.startedAt + s.durationMs);
-      } else if (typeof s.durationMs === "number") {
-        end = Math.max(end, start + s.durationMs);
-      }
-    }
-    return Math.max(0, end - start);
+  if (startedAts.length === 0) return undefined;
+  const start = Math.min(...startedAts);
+  if (live || steps.some((s) => s.status === "running")) {
+    return Math.max(0, now - start);
   }
-  const finished = steps
-    .map((s) => s.durationMs)
-    .filter((ms): ms is number => typeof ms === "number" && ms >= 0);
-  if (finished.length > 0) return finished.reduce((a, b) => a + b, 0);
-  return undefined;
+  let end = start;
+  for (const s of steps) {
+    if (typeof s.startedAt === "number" && typeof s.durationMs === "number") {
+      end = Math.max(end, s.startedAt + s.durationMs);
+    } else if (typeof s.startedAt === "number") {
+      end = Math.max(end, s.startedAt);
+    }
+  }
+  return Math.max(0, end - start);
 }
 
 function shortFileName(path: string): string {
@@ -1147,7 +1158,9 @@ function StepRow({
 
   const elapsed =
     durationMs ??
-    (status === "running" && startedAt ? Math.max(0, clock - startedAt) : undefined);
+    (status === "running" && typeof startedAt === "number" && startedAt > 0
+      ? Math.max(0, clock - startedAt)
+      : undefined);
 
   return (
     <div className="w-full">
@@ -1190,15 +1203,19 @@ function StepRow({
 function ExploredGroup({
   steps,
   now,
+  live = false,
 }: {
   steps: StepItem[];
   now?: number;
+  live?: boolean;
 }) {
   const n = steps.length;
   const running = steps.some((s) => s.status === "running");
   const [open, setOpen] = useState(running);
   const wasRunningRef = useRef(running);
   const label = `Explored ${n} file${n === 1 ? "" : "s"}`;
+  const clock = now ?? Date.now();
+  const duration = workDurationMs(steps, clock, live || running);
 
   useLayoutEffect(() => {
     if (running) {
@@ -1222,7 +1239,14 @@ function ExploredGroup({
         ) : (
           <ChevronRight size={12} strokeWidth={1.75} className="shrink-0 opacity-70" />
         )}
-        <span className={running ? "text-ink/90" : undefined}>{label}</span>
+        <span className={`min-w-0 truncate ${running ? "text-ink/90" : ""}`}>
+          {label}
+        </span>
+        {duration != null ? (
+          <span className="shrink-0 font-mono tabular-nums text-muted/80">
+            {formatDuration(duration)}
+          </span>
+        ) : null}
       </button>
       {open ? (
         <div className="ml-3 mt-1 space-y-1 border-l border-line/60 pl-3">
@@ -1278,15 +1302,20 @@ function WorkBlock({
   steps,
   live,
   defaultOpen,
+  clockPaused = false,
 }: {
   steps: StepItem[];
   live: boolean;
   defaultOpen: boolean;
+  /** Freeze wall-clock while user answers ask_user / AskQuestion. */
+  clockPaused?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const [now, setNow] = useState(Date.now());
   const prevLiveRef = useRef(live);
-  const blockStartedAtRef = useRef<number | null>(null);
+  const [blockStart, setBlockStart] = useState<number | null>(null);
+  const [blockEnd, setBlockEnd] = useState<number | null>(null);
+  const clockPauseStartedRef = useRef<number | null>(null);
 
   const usageSteps = steps.filter(isUsageStep);
   // Bootstrap planning placeholder / noisy step counters stay out of the nested list.
@@ -1305,23 +1334,59 @@ function WorkBlock({
   const durationSteps = bodySteps.length > 0 ? bodySteps : steps;
 
   useLayoutEffect(() => {
-    for (const s of durationSteps) {
-      if (typeof s.startedAt === "number" && s.startedAt > 0) {
-        if (
-          blockStartedAtRef.current == null ||
-          s.startedAt < blockStartedAtRef.current
-        ) {
-          blockStartedAtRef.current = s.startedAt;
-        }
-      }
-    }
-  }, [durationSteps]);
+    const startedAts = durationSteps
+      .map((s) => s.startedAt)
+      .filter((t): t is number => typeof t === "number" && t > 0);
+    const earliest = startedAts.length > 0 ? Math.min(...startedAts) : null;
+    setBlockStart((prev) => {
+      if (earliest != null && (prev == null || earliest < prev)) return earliest;
+      if (prev == null && live) return Date.now();
+      return prev;
+    });
+  }, [durationSteps, live]);
 
   useLayoutEffect(() => {
-    if (!hasRunning) return;
-    const timer = window.setInterval(() => setNow(Date.now()), 500);
+    if (live) {
+      setBlockEnd(null);
+      return;
+    }
+    setBlockEnd((prev) => {
+      if (prev != null) return prev;
+      let end: number | null = null;
+      for (const s of durationSteps) {
+        if (typeof s.startedAt === "number" && typeof s.durationMs === "number") {
+          end = Math.max(end ?? 0, s.startedAt + s.durationMs);
+        }
+      }
+      return end ?? Date.now();
+    });
+  }, [live, durationSteps]);
+
+  useLayoutEffect(() => {
+    if (clockPaused) {
+      if (clockPauseStartedRef.current == null) {
+        const t = Date.now();
+        clockPauseStartedRef.current = t;
+        setNow(t);
+      }
+      return;
+    }
+    if (clockPauseStartedRef.current != null) {
+      const delta = Math.max(0, Date.now() - clockPauseStartedRef.current);
+      clockPauseStartedRef.current = null;
+      // Shift start forward so ask-wait is excluded from wall-clock.
+      setBlockStart((s) => (s != null ? s + delta : s));
+      setNow(Date.now());
+    }
+  }, [clockPaused]);
+
+  useLayoutEffect(() => {
+    // Tick while live, but freeze during ask wait.
+    if (!live || clockPaused) return;
+    setNow(Date.now());
+    const timer = window.setInterval(() => setNow(Date.now()), 250);
     return () => window.clearInterval(timer);
-  }, [hasRunning]);
+  }, [live, clockPaused]);
 
   useLayoutEffect(() => {
     if (!prevLiveRef.current && live) {
@@ -1333,9 +1398,9 @@ function WorkBlock({
   }, [live]);
 
   const duration =
-    hasRunning && blockStartedAtRef.current != null
-      ? Math.max(0, now - blockStartedAtRef.current)
-      : workDurationMs(durationSteps, now);
+    blockStart != null
+      ? Math.max(0, (live ? now : (blockEnd ?? now)) - blockStart)
+      : workDurationMs(durationSteps, now, live);
 
   let title: string;
   if (onlyThinking) {
@@ -1348,7 +1413,7 @@ function WorkBlock({
           ? `Thought for ${formatDuration(duration)}`
           : "Thought";
   } else {
-    title = hasRunning
+    title = hasRunning || live
       ? duration != null
         ? `Working · ${formatDuration(duration)}`
         : "Working"
@@ -1375,7 +1440,7 @@ function WorkBlock({
         ) : (
           <ChevronRight size={12} strokeWidth={1.75} className="shrink-0 opacity-70" />
         )}
-        <span className={hasRunning ? "text-ink/90" : undefined}>{title}</span>
+        <span className={hasRunning || live ? "text-ink/90" : undefined}>{title}</span>
       </button>
       {!open && summary ? (
         <p className="ml-4 mt-0.5 text-[11px] text-muted/80">{summary}</p>
@@ -1390,7 +1455,7 @@ function WorkBlock({
         <div className="ml-1 mt-1.5 space-y-1 border-l border-line/60 pl-3">
           {clustered.map((view) =>
             view.type === "explored" ? (
-              <ExploredGroup key={view.id} steps={view.steps} now={now} />
+              <ExploredGroup key={view.id} steps={view.steps} now={now} live={live} />
             ) : (
               <StepRow
                 key={view.step.id}
@@ -1538,16 +1603,51 @@ export function Chat({
     return Math.min(...candidates);
   }, [busy, planningStartedAt, activities, messages]);
 
+  const askWaiting = pendingQuestions.length > 0;
+  const askPauseStartedRef = useRef<number | null>(null);
+  const [askPausedAccumMs, setAskPausedAccumMs] = useState(0);
   const [liveNow, setLiveNow] = useState(() => Date.now());
+
   useEffect(() => {
-    if (!busy || liveReplyStartedAt == null) return;
+    if (!busy) {
+      askPauseStartedRef.current = null;
+      setAskPausedAccumMs(0);
+      return;
+    }
+    if (askWaiting) {
+      if (askPauseStartedRef.current == null) {
+        const now = Date.now();
+        askPauseStartedRef.current = now;
+        setLiveNow(now);
+      }
+      return;
+    }
+    if (askPauseStartedRef.current != null) {
+      const started = askPauseStartedRef.current;
+      askPauseStartedRef.current = null;
+      setAskPausedAccumMs((prev) => prev + Math.max(0, Date.now() - started));
+    }
+  }, [busy, askWaiting]);
+
+  useEffect(() => {
+    // Freeze while an ask card waits for the user.
+    if (!busy || liveReplyStartedAt == null || askWaiting) return;
     setLiveNow(Date.now());
     const id = window.setInterval(() => setLiveNow(Date.now()), 250);
     return () => window.clearInterval(id);
-  }, [busy, liveReplyStartedAt]);
+  }, [busy, liveReplyStartedAt, askWaiting]);
+
   const liveElapsed =
     busy && liveReplyStartedAt != null
-      ? Math.max(0, liveNow - liveReplyStartedAt)
+      ? Math.max(
+          0,
+          liveNow -
+            liveReplyStartedAt -
+            askPausedAccumMs -
+            (askPauseStartedRef.current != null
+              ? Math.max(0, liveNow - askPauseStartedRef.current)
+              : 0),
+        )
       : undefined;
 
   const timeline = useMemo(
@@ -1688,6 +1788,7 @@ export function Chat({
                   steps={block.steps}
                   live={block.live}
                   defaultOpen={block.defaultOpen}
+                  clockPaused={askWaiting}
                 />
               );
             }

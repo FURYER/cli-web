@@ -72,6 +72,61 @@ const settledByCallId = new Map<
 const SETTLE_TTL_MS = 30 * 60 * 1000;
 let broadcast: Broadcaster = () => {};
 
+/** Wall-clock pause of the parent reply timer while ask cards wait for the user. */
+type AskWaitPause = {
+  openCount: number;
+  /** When the first open ask started (0 if none open). */
+  pauseStartedAt: number;
+  /** Accumulated closed pause intervals for this busy turn. */
+  accumulatedMs: number;
+};
+const askWaitPauseBySession = new Map<string, AskWaitPause>();
+
+function getAskWaitPause(sessionId: string): AskWaitPause {
+  let entry = askWaitPauseBySession.get(sessionId);
+  if (!entry) {
+    entry = { openCount: 0, pauseStartedAt: 0, accumulatedMs: 0 };
+    askWaitPauseBySession.set(sessionId, entry);
+  }
+  return entry;
+}
+
+/** Call when an ask card becomes pending. */
+export function noteAskWaitStart(sessionId: string): void {
+  const entry = getAskWaitPause(sessionId);
+  entry.openCount += 1;
+  if (entry.openCount === 1) {
+    entry.pauseStartedAt = Date.now();
+  }
+}
+
+/** Call when an ask card is answered/skipped/cancelled. */
+export function noteAskWaitEnd(sessionId: string): void {
+  const entry = askWaitPauseBySession.get(sessionId);
+  if (!entry || entry.openCount <= 0) return;
+  entry.openCount -= 1;
+  if (entry.openCount === 0 && entry.pauseStartedAt > 0) {
+    entry.accumulatedMs += Math.max(0, Date.now() - entry.pauseStartedAt);
+    entry.pauseStartedAt = 0;
+  }
+}
+
+/** Ms the reply clock should ignore (open pause included). */
+export function askWaitPausedMs(sessionId: string, at = Date.now()): number {
+  const entry = askWaitPauseBySession.get(sessionId);
+  if (!entry) return 0;
+  let total = entry.accumulatedMs;
+  if (entry.openCount > 0 && entry.pauseStartedAt > 0) {
+    total += Math.max(0, at - entry.pauseStartedAt);
+  }
+  return Math.max(0, total);
+}
+
+/** Clear when the session run ends (busy → idle). */
+export function clearAskWaitPause(sessionId: string): void {
+  askWaitPauseBySession.delete(sessionId);
+}
+
 declare global {
   // eslint-disable-next-line no-var
   var __cursorCliAskQuestion:
@@ -236,11 +291,14 @@ export function promptUserQuestions(
     questionTitle: prompt.title || prompt.questions[0]?.prompt,
   });
 
+  noteAskWaitStart(sessionId);
+
   return new Promise<AskQuestionHandlerResult>((resolve) => {
     pendingByCallId.set(callId, {
       sessionId,
       prompt,
       resolve: (result) => {
+        noteAskWaitEnd(sessionId);
         rememberSettled(sessionId, callId, result);
         resolve(result);
       },

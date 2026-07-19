@@ -14,7 +14,9 @@ export function createAskUserCustomTool(sessionId: string): SDKCustomTool {
   return {
     description:
       "Ask the user interactive multiple-choice questions in the WebCLI chat UI. " +
-      "Use this instead of writing questions as plain markdown. Blocks until the user answers or skips.",
+      "Use this instead of writing questions as plain markdown. Blocks until the user answers or skips. " +
+      "Each question already has a freeform text field — do NOT add an option like " +
+      "«свой ответ», «другое», «other», or «custom»; only concrete choices.",
     inputSchema: {
       type: "object",
       properties: {

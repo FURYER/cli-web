@@ -10,7 +10,6 @@ import {
   listSessions,
   resumeSession,
   rollbackToMessage,
-  sendMessage,
   submitAskQuestionAnswer,
   updateSession,
   type AskQuestionAnswer,
@@ -404,23 +403,32 @@ export async function registerSessionRoutes(app: FastifyInstance): Promise<void>
     if (!session) {
       return reply.code(404).send({ error: "Session not found" });
     }
-    if (session.busy) {
-      return reply.code(409).send({ error: "Session is already running" });
-    }
     const text = request.body?.text ?? "";
     const images = request.body?.images ?? [];
     if (!text.trim() && images.length === 0) {
       return reply.code(400).send({ error: "Message text is required" });
     }
-    // Note: sendMessage sets busy synchronously before first await.
-    void sendMessage(request.params.id, text, {
-      modelId: request.body?.model,
-      mode: request.body?.mode === "plan" ? "plan" : "agent",
-      images,
-    }).catch((err) => {
-      request.log.error(err);
-    });
-    return reply.code(202).send({ accepted: true, sessionId: request.params.id });
+    try {
+      const { enqueueSessionSend } = await import("./agent.js");
+      const result = enqueueSessionSend(
+        request.params.id,
+        text,
+        {
+          modelId: request.body?.model,
+          mode: request.body?.mode === "plan" ? "plan" : "agent",
+          images,
+        },
+        "user",
+      );
+      return reply.code(202).send({
+        accepted: true,
+        queued: result.queued,
+        sessionId: request.params.id,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return reply.code(400).send({ error: message });
+    }
   });
 
   app.post<{ Params: { id: string } }>(

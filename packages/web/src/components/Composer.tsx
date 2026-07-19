@@ -34,7 +34,7 @@ type Props = {
   lastContext?: ContextSnapshot | null;
   onModelChange: (modelId: string) => void;
   onModeChange: (mode: "agent" | "plan") => void;
-  onSend: (text: string, images: SendImagePayload[]) => void;
+  onSend: (text: string, images: SendImagePayload[]) => void | Promise<void>;
   onStop?: () => void;
 };
 
@@ -410,14 +410,20 @@ export function Composer({
   const submit = () => {
     if (listening) void stopRecording({ discard: true });
     const value = text.trim();
-    if ((!value && images.length === 0) || disabled || busy || transcribing) return;
-    clearDraft(sessionId);
-    onSend(
-      value,
-      images.map((item) => item.payload),
-    );
-    setText("");
-    setImages([]);
+    // Allow send while busy — server queues behind the current run (wake race).
+    if ((!value && images.length === 0) || disabled || transcribing) return;
+    const payloadImages = images.map((item) => item.payload);
+    const pendingText = value;
+    void (async () => {
+      try {
+        await Promise.resolve(onSend(pendingText, payloadImages));
+        clearDraft(sessionId);
+        setText("");
+        setImages([]);
+      } catch {
+        /* parent restores draft / shows error */
+      }
+    })();
   };
 
   const addFiles = async (files: FileList | null) => {
@@ -510,7 +516,7 @@ export function Composer({
                   submit();
                 }}
               />
-              {text.trim() && !disabled && !busy && !transcribing ? (
+              {text.trim() && !disabled && !transcribing ? (
                 <button
                   type="button"
                   onClick={() => {

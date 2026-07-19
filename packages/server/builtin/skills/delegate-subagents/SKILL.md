@@ -2,15 +2,21 @@
 name: delegate-subagents
 description: >-
   Delegate work to isolated sub-agents (git worktree + branch each), review
-  results, and merge back. Use for parallelizable tasks that may touch the
-  same files.
+  results, and merge back. Use when parallel isolated work would help — judge
+  the tradeoff yourself; there is no rigid checklist of cases.
 ---
 
 # Sub-agents (delegate_task)
 
-When a large task can be split, or multiple agents should edit overlapping
-areas safely, use the in-process tools — **do not** invent markdown checklists
-instead of calling them.
+You have tools to spawn isolated workers (git worktree + branch each). Prefer
+calling them over inventing markdown “todo lists” that pretend to be parallel.
+
+There is **no fixed list of when yes / when no**. Before you delegate, briefly
+reason: would splitting this save wall-clock or reduce risk of conflicting edits
+enough to justify spawn + merge overhead? If a single focused pass is clearer
+and faster, just do the work yourself. If two chunks are independent (or need
+safe overlap on the same files), delegation is often worth it. Stay curious —
+re-evaluate mid-task if the shape of the work changes.
 
 ## Tools
 
@@ -52,7 +58,7 @@ On **conflict**: resolve files in the parent repo (or `git merge --abort`), then
 
 ## Recommended flow
 
-1. Plan the split (non-overlapping preferred; overlapping is OK because of worktrees).
+1. Decide the split is worth it (see the reasoning nudge above).
 2. `delegate_task` × N with `wait: false` (each call auto-prepares if still dirty).
 3. **You can end your turn** — when all those children finish, the system
    automatically sends you a wake-up message with their results.

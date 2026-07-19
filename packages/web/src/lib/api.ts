@@ -129,6 +129,12 @@ export type StreamEvent =
       durationMs?: number;
     }
   | {
+      type: "user_message";
+      sessionId: string;
+      message: ChatMessage;
+      queued?: boolean;
+    }
+  | {
       type: "activity";
       sessionId: string;
       id: string;
@@ -371,7 +377,7 @@ export function sendMessage(
     mode?: "agent" | "plan";
     images?: SendImagePayload[];
   },
-): Promise<{ accepted: boolean }> {
+): Promise<{ accepted: boolean; queued?: boolean }> {
   return request(`/api/sessions/${sessionId}/messages`, auth, {
     method: "POST",
     body: JSON.stringify({
