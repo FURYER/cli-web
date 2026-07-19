@@ -1,6 +1,8 @@
 node_modules/
 dist/
 .env
+ЧТО-ДЕЛАТЬ-ДАЛЬШЕ.txt
+NEXT-STEPS.txt
 *.log
 .DS_Store
 packages/web/dist/
