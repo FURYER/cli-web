@@ -92,7 +92,9 @@ export function AskQuestionCard({
           : [...current, optionId];
         return { ...prev, [question.id]: next };
       }
-      return { ...prev, [question.id]: [optionId] };
+      // Single-select: tap again to clear (e.g. switch to freeform only).
+      const next = current.includes(optionId) ? [] : [optionId];
+      return { ...prev, [question.id]: next };
     });
   }
 
