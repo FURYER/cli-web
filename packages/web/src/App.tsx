@@ -11,6 +11,7 @@ import { BootSplash, ChatSkeleton } from "./components/Skeleton";
 import { WorkspacePicker } from "./components/WorkspacePicker";
 import {
   answerAskQuestion,
+  cancelQueuedMessage,
   cancelRun,
   connectSocket,
   createSession,
@@ -815,6 +816,11 @@ export default function App() {
                 return [...withoutLocal, msg];
               });
               break;
+            case "queue_cancelled":
+              setMessages((prev) =>
+                prev.filter((m) => m.id !== event.clientMessageId),
+              );
+              break;
             case "activity":
               if (event.id === "working" || event.id === "planning") {
                 setActivities((prev) => {
@@ -1433,6 +1439,7 @@ export default function App() {
         model,
         mode: sendMode,
         images,
+        clientMessageId: localId,
       });
       if (result.queued) {
         setMessages((prev) =>
@@ -1451,6 +1458,19 @@ export default function App() {
       setComposerDraftKey((k) => k + 1);
       setError(err instanceof Error ? err.message : String(err));
       throw err;
+    }
+  }
+
+  async function handleCancelQueued(messageId: string) {
+    if (!activeId) return;
+    setError(null);
+    try {
+      await cancelQueuedMessage(auth, activeId, { clientMessageId: messageId });
+      setMessages((prev) => prev.filter((m) => m.id !== messageId));
+    } catch (err) {
+      // Already started or missing — drop local bubble anyway if still queued.
+      setMessages((prev) => prev.filter((m) => m.id !== messageId));
+      setError(err instanceof Error ? err.message : String(err));
     }
   }
 
@@ -1819,6 +1839,7 @@ export default function App() {
                 loadingOlder={loadingOlder}
                 onLoadOlder={() => loadOlderMessages()}
                 onRollback={(messageId) => void handleRollback(messageId)}
+                onCancelQueued={(messageId) => void handleCancelQueued(messageId)}
                 onImplementPlan={handleImplementPlan}
                 onAnswerQuestion={(callId, answers) =>
                   void handleAnswerQuestion(callId, answers)

@@ -456,6 +456,7 @@ export async function registerSessionRoutes(app: FastifyInstance): Promise<void>
       model?: string;
       mode?: string;
       images?: SendImageInput[];
+      clientMessageId?: string;
     };
   }>("/api/sessions/:id/messages", async (request, reply) => {
     const session = getSession(request.params.id);
@@ -476,6 +477,7 @@ export async function registerSessionRoutes(app: FastifyInstance): Promise<void>
           modelId: request.body?.model,
           mode: request.body?.mode === "plan" ? "plan" : "agent",
           images,
+          clientMessageId: request.body?.clientMessageId,
         },
         "user",
       );
@@ -484,6 +486,30 @@ export async function registerSessionRoutes(app: FastifyInstance): Promise<void>
         queued: result.queued,
         sessionId: request.params.id,
       });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return reply.code(400).send({ error: message });
+    }
+  });
+
+  app.delete<{
+    Params: { id: string };
+    Body: { clientMessageId?: string; content?: string };
+  }>("/api/sessions/:id/messages/queue", async (request, reply) => {
+    const session = getSession(request.params.id);
+    if (!session) {
+      return reply.code(404).send({ error: "Session not found" });
+    }
+    try {
+      const { cancelQueuedSend } = await import("./agent.js");
+      const result = cancelQueuedSend(request.params.id, {
+        clientMessageId: request.body?.clientMessageId,
+        content: request.body?.content,
+      });
+      if (!result.ok) {
+        return reply.code(404).send({ error: result.reason });
+      }
+      return { ok: true, clientMessageId: result.clientMessageId };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       return reply.code(400).send({ error: message });

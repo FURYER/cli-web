@@ -170,6 +170,8 @@ type SessionSendRequest = {
     images?: SendImageInput[];
   };
   source: SessionSendSource;
+  /** Client optimistic bubble id (`local-…`) — used to cancel a queued send. */
+  clientMessageId?: string;
   resolve?: () => void;
   reject?: (err: Error) => void;
 };
@@ -358,6 +360,11 @@ export type StreamEvent =
       message: ChatMessage;
       /** True when the run will start after the current one finishes. */
       queued?: boolean;
+    }
+  | {
+      type: "queue_cancelled";
+      sessionId: string;
+      clientMessageId: string;
     }
   | {
       type: "activity";
@@ -1843,6 +1850,7 @@ export function enqueueSessionSend(
     modelId?: string;
     mode?: AgentModeOption;
     images?: SendImageInput[];
+    clientMessageId?: string;
   } | undefined,
   source: SessionSendSource,
 ): { queued: boolean } {
@@ -1860,9 +1868,63 @@ export function enqueueSessionSend(
     sessionSendPumping.has(sessionId) ||
     (sessionSendQueues.get(sessionId)?.length ?? 0) > 0;
 
-  pushSessionSend(sessionId, { text, options, source });
+  const clientMessageId = options?.clientMessageId?.trim() || undefined;
+  const runOptions =
+    options && (options.modelId || options.mode || options.images)
+      ? {
+          modelId: options.modelId,
+          mode: options.mode,
+          images: options.images,
+        }
+      : undefined;
+  pushSessionSend(sessionId, {
+    text,
+    options: runOptions,
+    source,
+    clientMessageId,
+  });
   void pumpSessionSendQueue(sessionId);
   return { queued: wasBusy };
+}
+
+/** Remove a pending user send from the in-memory queue (not the active run). */
+export function cancelQueuedSend(
+  sessionId: string,
+  match: { clientMessageId?: string; content?: string },
+): { ok: true; clientMessageId?: string } | { ok: false; reason: string } {
+  const q = sessionSendQueues.get(sessionId);
+  if (!q?.length) {
+    return { ok: false, reason: "not_found" };
+  }
+  const clientId = match.clientMessageId?.trim();
+  const content = match.content?.trim();
+  if (!clientId && !content) {
+    return { ok: false, reason: "clientMessageId_or_content_required" };
+  }
+
+  const idx = q.findIndex((item) => {
+    if (item.source !== "user") return false;
+    if (clientId && item.clientMessageId === clientId) return true;
+    if (content && item.text.trim() === content) return true;
+    return false;
+  });
+  if (idx < 0) {
+    return { ok: false, reason: "not_found" };
+  }
+
+  const [removed] = q.splice(idx, 1);
+  if (q.length) sessionSendQueues.set(sessionId, q);
+  else sessionSendQueues.delete(sessionId);
+
+  removed?.reject?.(new Error("Cancelled"));
+  if (removed?.clientMessageId) {
+    broadcast({
+      type: "queue_cancelled",
+      sessionId,
+      clientMessageId: removed.clientMessageId,
+    });
+  }
+  return { ok: true, clientMessageId: removed?.clientMessageId };
 }
 
 function pushSessionSend(sessionId: string, item: SessionSendRequest): void {

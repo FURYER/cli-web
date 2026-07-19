@@ -137,6 +137,11 @@ export type StreamEvent =
       queued?: boolean;
     }
   | {
+      type: "queue_cancelled";
+      sessionId: string;
+      clientMessageId: string;
+    }
+  | {
       type: "activity";
       sessionId: string;
       id: string;
@@ -432,6 +437,7 @@ export function sendMessage(
     model?: string;
     mode?: "agent" | "plan";
     images?: SendImagePayload[];
+    clientMessageId?: string;
   },
 ): Promise<{ accepted: boolean; queued?: boolean }> {
   return request(`/api/sessions/${sessionId}/messages`, auth, {
@@ -441,7 +447,19 @@ export function sendMessage(
       model: opts?.model,
       mode: opts?.mode,
       images: opts?.images,
+      clientMessageId: opts?.clientMessageId,
     }),
+  });
+}
+
+export function cancelQueuedMessage(
+  auth: AuthMode,
+  sessionId: string,
+  match: { clientMessageId?: string; content?: string },
+): Promise<{ ok: boolean; clientMessageId?: string }> {
+  return request(`/api/sessions/${sessionId}/messages/queue`, auth, {
+    method: "DELETE",
+    body: JSON.stringify(match),
   });
 }
 

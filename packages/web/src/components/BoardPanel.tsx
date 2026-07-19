@@ -135,9 +135,12 @@ export function BoardPanel({
     setDragCardId(null);
     if (!card || card.columnId === columnId) return;
     const order =
-      board.cards
-        .filter((c) => c.columnId === columnId)
-        .reduce((m, c) => Math.max(m, c.order), -1) + 1;
+      (() => {
+        const inColumn = board.cards.filter((c) => c.columnId === columnId);
+        return inColumn.length
+          ? Math.min(...inColumn.map((c) => c.order)) - 1
+          : 0;
+      })();
     await apply(
       moveBoardCard(auth, workspace, dragCardId, { columnId, order }),
     );

@@ -217,10 +217,10 @@ export async function addCard(
   const title = input.title.trim();
   if (!title) throw new Error("Card title is required");
   const now = Date.now();
-  const order =
-    board.cards
-      .filter((c) => c.columnId === columnId)
-      .reduce((m, c) => Math.max(m, c.order), -1) + 1;
+  const inColumn = board.cards.filter((c) => c.columnId === columnId);
+  const order = inColumn.length
+    ? Math.min(...inColumn.map((c) => c.order)) - 1
+    : 0;
   const id = `T-${board.nextId}`;
   board.nextId += 1;
   board.cards.push({
@@ -278,8 +278,25 @@ export async function moveCard(
   cardId: string,
   input: { columnId: string; order?: number },
 ): Promise<Board> {
+  const board = await loadBoard(workspace);
+  const card = board.cards.find((c) => c.id === cardId);
+  if (!card) throw new Error("Card not found");
+  if (!board.columns.some((c) => c.id === input.columnId)) {
+    throw new Error("Column not found");
+  }
+  const order =
+    typeof input.order === "number" && Number.isFinite(input.order)
+      ? input.order
+      : (() => {
+          const inColumn = board.cards.filter(
+            (c) => c.columnId === input.columnId && c.id !== cardId,
+          );
+          return inColumn.length
+            ? Math.min(...inColumn.map((c) => c.order)) - 1
+            : 0;
+        })();
   return patchCard(workspace, cardId, {
     columnId: input.columnId,
-    order: input.order,
+    order,
   });
 }

@@ -200,10 +200,10 @@ export async function addCard(
   const title = input.title.trim();
   if (!title) throw new Error("Card title is required");
   const now = Date.now();
-  const order =
-    board.cards
-      .filter((c) => c.columnId === columnId)
-      .reduce((m, c) => Math.max(m, c.order), -1) + 1;
+  const inColumn = board.cards.filter((c) => c.columnId === columnId);
+  const order = inColumn.length
+    ? Math.min(...inColumn.map((c) => c.order)) - 1
+    : 0;
   const id = `T-${board.nextId}`;
   board.nextId += 1;
   board.cards.push({
@@ -252,10 +252,12 @@ export async function moveCard(
   if (typeof input.order === "number" && Number.isFinite(input.order)) {
     card.order = input.order;
   } else {
-    card.order =
-      board.cards
-        .filter((c) => c.columnId === input.columnId && c.id !== id)
-        .reduce((m, c) => Math.max(m, c.order), -1) + 1;
+    const inColumn = board.cards.filter(
+      (c) => c.columnId === input.columnId && c.id !== id,
+    );
+    card.order = inColumn.length
+      ? Math.min(...inColumn.map((c) => c.order)) - 1
+      : 0;
   }
   card.updatedAt = Date.now();
   return saveBoard(workspace, board);
