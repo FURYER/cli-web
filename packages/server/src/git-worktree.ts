@@ -1,22 +1,29 @@
 import { execFile } from "node:child_process";
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { promisify } from "node:util";
-import { dataDir } from "./paths.js";
+import { dataDir, WORKSPACE_META_DIR } from "./paths.js";
 import { isGitRepo } from "./git-checkpoint.js";
 
 const execFileAsync = promisify(execFile);
+
+/** Always-on git flags so Windows worktrees survive paths > 260 chars. */
+const LONGPATH_ARGS = ["-c", "core.longpaths=true"] as const;
 
 async function git(
   cwd: string,
   args: string[],
 ): Promise<{ ok: boolean; stdout: string; stderr: string }> {
   try {
-    const { stdout, stderr } = await execFileAsync("git", args, {
-      cwd,
-      windowsHide: true,
-      maxBuffer: 20 * 1024 * 1024,
-    });
+    const { stdout, stderr } = await execFileAsync(
+      "git",
+      [...LONGPATH_ARGS, ...args],
+      {
+        cwd,
+        windowsHide: true,
+        maxBuffer: 20 * 1024 * 1024,
+      },
+    );
     return { ok: true, stdout: stdout.trim(), stderr: stderr.trim() };
   } catch (err) {
     const error = err as { stdout?: string; stderr?: string; message?: string };
@@ -25,6 +32,36 @@ async function git(
       stdout: String(error.stdout ?? "").trim(),
       stderr: String(error.stderr ?? error.message ?? "").trim(),
     };
+  }
+}
+
+/** Persist longpaths on the repo so plain `git` (hooks, GUIs) also works. */
+async function ensureRepoLongPaths(cwd: string): Promise<void> {
+  await git(cwd, ["config", "core.longpaths", "true"]);
+}
+
+function shortId(id: string): string {
+  const cleaned = id.replace(/[^a-zA-Z0-9]/g, "");
+  return (cleaned || id).slice(0, 8);
+}
+
+/**
+ * Optional per-project excludes for child worktrees:
+ * `.webcli/worktree-excludes` — one repo-relative directory per line
+ * (e.g. `universal-lpc-spritesheet-character-generator`).
+ * Speeds up forks of huge trees and avoids Windows MAX_PATH failures.
+ */
+async function readWorktreeExcludes(parentWorkspace: string): Promise<string[]> {
+  const file = join(parentWorkspace, WORKSPACE_META_DIR, "worktree-excludes");
+  try {
+    const text = await readFile(file, "utf8");
+    return text
+      .split(/\r?\n/)
+      .map((line) => line.replace(/#.*$/, "").trim())
+      .filter(Boolean)
+      .map((line) => line.replace(/\\/g, "/").replace(/^\/+|\/+$/g, ""));
+  } catch {
+    return [];
   }
 }
 
@@ -48,9 +85,12 @@ export type DelegatePrepareResult =
       code?: "not_git" | "busy" | "commit_failed";
     };
 
-/** Absolute path for an isolated agent worktree (outside the project tree). */
+/**
+ * Absolute path for an isolated agent worktree (outside the project tree).
+ * Short ids keep Windows paths under classic MAX_PATH when possible.
+ */
 export function childWorktreePath(parentSessionId: string, childSessionId: string): string {
-  return join(dataDir(), "worktrees", parentSessionId, childSessionId);
+  return join(dataDir(), "wt", shortId(parentSessionId), shortId(childSessionId));
 }
 
 export function childBranchName(childSessionId: string): string {
@@ -96,6 +136,7 @@ export async function prepareParentForDelegate(
     };
   }
 
+  await ensureRepoLongPaths(cwd);
   await git(cwd, ["worktree", "prune"]);
 
   const status = await git(cwd, ["status", "--porcelain"]);
@@ -216,6 +257,8 @@ export async function createChildWorktree(input: {
     throw new Error(head.stderr || "Could not resolve HEAD for worktree");
   }
 
+  await ensureRepoLongPaths(cwd);
+
   const branch = childBranchName(input.childSessionId);
   const worktreePath = childWorktreePath(input.parentSessionId, input.childSessionId);
   await mkdir(dirname(worktreePath), { recursive: true });
@@ -228,16 +271,38 @@ export async function createChildWorktree(input: {
     await git(cwd, ["branch", "-D", branch]);
   }
 
-  const added = await git(cwd, [
-    "worktree",
-    "add",
-    "-b",
-    branch,
-    worktreePath,
-    head.stdout,
-  ]);
+  const excludes = await readWorktreeExcludes(cwd);
+  const addArgs = excludes.length
+    ? (["worktree", "add", "--no-checkout", "-b", branch, worktreePath, head.stdout] as string[])
+    : (["worktree", "add", "-b", branch, worktreePath, head.stdout] as string[]);
+
+  const added = await git(cwd, addArgs);
   if (!added.ok) {
     throw new Error(added.stderr || added.stdout || "git worktree add failed");
+  }
+
+  if (excludes.length) {
+    // Non-cone: include everything, then negate huge vendor trees.
+    const patterns = ["/*", ...excludes.map((dir) => `!/${dir}/`)];
+    const sparseInit = await git(worktreePath, ["sparse-checkout", "init", "--no-cone"]);
+    if (!sparseInit.ok) {
+      await git(cwd, ["worktree", "remove", "--force", worktreePath]);
+      await git(cwd, ["branch", "-D", branch]);
+      throw new Error(sparseInit.stderr || "sparse-checkout init failed");
+    }
+    const sparseSet = await git(worktreePath, ["sparse-checkout", "set", "--no-cone", ...patterns]);
+    if (!sparseSet.ok) {
+      await git(cwd, ["worktree", "remove", "--force", worktreePath]);
+      await git(cwd, ["branch", "-D", branch]);
+      throw new Error(sparseSet.stderr || "sparse-checkout set failed");
+    }
+    const checked = await git(worktreePath, ["checkout", head.stdout]);
+    if (!checked.ok) {
+      await git(cwd, ["worktree", "remove", "--force", worktreePath]);
+      await git(cwd, ["branch", "-D", branch]);
+      throw new Error(checked.stderr || checked.stdout || "sparse worktree checkout failed");
+    }
+    await ensureRepoLongPaths(worktreePath);
   }
 
   return { worktreePath, branch, baseSha: head.stdout };
