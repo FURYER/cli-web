@@ -32,6 +32,7 @@ import {
 } from "./paths.js";
 import { registerSessionRoutes } from "./sessions.js";
 import { syncBuiltinConfigToUser } from "./cursor-config.js";
+import { ensureDefaultMcpServers } from "./mcp.js";
 import { ensureWhisperReady, stopWhisperWorker } from "./whisper.js";
 
 const envPath = loadRootEnv();
@@ -42,6 +43,10 @@ const migrated = await migrateDataDirIfNeeded().catch((err) => {
   return null;
 });
 if (migrated) console.info(migrated);
+
+await ensureDefaultMcpServers().catch((err) => {
+  console.error("Failed to seed default mcp.json:", err);
+});
 
 const loadedSessions = await loadPersistedSessions();
 await syncBuiltinConfigToUser().catch((err) => {

@@ -110,6 +110,7 @@ Serves the built SPA from Fastify on `PORT` (default `8787`).
 |----------|----------|-------------|
 | `AGENT_API_KEY` | yes | Agent backend API key (legacy: `CURSOR_API_KEY`) |
 | `ACCESS_TOKEN` | yes | Bearer token for REST/WS. **Quote it** if it contains `#` or spaces: `ACCESS_TOKEN="…"` |
+| `CONTEXT7_API_KEY` | no | Context7 docs MCP (`${CONTEXT7_API_KEY}` in `~/.webcli/mcp.json`) |
 | `PORT` | no | Default `8787` (stand uses `8788`) |
 | `WEBCLI_STAND` | no | Set `1` for test stand (banner + health flag; legacy `CURSOR_CLI_STAND`) |
 | `WEBCLI_DATA_DIR` | no | Sessions/push storage (stand defaults to `~/.webcli-stand`; legacy `CURSOR_CLI_DATA_DIR`) |
@@ -138,6 +139,19 @@ download-whisper.bat
 ```
 
 Or set a proxy in `.env` (`HTTPS_PROXY=…`) / use the official hub (`HF_ENDPOINT=https://huggingface.co`). Needs `ffmpeg` on PATH for webm/m4a from the phone browser.
+
+## MCP (Context7 + board)
+
+On first run / `setup.bat`, WebCLI seeds `~/.webcli/mcp.json` with:
+
+- **context7** — docs MCP; set `CONTEXT7_API_KEY` in `.env` (from https://context7.com)
+- **workspace-board** — bundled package `packages/workspace-board-mcp` (kanban tools)
+
+Placeholders like `${CONTEXT7_API_KEY}` are expanded when starting an agent. Edit the file in Settings → MCP, or re-seed:
+
+```bat
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\write-default-mcp.ps1 -RepoDir "%CD%"
+```
 
 ## CloudPub (HTTPS tunnel)
 

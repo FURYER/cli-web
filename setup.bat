@@ -164,6 +164,15 @@ if errorlevel 1 (
   exit /b 1
 )
 
+rem --- default MCP (Context7 + workspace-board) --------------------------------
+echo.
+echo Seeding default MCP config ...
+if exist "%REPO_DIR%\scripts\write-default-mcp.ps1" (
+  "%PS%" -NoProfile -ExecutionPolicy Bypass -File "%REPO_DIR%\scripts\write-default-mcp.ps1" -RepoDir "%REPO_DIR%"
+) else (
+  echo [WARN] write-default-mcp.ps1 missing — MCP will seed on first server start.
+)
+
 rem --- Python / Whisper -------------------------------------------------------
 echo.
 echo Installing Whisper ^(faster-whisper^) ...

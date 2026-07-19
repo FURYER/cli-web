@@ -8,12 +8,16 @@ import {
   getSessionContext,
   listCursorAgents,
   listSessions,
+  listProjects,
+  listProjectSessions,
   resumeSession,
   rollbackToMessage,
+  sliceMessagesPage,
   submitAskQuestionAnswer,
   updateSession,
   type AskQuestionAnswer,
   type AskQuestionHandlerResult,
+  type ProjectListItem,
   type SendImageInput,
   type SessionSummary,
 } from "./agent.js";
@@ -35,7 +39,11 @@ import {
   listSkills,
   readConfigDoc,
 } from "./cursor-config.js";
-import { loadMcpServers, saveMcpServers, type McpServersMap } from "./mcp.js";
+import {
+  readMcpServers,
+  saveMcpServers,
+  type McpServersMap,
+} from "./mcp.js";
 import { listModels } from "./models.js";
 import { hasAgentApiKey, isStandMode } from "./paths.js";
 import {
@@ -148,7 +156,8 @@ export async function registerSessionRoutes(app: FastifyInstance): Promise<void>
   });
 
   app.get("/api/mcp", async () => ({
-    servers: await loadMcpServers(),
+    // Raw file (keeps ${CONTEXT7_API_KEY} placeholders for Settings UI).
+    servers: await readMcpServers(),
   }));
 
   app.put<{ Body: { servers?: McpServersMap } }>("/api/mcp", async (request, reply) => {
@@ -221,11 +230,61 @@ export async function registerSessionRoutes(app: FastifyInstance): Promise<void>
 
   app.get<{ Reply: SessionSummary[] }>("/api/sessions", async () => listSessions());
 
-  app.get<{ Params: { id: string } }>("/api/sessions/:id", async (request, reply) => {
+  app.get<{
+    Querystring: {
+      limit?: string;
+      beforeUpdatedAt?: string;
+      sessionsLimit?: string;
+    };
+  }>("/api/projects", async (request) => {
+    const limit = request.query.limit ? Number(request.query.limit) : undefined;
+    const beforeUpdatedAt = request.query.beforeUpdatedAt
+      ? Number(request.query.beforeUpdatedAt)
+      : undefined;
+    const sessionsLimit = request.query.sessionsLimit
+      ? Number(request.query.sessionsLimit)
+      : undefined;
+    return listProjects({
+      limit: Number.isFinite(limit) ? limit : undefined,
+      beforeUpdatedAt: Number.isFinite(beforeUpdatedAt) ? beforeUpdatedAt : undefined,
+      sessionsLimit: Number.isFinite(sessionsLimit) ? sessionsLimit : undefined,
+    });
+  });
+
+  app.get<{
+    Querystring: {
+      workspace?: string;
+      limit?: string;
+      beforeUpdatedAt?: string;
+    };
+  }>("/api/projects/sessions", async (request, reply) => {
+    const workspace = request.query.workspace?.trim();
+    if (!workspace) {
+      return reply.code(400).send({ error: "workspace is required" });
+    }
+    const limit = request.query.limit ? Number(request.query.limit) : undefined;
+    const beforeUpdatedAt = request.query.beforeUpdatedAt
+      ? Number(request.query.beforeUpdatedAt)
+      : undefined;
+    return listProjectSessions({
+      workspace,
+      limit: Number.isFinite(limit) ? limit : undefined,
+      beforeUpdatedAt: Number.isFinite(beforeUpdatedAt) ? beforeUpdatedAt : undefined,
+    });
+  });
+
+  app.get<{
+    Params: { id: string };
+    Querystring: { limit?: string; before?: string };
+  }>("/api/sessions/:id", async (request, reply) => {
     const session = getSession(request.params.id);
     if (!session) {
       return reply.code(404).send({ error: "Session not found" });
     }
+    const limitRaw = request.query.limit ? Number(request.query.limit) : undefined;
+    const limit = Number.isFinite(limitRaw) ? limitRaw : undefined;
+    const before = request.query.before?.trim() || undefined;
+    const page = sliceMessagesPage(session.messages, { limit, before });
     const { usage, context } = await getSessionContext(session.id);
     return {
       id: session.id,
@@ -236,9 +295,10 @@ export async function registerSessionRoutes(app: FastifyInstance): Promise<void>
       title: session.title,
       createdAt: session.createdAt,
       updatedAt: session.updatedAt,
-      messageCount: session.messages.length,
+      messageCount: page.messageCount,
       busy: Boolean(session.busy),
-      messages: session.messages,
+      messages: page.messages,
+      hasMoreOlder: page.hasMoreOlder,
       usage: usage ?? undefined,
       context: context ?? undefined,
     };

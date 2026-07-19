@@ -23,6 +23,7 @@ function Set-DotEnvValue([string]$content, [string]$key, [string]$value) {
 Write-Host ""
 $key = Read-Host "  AGENT_API_KEY (Cursor Integrations dashboard)"
 $acs = Read-Host "  ACCESS_TOKEN (password for web UI; empty = generate)"
+$ctx7 = Read-Host "  CONTEXT7_API_KEY (optional; https://context7.com — empty = skip Context7 MCP)"
 
 if ([string]::IsNullOrWhiteSpace($acs)) {
   $bytes = New-Object byte[] 18
@@ -38,6 +39,9 @@ if (-not [string]::IsNullOrWhiteSpace($key)) {
   $content = Set-DotEnvValue $content "AGENT_API_KEY" $key.Trim()
 }
 $content = Set-DotEnvValue $content "ACCESS_TOKEN" $acs.Trim()
+if (-not [string]::IsNullOrWhiteSpace($ctx7)) {
+  $content = Set-DotEnvValue $content "CONTEXT7_API_KEY" $ctx7.Trim()
+}
 
 # UTF-8 without BOM (Node dotenv-friendly)
 $utf8 = New-Object System.Text.UTF8Encoding $false
