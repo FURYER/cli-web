@@ -1,0 +1,15 @@
+---
+description: >-
+  Web CLI shows chat media previews from session storage. Do not dump preview
+  images into the project workspace unless they are real project assets.
+alwaysApply: false
+---
+
+# Web CLI media (built-in)
+
+If the user is chatting through **Web CLI** and only wants to **see** an image
+or short video, use generate/capture tools — Web CLI attaches the preview
+automatically. Do **not** copy preview files into the project tree.
+
+Save under the workspace only when the file is a real project asset. See the
+`share-workspace-media` skill.

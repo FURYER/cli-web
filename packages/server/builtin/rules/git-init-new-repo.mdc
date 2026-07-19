@@ -1,0 +1,12 @@
+---
+description: >-
+  When creating a new repository folder, always git init (see skill
+  git-init-new-repo).
+alwaysApply: true
+---
+
+# New repos need git (built-in)
+
+If you create a **new project/repository directory** (e.g. under
+`Documents/GitHub/...`), run **`git init`** there right away, add `.gitignore`,
+and usually make an initial commit. Details: skill `git-init-new-repo`.

@@ -1,0 +1,193 @@
+import { useMemo, useState } from "react";
+import type { AskQuestionAnswer, AskQuestionItem } from "../lib/api";
+
+type Props = {
+  callId: string;
+  title?: string;
+  questions: AskQuestionItem[];
+  status: "pending" | "answered" | "skipped";
+  answers?: AskQuestionAnswer[];
+  submitting?: boolean;
+  onSubmit?: (answers: AskQuestionAnswer[]) => void;
+  onSkip?: () => void;
+};
+
+function labelFor(
+  question: AskQuestionItem,
+  selectedIds: string[],
+  freeform?: string,
+): string {
+  const labels = selectedIds
+    .map(
+      (id) =>
+        (question.options ?? []).find((option) => option.id === id)?.label ?? id,
+    )
+    .filter(Boolean);
+  const parts = [...labels, freeform?.trim()].filter(Boolean);
+  return parts.join(", ") || "—";
+}
+
+export function AskQuestionCard({
+  title,
+  questions,
+  status,
+  answers,
+  submitting,
+  onSubmit,
+  onSkip,
+}: Props) {
+  const [selected, setSelected] = useState<Record<string, string[]>>(() => {
+    const initial: Record<string, string[]> = {};
+    for (const question of questions) initial[question.id] = [];
+    return initial;
+  });
+  const [freeform, setFreeform] = useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {};
+    for (const question of questions) initial[question.id] = "";
+    return initial;
+  });
+
+  const answeredMap = useMemo(() => {
+    const map = new Map<string, AskQuestionAnswer>();
+    for (const answer of answers ?? []) map.set(answer.questionId, answer);
+    return map;
+  }, [answers]);
+
+  const canSubmit =
+    status === "pending" &&
+    !submitting &&
+    questions.every((question) => {
+      const opts = question.options ?? [];
+      const hasSelection = (selected[question.id]?.length ?? 0) > 0;
+      const hasFreeform = Boolean(freeform[question.id]?.trim());
+      // No preset choices → freeform optional; Continue always ok.
+      if (opts.length === 0) return true;
+      return hasSelection || hasFreeform;
+    });
+
+  function toggleOption(question: AskQuestionItem, optionId: string) {
+    setSelected((prev) => {
+      const current = prev[question.id] ?? [];
+      if (question.allowMultiple) {
+        const next = current.includes(optionId)
+          ? current.filter((id) => id !== optionId)
+          : [...current, optionId];
+        return { ...prev, [question.id]: next };
+      }
+      return { ...prev, [question.id]: [optionId] };
+    });
+  }
+
+  function handleSubmit() {
+    if (!canSubmit || !onSubmit) return;
+    onSubmit(
+      questions.map((question) => {
+        const text = freeform[question.id]?.trim();
+        return {
+          questionId: question.id,
+          selectedOptionIds: selected[question.id] ?? [],
+          ...(text ? { freeformText: text } : {}),
+        };
+      }),
+    );
+  }
+
+  return (
+    <div className="w-full rounded-xl border border-line bg-elevated/80 px-3.5 py-3">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-muted">
+          {title?.trim() || "Question"}
+        </p>
+        {status !== "pending" ? (
+          <span className="text-[11px] text-muted">
+            {status === "answered" ? "Answered" : "Skipped"}
+          </span>
+        ) : null}
+      </div>
+
+      <div className="space-y-3">
+        {questions.map((question) => {
+          const chosen = selected[question.id] ?? [];
+          const answered = answeredMap.get(question.id);
+          const customValue = freeform[question.id] ?? "";
+          return (
+            <div key={question.id} className="space-y-1.5">
+              <p className="text-sm leading-snug text-ink">{question.prompt}</p>
+              {status === "pending" ? (
+                <div className="flex flex-col gap-1.5">
+                  {(question.options ?? []).map((option) => {
+                    const active = chosen.includes(option.id);
+                    return (
+                      <button
+                        key={option.id}
+                        type="button"
+                        onClick={() => toggleOption(question, option.id)}
+                        className={`rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                          active
+                            ? "bg-accent/20 text-ink ring-1 ring-accent/40"
+                            : "bg-white/[0.03] text-ink/90 ring-1 ring-line hover:bg-white/[0.06]"
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    );
+                  })}
+                  <label className="mt-0.5 block">
+                    <span className="sr-only">Your own answer</span>
+                    <input
+                      type="text"
+                      value={customValue}
+                      onChange={(e) =>
+                        setFreeform((prev) => ({
+                          ...prev,
+                          [question.id]: e.target.value,
+                        }))
+                      }
+                      placeholder="Or write your own…"
+                      className={`w-full rounded-lg bg-white/[0.03] px-3 py-2 text-sm text-ink outline-none ring-1 placeholder:text-muted/70 ${
+                        customValue.trim()
+                          ? "ring-accent/40"
+                          : "ring-line focus:ring-accent/30"
+                      }`}
+                    />
+                  </label>
+                </div>
+              ) : (
+                <p className="text-sm text-muted">
+                  {labelFor(
+                    question,
+                    answered?.selectedOptionIds ?? [],
+                    answered?.freeformText,
+                  )}
+                </p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {status === "pending" ? (
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            disabled={!canSubmit}
+            onClick={handleSubmit}
+            className="rounded-md bg-accent px-3 py-1.5 text-xs font-medium text-[var(--color-accent-ink)] disabled:opacity-40"
+          >
+            {submitting ? "Sending…" : "Continue"}
+          </button>
+          {onSkip ? (
+            <button
+              type="button"
+              disabled={submitting}
+              onClick={onSkip}
+              className="rounded-md px-2 py-1.5 text-xs text-muted hover:text-ink disabled:opacity-40"
+            >
+              Skip
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
+  );
+}

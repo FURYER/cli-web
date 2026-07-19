@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+*.log
+.DS_Store
+packages/web/dist/
+packages/server/dist/
+tmp/
+.cursor-cli/
+.webcli/

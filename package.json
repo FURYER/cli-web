@@ -1,0 +1,24 @@
+{
+  "name": "webcli",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run stand",
+    "stand": "concurrently -n server,web -c blue,green \"npm run stand:server\" \"npm run stand:web\"",
+    "stand:server": "node scripts/stand-env.mjs server",
+    "stand:web": "node scripts/stand-env.mjs web",
+    "dev:release-ports": "concurrently -n server,web -c blue,green \"npm run dev -w @webcli/server\" \"npm run dev -w @webcli/web\"",
+    "build": "npm run build -w @webcli/web && npm run build -w @webcli/server",
+    "start": "npm run start -w @webcli/server",
+    "postinstall": "node scripts/patch-cursor-sdk-ask-question.mjs",
+    "patch:ask-question": "node scripts/patch-cursor-sdk-ask-question.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

@@ -1,0 +1,2 @@
+faster-whisper
+huggingface_hub[hf_xet]

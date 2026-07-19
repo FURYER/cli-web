@@ -1,0 +1,15 @@
+---
+description: >-
+  After WebCLI server/UI changes, promote to release yourself — do not ask the
+  user to restart. See promote-web-cli-release skill.
+alwaysApply: true
+---
+
+# WebCLI release promote
+
+When the user needs changes on the live release (`:8787` / phone), **you** run
+`promote-to-release.bat` from the repo root. Do not tell them to restart
+manually.
+
+Schedule promote as the **last** step of the turn, then stop — the current run
+blocks idle restart if you keep polling. Details: skill `promote-web-cli-release`.
