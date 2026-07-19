@@ -261,13 +261,6 @@ export function Composer({
     };
   }, []);
 
-  useEffect(() => {
-    if (busy && listening) {
-      void stopRecording({ discard: true });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to busy
-  }, [busy]);
-
   const cleanupStream = () => {
     mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
     mediaStreamRef.current = null;
@@ -492,10 +485,14 @@ export function Composer({
               <textarea
                 ref={textareaRef}
                 value={text}
-                disabled={disabled || busy || transcribing}
+                disabled={disabled || transcribing}
                 rows={1}
                 placeholder={
-                  transcribing ? "Transcribing with Whisper…" : "Message the agent…"
+                  transcribing
+                    ? "Transcribing with Whisper…"
+                    : busy
+                      ? "Message queued after current reply…"
+                      : "Message the agent…"
                 }
                 className={`max-h-[7.5rem] min-h-[2.75rem] w-full resize-none overflow-y-auto bg-transparent py-3 text-sm leading-relaxed text-ink placeholder:text-muted/70 outline-none disabled:opacity-50 ${
                   text.trim() ? "pl-3.5 pr-10" : "px-3.5"
@@ -559,7 +556,6 @@ export function Composer({
               <button
                 ref={attachBtnRef}
                 type="button"
-                disabled={busy}
                 onClick={() => {
                   setModelOpen(false);
                   setAttachOpen((v) => !v);
@@ -620,7 +616,6 @@ export function Composer({
                   <button
                     key={value}
                     type="button"
-                    disabled={busy}
                     onClick={() => onModeChange(value)}
                     className={`rounded-md px-2 py-1 text-[11px] capitalize transition-colors disabled:opacity-40 ${
                       active
@@ -640,7 +635,7 @@ export function Composer({
                 ref={modelBtnRef}
                 type="button"
                 id="model-select"
-                disabled={modelsLoading || modelOptions.length === 0 || busy}
+                disabled={modelsLoading || modelOptions.length === 0}
                 onClick={() => {
                   setAttachOpen(false);
                   setModelOpen((v) => !v);
@@ -691,6 +686,49 @@ export function Composer({
             <div className="ml-auto flex items-center gap-0.5">
               <ContextRing usage={lastUsage} context={lastContext} />
 
+              <button
+                type="button"
+                disabled={disabled || !voiceSupported || transcribing}
+                onClick={toggleVoice}
+                className={`inline-flex h-8 w-8 items-center justify-center rounded-lg transition-colors disabled:opacity-40 ${
+                  listening
+                    ? "bg-red-500/15 text-red-300"
+                    : "text-muted hover:bg-white/[0.04] hover:text-ink"
+                }`}
+                title={
+                  !voiceSupported
+                    ? "Voice input not supported in this browser"
+                    : transcribing
+                      ? "Transcribing…"
+                      : listening
+                        ? "Stop & transcribe (local Whisper)"
+                        : busy
+                          ? "Record voice (queues after current reply)"
+                          : "Record voice (local Whisper)"
+                }
+                aria-label={
+                  transcribing
+                    ? "Transcribing"
+                    : listening
+                      ? "Stop recording"
+                      : "Voice input"
+                }
+                aria-pressed={listening}
+              >
+                {listening ? <MicOff {...iconProps} /> : <Mic {...iconProps} />}
+              </button>
+              {!listening ? (
+                <button
+                  type="button"
+                  disabled={disabled || transcribing || !canSend}
+                  onClick={submit}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-[var(--color-accent-ink)] transition-opacity disabled:opacity-35"
+                  title={busy ? "Queue message" : "Send"}
+                  aria-label={busy ? "Queue message" : "Send"}
+                >
+                  <Send size={14} strokeWidth={1.75} aria-hidden />
+                </button>
+              ) : null}
               {busy ? (
                 <button
                   type="button"
@@ -701,51 +739,7 @@ export function Composer({
                 >
                   <Square size={14} strokeWidth={1.75} className="fill-current" aria-hidden />
                 </button>
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    disabled={disabled || !voiceSupported || transcribing}
-                    onClick={toggleVoice}
-                    className={`inline-flex h-8 w-8 items-center justify-center rounded-lg transition-colors disabled:opacity-40 ${
-                      listening
-                        ? "bg-red-500/15 text-red-300"
-                        : "text-muted hover:bg-white/[0.04] hover:text-ink"
-                    }`}
-                    title={
-                      !voiceSupported
-                        ? "Voice input not supported in this browser"
-                        : transcribing
-                          ? "Transcribing…"
-                          : listening
-                            ? "Stop & transcribe (local Whisper)"
-                            : "Record voice (local Whisper)"
-                    }
-                    aria-label={
-                      transcribing
-                        ? "Transcribing"
-                        : listening
-                          ? "Stop recording"
-                          : "Voice input"
-                    }
-                    aria-pressed={listening}
-                  >
-                    {listening ? <MicOff {...iconProps} /> : <Mic {...iconProps} />}
-                  </button>
-                  {!listening ? (
-                    <button
-                      type="button"
-                      disabled={disabled || transcribing || !canSend}
-                      onClick={submit}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-[var(--color-accent-ink)] transition-opacity disabled:opacity-35"
-                      title="Send"
-                      aria-label="Send"
-                    >
-                      <Send size={14} strokeWidth={1.75} aria-hidden />
-                    </button>
-                  ) : null}
-                </>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

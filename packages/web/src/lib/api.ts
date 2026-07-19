@@ -92,6 +92,8 @@ export type ChatMessage = {
   questionStatus?: "answered" | "skipped";
   questionAnswers?: AskQuestionAnswer[];
   questionCallId?: string;
+  /** Waiting behind the current agent run (optimistic / server send queue). */
+  queued?: boolean;
 };
 
 export type BoardColumn = {

@@ -1795,10 +1795,19 @@ export function Chat({
               return (
                 <div key={block.key} className="group relative w-full">
                   <div className="w-full rounded-xl bg-elevated px-3.5 py-2.5 text-sm leading-relaxed text-ink">
-                    {isPlanTurn ? (
-                      <span className="mb-1.5 inline-block rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted">
-                        Plan
-                      </span>
+                    {isPlanTurn || message.queued ? (
+                      <div className="mb-1.5 flex flex-wrap gap-1.5">
+                        {isPlanTurn ? (
+                          <span className="inline-block rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted">
+                            Plan
+                          </span>
+                        ) : null}
+                        {message.queued ? (
+                          <span className="inline-block rounded bg-accent/15 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-accent">
+                            Queued
+                          </span>
+                        ) : null}
+                      </div>
                     ) : null}
                     {message.images?.length ? (
                       <div className="mb-2 flex flex-wrap gap-2">

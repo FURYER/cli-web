@@ -800,14 +800,17 @@ export default function App() {
             case "user_message":
               setMessages((prev) => {
                 const msg = event.message;
-                const withoutLocal = prev.filter(
+                // Drop only the first matching optimistic bubble (queue may have duplicates).
+                const localIdx = prev.findIndex(
                   (m) =>
-                    !(
-                      String(m.id).startsWith("local-") &&
-                      m.role === "user" &&
-                      m.content === msg.content
-                    ),
+                    String(m.id).startsWith("local-") &&
+                    m.role === "user" &&
+                    m.content === msg.content,
                 );
+                const withoutLocal =
+                  localIdx >= 0
+                    ? [...prev.slice(0, localIdx), ...prev.slice(localIdx + 1)]
+                    : prev;
                 if (withoutLocal.some((m) => m.id === msg.id)) return withoutLocal;
                 return [...withoutLocal, msg];
               });
@@ -1379,16 +1382,17 @@ export default function App() {
     images: SendImagePayload[] = [],
     opts?: { mode?: "agent" | "plan" },
   ) {
-    if (!activeId || sendingRef.current.has(activeId)) return;
+    if (!activeId) return;
     const sendMode = opts?.mode ?? mode;
     const sessionId = activeId;
     const alreadyBusy = busyIdsRef.current.has(sessionId);
-    sendingRef.current.add(sessionId);
-    markBusy(sessionId, true);
-    setError(null);
-    // If a run is already in flight (e.g. sub-agent wake), only queue — do not
-    // wipe the live stream/activities of the current turn.
+    // Only block double-tap while starting an idle run — allow queue while busy.
+    if (!alreadyBusy && sendingRef.current.has(sessionId)) return;
+
     if (!alreadyBusy) {
+      sendingRef.current.add(sessionId);
+      markBusy(sessionId, true);
+      setError(null);
       setStreamingText("");
       setPendingQuestions([]);
       setAskSubmittingId(null);
@@ -1403,8 +1407,12 @@ export default function App() {
           startedAt: Date.now(),
         },
       ]);
+    } else {
+      setError(null);
+      markBusy(sessionId, true);
     }
-    const localId = `local-${Date.now()}`;
+
+    const localId = `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     setMessages((prev) => [
       ...prev,
       {
@@ -1412,6 +1420,7 @@ export default function App() {
         role: "user",
         content: text,
         mode: sendMode,
+        queued: alreadyBusy,
         images: images.map((img) => ({
           mimeType: img.mimeType,
           dataUrl: `data:${img.mimeType};base64,${img.data}`,
@@ -1420,11 +1429,20 @@ export default function App() {
       },
     ]);
     try {
-      await sendMessage(auth, sessionId, text, { model, mode: sendMode, images });
+      const result = await sendMessage(auth, sessionId, text, {
+        model,
+        mode: sendMode,
+        images,
+      });
+      if (result.queued) {
+        setMessages((prev) =>
+          prev.map((m) => (m.id === localId ? { ...m, queued: true } : m)),
+        );
+      }
       setComposerDraft("");
     } catch (err) {
-      clearSending(sessionId);
       if (!alreadyBusy) {
+        clearSending(sessionId);
         markBusy(sessionId, false);
         setActivities([]);
       }
