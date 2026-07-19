@@ -194,12 +194,17 @@ if errorlevel 1 (
 )
 
 rem --- instruction file for the friend ---------------------------------------
-set "HELP_FILE=%REPO_DIR%\ЧТО-ДЕЛАТЬ-ДАЛЬШЕ.txt"
+rem ASCII filename + CP1251 body so Russian Notepad shows Cyrillic correctly.
+set "HELP_FILE=%REPO_DIR%\NEXT-STEPS.txt"
 if exist "%REPO_DIR%\scripts\write-next-steps.ps1" (
   "%PS%" -NoProfile -ExecutionPolicy Bypass -File "%REPO_DIR%\scripts\write-next-steps.ps1" -RepoDir "%REPO_DIR%" -OutPath "%HELP_FILE%"
 ) else (
-  echo See setup finished messages below. > "%REPO_DIR%\NEXT-STEPS.txt"
-  set "HELP_FILE=%REPO_DIR%\NEXT-STEPS.txt"
+  (
+    echo WebCLI setup finished.
+    echo Open start-phone.bat in this folder.
+    echo Fill AGENT_API_KEY and ACCESS_TOKEN in .env
+    echo CloudPub: clo login
+  ) > "%HELP_FILE%"
 )
 
 echo.

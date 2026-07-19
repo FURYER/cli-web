@@ -12,10 +12,11 @@ if (-not (Test-Path -LiteralPath $templatePath)) {
   throw "Missing template: $templatePath"
 }
 
-# Read template as UTF-8 (BOM). Write UTF-16 LE so notepad.exe always shows Cyrillic.
+# Template is UTF-8. Output is Windows-1251 so classic Russian Notepad (ANSI) shows Cyrillic.
 $utf8 = New-Object System.Text.UTF8Encoding $false
 $raw = [System.IO.File]::ReadAllText($templatePath, $utf8)
 $text = $raw.Replace("__REPO_DIR__", $RepoDir).TrimStart() + "`r`n"
 
-[System.IO.File]::WriteAllText($OutPath, $text, [System.Text.Encoding]::Unicode)
-Write-Host "Wrote $OutPath (UTF-16)"
+$cp1251 = [System.Text.Encoding]::GetEncoding(1251)
+[System.IO.File]::WriteAllText($OutPath, $text, $cp1251)
+Write-Host "Wrote $OutPath (Windows-1251)"

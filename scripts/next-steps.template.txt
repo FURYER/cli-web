@@ -1,54 +1,78 @@
-﻿WebCLI — что делать после установки
-=====================================
+﻿WebCLI - next steps after setup
+================================
+
+Project folder:
+  __REPO_DIR__
+
+If the Russian section below looks broken, use these English steps.
+Or in Notepad: File -> Open -> Encoding -> ANSI (for CP1251 file).
+
+----------------------------------------
+1) CloudPub (HTTPS for phone)
+----------------------------------------
+  - Sign up: https://cloudpub.ru/dashboard
+  - Open a NEW cmd window and run:
+      clo login
+    (or: clo set token YOUR_TOKEN from the dashboard)
+
+----------------------------------------
+2) Keys in .env
+----------------------------------------
+  Open:
+      notepad "__REPO_DIR__\.env"
+
+  Two lines:
+      AGENT_API_KEY=...   <- Cursor: https://cursor.com/dashboard/integrations
+      ACCESS_TOKEN=...    <- password for the web chat (any you choose)
+
+  You do NOT need Cursor IDE / Cursor SDK separately:
+  @cursor/sdk is installed by npm during setup.
+  You only need the API key from Cursor dashboard (Integrations).
+
+  If ACCESS_TOKEN was generated during setup, use that same value
+  when logging in from the phone.
+
+----------------------------------------
+3) Start
+----------------------------------------
+  In Explorer open the project folder and run:
+      start-phone.bat
+
+  Or two windows manually:
+      start-prod.bat
+      publish-release.bat
+
+  - On PC:     http://127.0.0.1:8787
+  - On phone:  the HTTPS URL printed by CloudPub
+               (looks like https://something.cloudpub.ru)
+  - Enter the same ACCESS_TOKEN as in .env
+
+----------------------------------------
+Notes
+----------------------------------------
+  - Keep both windows open; PC must not sleep.
+  - First voice input downloads the Whisper model (several GB).
+  - If clo / node / python are "not found" - close cmd and open a new one.
+
+========================================
+По-русски
+========================================
 
 Папка проекта:
   __REPO_DIR__
 
-----------------------------------------
-1) CloudPub (HTTPS для телефона)
-----------------------------------------
-  • Зарегистрируйся: https://cloudpub.ru/dashboard
-  • Открой НОВОЕ окно cmd и выполни:
-      clo login
-    (или: clo set token ТВОЙ_ТОКЕН из личного кабинета)
+1) CloudPub: https://cloudpub.ru/dashboard
+   В новом cmd: clo login
+   (или: clo set token ТВОЙ_ТОКЕН)
 
-----------------------------------------
-2) Ключи в .env
-----------------------------------------
-  Открой файл:
-      notepad "__REPO_DIR__\.env"
+2) Ключи в .env:
+   notepad "__REPO_DIR__\.env"
+   AGENT_API_KEY=...  (Cursor Integrations)
+   ACCESS_TOKEN=...   (пароль для входа с телефона)
 
-  Нужны две строки:
-      AGENT_API_KEY=...   ← ключ Cursor: https://cursor.com/dashboard/integrations
-      ACCESS_TOKEN=...    ← пароль для входа в веб-чат (любой свой)
+3) Запуск: start-phone.bat
+   ПК: http://127.0.0.1:8787
+   Телефон: HTTPS-ссылка от CloudPub
+   Вход тем же ACCESS_TOKEN
 
-  Cursor IDE / Cursor SDK отдельно ставить НЕ нужно:
-  пакет @cursor/sdk ставится сам через npm install при setup.
-  Нужен только API-ключ из дашборда Cursor (Integrations).
-
-  Если ACCESS_TOKEN уже сгенерирован при setup — запомни его,
-  им же входишь с телефона.
-
-----------------------------------------
-3) Запуск
-----------------------------------------
-  В проводнике открой папку проекта и запусти:
-      start-phone.bat
-
-  Или вручную два окна:
-      start-prod.bat
-      publish-release.bat
-
-  • На компе:  http://127.0.0.1:8787
-  • С телефона: HTTPS-ссылку, которую напечатает CloudPub
-    (вид примерно https://что-то.cloudpub.ru)
-  • Введи тот же ACCESS_TOKEN, что в .env
-
-----------------------------------------
-Важно
-----------------------------------------
-  • Оба окна держи открытыми, ПК не должен засыпать.
-  • Первый голосовой ввод скачает модель Whisper (несколько ГБ).
-  • Если clo / node / python «не найдены» — закрой cmd и открой новый.
-
-Готово. Удачи.
+Держи оба окна открытыми. Удачи.
