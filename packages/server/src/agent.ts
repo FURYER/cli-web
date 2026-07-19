@@ -932,6 +932,29 @@ function isStaleAuthFailure(err: unknown): boolean {
   );
 }
 
+/** SDK still thinks a run is in flight after crash / lost WS / killed host. */
+function isActiveRunConflict(err: unknown): boolean {
+  const hay = (
+    err instanceof Error ? `${err.name} ${err.message}` : String(err ?? "")
+  ).toLowerCase();
+  return (
+    hay.includes("already has active run") ||
+    (hay.includes("active run") && hay.includes("already")) ||
+    hay.includes("run already in progress")
+  );
+}
+
+function isAgentMissingFailure(err: unknown): boolean {
+  const hay = (
+    err instanceof Error ? `${err.name} ${err.message}` : String(err ?? "")
+  ).toLowerCase();
+  return (
+    hay.includes("not found") ||
+    hay.includes("unknown agent") ||
+    hay.includes("no such agent")
+  );
+}
+
 const AUTH_RECOVERY_FAILED_MESSAGE =
   "Cursor agent session expired after idle, and automatic reconnect failed. Restart the server (start-prod.bat) or send the message again.";
 
@@ -953,16 +976,26 @@ async function ensureAgent(session: SessionRecord): Promise<SDKAgent> {
   if (session.agent) return session.agent;
   const apiKey = requireApiKey();
   const mcpServers = await loadMcpServers();
-  const agent = await Agent.resume(session.agentId, {
-    apiKey,
-    model: { id: session.model || defaultModel() },
-    mode: session.mode || "agent",
-    local: localRuntime(session.workspace),
-    ...(Object.keys(mcpServers).length > 0 ? { mcpServers } : {}),
-  });
-  session.agent = agent;
-  session.agentId = agent.agentId;
-  return agent;
+  try {
+    const agent = await Agent.resume(session.agentId, {
+      apiKey,
+      model: { id: session.model || defaultModel() },
+      mode: session.mode || "agent",
+      local: localRuntime(session.workspace),
+      ...(Object.keys(mcpServers).length > 0 ? { mcpServers } : {}),
+    });
+    session.agent = agent;
+    session.agentId = agent.agentId;
+    return agent;
+  } catch (err) {
+    if (!isAgentMissingFailure(err)) throw err;
+    console.warn(
+      `[agent] resume failed for ${session.agentId} (${err instanceof Error ? err.message : String(err)}); creating a new agent`,
+    );
+    await recreateAgent(session);
+    if (!session.agent) throw err;
+    return session.agent;
+  }
 }
 
 export async function createSession(input: {
@@ -2473,6 +2506,32 @@ async function sendMessageNow(
       });
       continue;
     }
+    if (!authRetried && isActiveRunConflict(err)) {
+      authRetried = true;
+      console.warn(
+        "[agent] SDK active-run conflict; recreating agent and retrying once",
+      );
+      try {
+        const stale = session.activeRun;
+        if (stale?.id) {
+          await Agent.cancelRun(stale.id, {
+            runtime: "local",
+            cwd: session.workspace,
+          }).catch(() => undefined);
+        }
+      } catch {
+        /* ignore */
+      }
+      await recreateAgent(session);
+      resetTurnBuffers();
+      broadcast({
+        type: "status",
+        sessionId,
+        status: "RUNNING",
+        message: "Clearing stuck agent run…",
+      });
+      continue;
+    }
     const message = isStaleAuthFailure(err)
       ? AUTH_RECOVERY_FAILED_MESSAGE
       : err instanceof Error
@@ -2818,15 +2877,49 @@ export async function cancelSessionRun(sessionId: string): Promise<void> {
   if (!session) throw new Error("Session not found");
   cancelAskQuestionsForSession(sessionId, "Cancelled by user");
   const run = session.activeRun;
-  if (!run) throw new Error("No active run");
-  if (run.supports("cancel")) {
-    await run.cancel();
-    return;
+  if (run) {
+    try {
+      if (run.supports("cancel")) {
+        await run.cancel();
+      } else {
+        await Agent.cancelRun(run.id, {
+          runtime: "local",
+          cwd: session.workspace,
+        });
+      }
+    } catch (err) {
+      console.warn(
+        `[agent] cancelRun failed for ${sessionId}:`,
+        err instanceof Error ? err.message : err,
+      );
+    }
   }
-  await Agent.cancelRun(run.id, {
-    runtime: "local",
-    cwd: session.workspace,
+
+  // Always clear local busy — after host crash SDK may still hold a run lock
+  // with no activeRun handle on our side ("already has active run" on next send).
+  setSessionBusy(session, false);
+  session.activeRun = null;
+  endAskSession(sessionId);
+  sessionSendQueues.delete(sessionId);
+  sessionSendPumping.delete(sessionId);
+  broadcast({
+    type: "done",
+    sessionId,
+    runId: run?.id ?? "",
+    status: "cancelled",
+    title: session.title,
   });
+  notifyDeployIdleCheck();
+
+  try {
+    await recreateAgent(session);
+  } catch (err) {
+    console.warn(
+      `[agent] recreate after cancel failed for ${sessionId}:`,
+      err instanceof Error ? err.message : err,
+    );
+    await disposeAgentHandle(session);
+  }
 }
 
 export async function listCursorAgents(workspace?: string): Promise<SDKAgentInfo[]> {
