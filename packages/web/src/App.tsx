@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AppHeader } from "./components/AppHeader";
 import { BoardPanel } from "./components/BoardPanel";
 import { Chat } from "./components/Chat";
+import { ChildAgentsStrip } from "./components/ChildAgentsStrip";
 import { Composer } from "./components/Composer";
 import { DeployBanner } from "./components/DeployBanner";
 import { SessionList } from "./components/SessionList";
@@ -182,6 +183,11 @@ export default function App() {
       ? sessions.find((s) => s.id === activeSession.parentSessionId)?.workspace
       : null) ||
     workspace;
+  const childAgentsForActive = activeId
+    ? sessions
+        .filter((s) => s.parentSessionId === activeId)
+        .sort((a, b) => b.updatedAt - a.updatedAt)
+    : [];
 
   useEffect(() => {
     busyIdsRef.current = busyIds;
@@ -651,6 +657,52 @@ export default function App() {
           }
 
           if (event.type === "child_agent") {
+            if (event.status === "running") {
+              markBusy(event.childSessionId, true);
+            } else {
+              markBusy(event.childSessionId, false);
+            }
+            setSessions((prev) => {
+              const childIdx = prev.findIndex((s) => s.id === event.childSessionId);
+              if (childIdx >= 0) {
+                const child = prev[childIdx]!;
+                if (
+                  child.childStatus === event.status &&
+                  (!event.title || event.title === child.title)
+                ) {
+                  return prev;
+                }
+                const next = [...prev];
+                next[childIdx] = {
+                  ...child,
+                  childStatus: event.status,
+                  title: event.title || child.title,
+                  agentBranch: event.branch || child.agentBranch,
+                  updatedAt: Date.now(),
+                };
+                return next;
+              }
+              const parent = prev.find((s) => s.id === event.sessionId);
+              if (!parent) return prev;
+              return [
+                ...prev,
+                {
+                  id: event.childSessionId,
+                  agentId: parent.agentId,
+                  workspace: parent.workspace,
+                  model: parent.model,
+                  title: event.title || "Sub-agent",
+                  createdAt: Date.now(),
+                  updatedAt: Date.now(),
+                  messageCount: 0,
+                  busy: event.status === "running",
+                  parentSessionId: event.sessionId,
+                  projectWorkspace: parent.projectWorkspace || parent.workspace,
+                  agentBranch: event.branch,
+                  childStatus: event.status,
+                },
+              ];
+            });
             void refreshSessions();
           }
 
@@ -1507,6 +1559,11 @@ export default function App() {
                 onScrollDirection={(direction) => {
                   setHeaderVisible(direction === "up");
                 }}
+              />
+              <ChildAgentsStrip
+                childrenAgents={childAgentsForActive}
+                busyIds={busyIds}
+                onSelect={(id) => void openSession(id)}
               />
               <Composer
                 auth={auth}
