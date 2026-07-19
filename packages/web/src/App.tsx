@@ -681,6 +681,7 @@ export default function App() {
                     toolName: event.toolName,
                     mode: event.toolName === "createPlan" ? "plan" : undefined,
                     createdAt: Date.now(),
+                    durationMs: event.durationMs,
                   },
                 ];
               });
