@@ -560,6 +560,7 @@ const AssistantMessage = memo(function AssistantMessage({
   auth,
   isPlanDocument,
   createdAt,
+  durationMs,
   onImplementPlan,
 }: {
   text: string;
@@ -568,6 +569,7 @@ const AssistantMessage = memo(function AssistantMessage({
   /** True when this message is the CreatePlan body. */
   isPlanDocument?: boolean;
   createdAt?: number;
+  durationMs?: number;
   onImplementPlan?: () => void;
 }) {
   return (
@@ -604,6 +606,7 @@ const AssistantMessage = memo(function AssistantMessage({
       </div>
       <div className="mt-1 flex flex-wrap items-center gap-2">
         <MessageTimestamp createdAt={createdAt} />
+        <MessageDuration durationMs={durationMs} />
         <CopyButton text={text} />
       </div>
     </div>
@@ -623,6 +626,47 @@ function MessageTimestamp({ createdAt }: { createdAt?: number }) {
       {label}
     </time>
   );
+}
+
+function MessageDuration({
+  durationMs,
+  live = false,
+}: {
+  durationMs?: number;
+  live?: boolean;
+}) {
+  if (typeof durationMs !== "number" || durationMs < 0 || !Number.isFinite(durationMs)) {
+    return null;
+  }
+  const label = formatDuration(durationMs);
+  return (
+    <span
+      className="px-0.5 text-[11px] tabular-nums text-muted/80"
+      title={live ? "Elapsed" : "Response time"}
+      aria-live={live ? "off" : undefined}
+    >
+      {label}
+    </span>
+  );
+}
+
+/** Prefer persisted duration; else wall-clock from preceding user turn. */
+function resolveAssistantDurationMs(
+  message: ChatMessage,
+  messages: ChatMessage[],
+): number | undefined {
+  if (typeof message.durationMs === "number" && message.durationMs >= 0) {
+    return message.durationMs;
+  }
+  const idx = messages.findIndex((m) => m.id === message.id);
+  if (idx < 0) return undefined;
+  for (let i = idx - 1; i >= 0; i -= 1) {
+    if (messages[i]!.role === "user") {
+      const ms = message.createdAt - messages[i]!.createdAt;
+      return ms >= 0 ? ms : undefined;
+    }
+  }
+  return undefined;
 }
 
 function nodeText(node: ReactNode): string {
@@ -1472,6 +1516,40 @@ export function Chat({
       ? Math.max(0, planningNow - planningStartedAt)
       : undefined;
 
+  /** Wall-clock start for the in-progress reply (live elapsed timer). */
+  const liveReplyStartedAt = useMemo(() => {
+    if (!busy) return undefined;
+    const candidates: number[] = [];
+    if (typeof planningStartedAt === "number" && planningStartedAt > 0) {
+      candidates.push(planningStartedAt);
+    }
+    for (const item of activities) {
+      if (typeof item.startedAt === "number" && item.startedAt > 0) {
+        candidates.push(item.startedAt);
+      }
+    }
+    for (let i = messages.length - 1; i >= 0; i -= 1) {
+      if (messages[i]!.role === "user") {
+        candidates.push(messages[i]!.createdAt);
+        break;
+      }
+    }
+    if (candidates.length === 0) return undefined;
+    return Math.min(...candidates);
+  }, [busy, planningStartedAt, activities, messages]);
+
+  const [liveNow, setLiveNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!busy || liveReplyStartedAt == null) return;
+    setLiveNow(Date.now());
+    const id = window.setInterval(() => setLiveNow(Date.now()), 250);
+    return () => window.clearInterval(id);
+  }, [busy, liveReplyStartedAt]);
+  const liveElapsed =
+    busy && liveReplyStartedAt != null
+      ? Math.max(0, liveNow - liveReplyStartedAt)
+      : undefined;
+
   const timeline = useMemo(
     () => buildTimeline(messages, timelineLive.map(liveToStep), Boolean(busy)),
     // timelineLive contents drive live steps; identity changes every activity tick by design
@@ -1639,6 +1717,7 @@ export function Chat({
                 auth={auth}
                 isPlanDocument={isPlanDocument}
                 createdAt={block.message.createdAt}
+                durationMs={resolveAssistantDurationMs(block.message, messages)}
                 onImplementPlan={
                   isPlanDocument ? onImplementPlan : undefined
                 }
@@ -1660,12 +1739,19 @@ export function Chat({
           ))}
 
           {streamingText ? (
-            <div className="w-full whitespace-pre-wrap break-words text-sm leading-relaxed text-ink">
-              {streamingText}
-              {!hasRunningLive ? (
-                <span className="ml-1 text-muted" aria-hidden>
-                  …
-                </span>
+            <div className="w-full">
+              <div className="w-full whitespace-pre-wrap break-words text-sm leading-relaxed text-ink">
+                {streamingText}
+                {!hasRunningLive ? (
+                  <span className="ml-1 text-muted" aria-hidden>
+                    …
+                  </span>
+                ) : null}
+              </div>
+              {liveElapsed != null ? (
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <MessageDuration durationMs={liveElapsed} live />
+                </div>
               ) : null}
             </div>
           ) : null}
@@ -1683,6 +1769,13 @@ export function Chat({
                 Planning next moves
                 {planningElapsed != null ? ` · ${formatDuration(planningElapsed)}` : "…"}
               </span>
+            </div>
+          ) : null}
+
+          {/* Always-visible live timer while generating (when not already shown above). */}
+          {busy && liveElapsed != null && !streamingText && !showPlanning ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <MessageDuration durationMs={liveElapsed} live />
             </div>
           ) : null}
         </div>

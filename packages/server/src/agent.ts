@@ -321,6 +321,8 @@ export type StreamEvent =
       id: string;
       /** e.g. createPlan — UI can badge the message as a plan card. */
       toolName?: string;
+      /** Wall-clock ms from busy start to this commit. */
+      durationMs?: number;
     }
   | {
       type: "activity";
@@ -871,14 +873,24 @@ export async function deleteSession(id: string): Promise<boolean> {
   return true;
 }
 
+function busyElapsedMs(session: SessionRecord, at = Date.now()): number | undefined {
+  const started = session.busyStartedAt;
+  if (typeof started !== "number" || started <= 0) return undefined;
+  return Math.max(0, at - started);
+}
+
 function appendMessage(
   session: SessionRecord,
   role: ChatMessage["role"],
   content: string,
   extra?: Partial<
-    Pick<ChatMessage, "toolName" | "checkpointSha" | "images" | "usage" | "context" | "mode">
+    Pick<
+      ChatMessage,
+      "toolName" | "checkpointSha" | "images" | "usage" | "context" | "mode" | "durationMs"
+    >
   >,
 ): ChatMessage {
+  const createdAt = Date.now();
   const message: ChatMessage = {
     id: randomUUID(),
     role,
@@ -889,8 +901,14 @@ function appendMessage(
     usage: extra?.usage,
     context: extra?.context,
     mode: extra?.mode,
-    createdAt: Date.now(),
+    createdAt,
   };
+  if (typeof extra?.durationMs === "number" && extra.durationMs >= 0) {
+    message.durationMs = extra.durationMs;
+  } else if (role === "assistant") {
+    const elapsed = busyElapsedMs(session, createdAt);
+    if (elapsed != null) message.durationMs = elapsed;
+  }
   session.messages.push(message);
   session.updatedAt = Date.now();
   session.messageCount = session.messages.length;
@@ -1260,6 +1278,7 @@ function publishCreatePlanMessage(
     text: message.content,
     id: message.id,
     toolName: "createPlan",
+    durationMs: message.durationMs,
   });
   return message;
 }
@@ -1443,6 +1462,7 @@ async function ingestToolMedia(
         sessionId: session.id,
         text: message.content,
         id: message.id,
+        durationMs: message.durationMs,
       });
       return rel;
     }
@@ -1468,6 +1488,7 @@ async function ingestToolMedia(
         sessionId: session.id,
         text: message.content,
         id: message.id,
+        durationMs: message.durationMs,
       });
       return rel;
     }
@@ -1675,6 +1696,7 @@ export async function sendMessage(
       sessionId,
       text: assistantBuffer,
       id: message.id,
+      durationMs: message.durationMs,
     });
     assistantBuffer = "";
   };
@@ -2174,10 +2196,18 @@ export async function sendMessage(
     }
 
     if (assistantBuffer) {
-      appendMessage(session, "assistant", assistantBuffer, {
+      const message = appendMessage(session, "assistant", assistantBuffer, {
         usage: lastUsage,
         context: lastContext,
       });
+      broadcast({
+        type: "assistant_commit",
+        sessionId,
+        text: assistantBuffer,
+        id: message.id,
+        durationMs: message.durationMs,
+      });
+      assistantBuffer = "";
     }
     if (result.status === "error") {
       const raw = result.error?.message ?? "Run failed";

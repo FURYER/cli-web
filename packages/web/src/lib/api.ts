@@ -126,6 +126,7 @@ export type StreamEvent =
       text: string;
       id: string;
       toolName?: string;
+      durationMs?: number;
     }
   | {
       type: "activity";
