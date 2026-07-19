@@ -732,16 +732,18 @@ export function Composer({
                   >
                     {listening ? <MicOff {...iconProps} /> : <Mic {...iconProps} />}
                   </button>
-                  <button
-                    type="button"
-                    disabled={disabled || transcribing || !canSend}
-                    onClick={submit}
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-[var(--color-accent-ink)] transition-opacity disabled:opacity-35"
-                    title="Send"
-                    aria-label="Send"
-                  >
-                    <Send size={14} strokeWidth={1.75} aria-hidden />
-                  </button>
+                  {!listening ? (
+                    <button
+                      type="button"
+                      disabled={disabled || transcribing || !canSend}
+                      onClick={submit}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-[var(--color-accent-ink)] transition-opacity disabled:opacity-35"
+                      title="Send"
+                      aria-label="Send"
+                    >
+                      <Send size={14} strokeWidth={1.75} aria-hidden />
+                    </button>
+                  ) : null}
                 </>
               )}
             </div>

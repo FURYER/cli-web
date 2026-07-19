@@ -180,6 +180,8 @@ export type StreamEvent =
       sessionId: string;
       messageId: string;
       messages: ChatMessage[];
+      hasMoreOlder?: boolean;
+      messageCount?: number;
       filesRestored: boolean;
       restoredPrompt?: string;
     }
@@ -327,17 +329,69 @@ export function listSessions(auth: AuthMode): Promise<SessionSummary[]> {
   return request("/api/sessions", auth);
 }
 
+export type ProjectListItem = {
+  key: string;
+  workspace: string;
+  name: string;
+  updatedAt: number;
+  sessions: SessionSummary[];
+  children: SessionSummary[];
+  totalSessions: number;
+  hasMoreSessions: boolean;
+};
+
+export function listProjects(
+  auth: AuthMode,
+  opts?: { limit?: number; beforeUpdatedAt?: number; sessionsLimit?: number },
+): Promise<{ projects: ProjectListItem[]; hasMore: boolean }> {
+  const params = new URLSearchParams();
+  if (opts?.limit != null) params.set("limit", String(opts.limit));
+  if (opts?.beforeUpdatedAt != null) {
+    params.set("beforeUpdatedAt", String(opts.beforeUpdatedAt));
+  }
+  if (opts?.sessionsLimit != null) {
+    params.set("sessionsLimit", String(opts.sessionsLimit));
+  }
+  const qs = params.toString();
+  return request(`/api/projects${qs ? `?${qs}` : ""}`, auth);
+}
+
+export function listProjectSessions(
+  auth: AuthMode,
+  opts: { workspace: string; limit?: number; beforeUpdatedAt?: number },
+): Promise<{
+  sessions: SessionSummary[];
+  children: SessionSummary[];
+  hasMore: boolean;
+}> {
+  const params = new URLSearchParams();
+  params.set("workspace", opts.workspace);
+  if (opts.limit != null) params.set("limit", String(opts.limit));
+  if (opts.beforeUpdatedAt != null) {
+    params.set("beforeUpdatedAt", String(opts.beforeUpdatedAt));
+  }
+  return request(`/api/projects/sessions?${params}`, auth);
+}
+
+export const MESSAGE_PAGE_SIZE = 30;
+
 export function getSession(
   auth: AuthMode,
   id: string,
+  opts?: { limit?: number; before?: string },
 ): Promise<
   SessionSummary & {
     messages: ChatMessage[];
+    hasMoreOlder?: boolean;
     usage?: TokenUsage;
     context?: ContextSnapshot;
   }
 > {
-  return request(`/api/sessions/${id}`, auth);
+  const params = new URLSearchParams();
+  if (opts?.limit != null) params.set("limit", String(opts.limit));
+  if (opts?.before) params.set("before", opts.before);
+  const qs = params.toString();
+  return request(`/api/sessions/${id}${qs ? `?${qs}` : ""}`, auth);
 }
 
 export function createSession(

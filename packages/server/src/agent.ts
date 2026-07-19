@@ -405,6 +405,8 @@ export type StreamEvent =
       sessionId: string;
       messageId: string;
       messages: ChatMessage[];
+      hasMoreOlder?: boolean;
+      messageCount?: number;
       filesRestored: boolean;
       restoredPrompt?: string;
     }
@@ -665,6 +667,195 @@ export function getSession(id: string): SessionRecord | undefined {
   const session = sessions.get(id);
   if (session) healStuckBusy(session);
   return session;
+}
+
+const MESSAGE_PAGE_MAX = 500;
+
+/** Slice chat history for paged HTTP responses (full array stays in memory). */
+export function sliceMessagesPage(
+  messages: ChatMessage[],
+  opts?: { limit?: number; before?: string },
+): { messages: ChatMessage[]; hasMoreOlder: boolean; messageCount: number } {
+  const messageCount = messages.length;
+  if (opts?.limit == null || opts.limit <= 0) {
+    return { messages, hasMoreOlder: false, messageCount };
+  }
+  const limit = Math.min(Math.floor(opts.limit), MESSAGE_PAGE_MAX);
+  let end = messages.length;
+  if (opts.before) {
+    const idx = messages.findIndex((m) => m.id === opts.before);
+    if (idx <= 0) {
+      return { messages: [], hasMoreOlder: false, messageCount };
+    }
+    end = idx;
+  }
+  const start = Math.max(0, end - limit);
+  return {
+    messages: messages.slice(start, end),
+    hasMoreOlder: start > 0,
+    messageCount,
+  };
+}
+
+function normalizeProjectKey(path: string): string {
+  return path.replace(/\//g, "\\").replace(/\\+$/, "").toLowerCase();
+}
+
+function projectDisplayName(path: string): string {
+  const cleaned = path.replace(/[\\/]+$/, "");
+  const parts = cleaned.split(/[\\/]/).filter(Boolean);
+  return parts[parts.length - 1] || path || "Unknown";
+}
+
+export type ProjectListItem = {
+  key: string;
+  workspace: string;
+  name: string;
+  updatedAt: number;
+  /** Top-level sessions only (newest first), limited. */
+  sessions: SessionSummary[];
+  /** Children keyed by parent session id for the returned parents. */
+  children: SessionSummary[];
+  totalSessions: number;
+  hasMoreSessions: boolean;
+};
+
+export function listProjects(opts?: {
+  limit?: number;
+  beforeUpdatedAt?: number;
+  sessionsLimit?: number;
+}): { projects: ProjectListItem[]; hasMore: boolean } {
+  const all = listSessions();
+  const childrenByParent = new Map<string, SessionSummary[]>();
+  for (const session of all) {
+    if (!session.parentSessionId) continue;
+    const list = childrenByParent.get(session.parentSessionId) ?? [];
+    list.push(session);
+    childrenByParent.set(session.parentSessionId, list);
+  }
+  for (const [, list] of childrenByParent) {
+    list.sort((a, b) => b.updatedAt - a.updatedAt);
+  }
+
+  const groupMap = new Map<
+    string,
+    { workspace: string; updatedAt: number; sessions: SessionSummary[] }
+  >();
+  for (const session of all) {
+    if (session.parentSessionId) continue;
+    const parentWs = session.projectWorkspace || session.workspace;
+    const key = normalizeProjectKey(parentWs || "");
+    const kids = childrenByParent.get(session.id) ?? [];
+    const sessionUpdated = Math.max(
+      session.updatedAt,
+      ...kids.map((k) => k.updatedAt),
+    );
+    const existing = groupMap.get(key);
+    if (existing) {
+      existing.sessions.push(session);
+      existing.updatedAt = Math.max(existing.updatedAt, sessionUpdated);
+    } else {
+      groupMap.set(key, {
+        workspace: parentWs,
+        updatedAt: sessionUpdated,
+        sessions: [session],
+      });
+    }
+  }
+
+  let groups = [...groupMap.entries()]
+    .map(([key, g]) => ({
+      key,
+      workspace: g.workspace,
+      name: projectDisplayName(g.workspace),
+      updatedAt: g.updatedAt,
+      sessions: [...g.sessions].sort((a, b) => b.updatedAt - a.updatedAt),
+    }))
+    .sort((a, b) => b.updatedAt - a.updatedAt);
+
+  if (opts?.beforeUpdatedAt != null) {
+    const before = opts.beforeUpdatedAt;
+    groups = groups.filter((g) => g.updatedAt < before);
+  }
+
+  const projectLimit =
+    opts?.limit != null && opts.limit > 0 ? Math.min(Math.floor(opts.limit), 100) : 12;
+  const sessionsLimit =
+    opts?.sessionsLimit != null && opts.sessionsLimit > 0
+      ? Math.min(Math.floor(opts.sessionsLimit), 100)
+      : 8;
+
+  const page = groups.slice(0, projectLimit);
+  const hasMore = groups.length > projectLimit;
+
+  const projects: ProjectListItem[] = page.map((g) => {
+    const totalSessions = g.sessions.length;
+    const sessions = g.sessions.slice(0, sessionsLimit);
+    const children: SessionSummary[] = [];
+    for (const parent of sessions) {
+      const kids = childrenByParent.get(parent.id);
+      if (kids?.length) children.push(...kids);
+    }
+    return {
+      key: g.key,
+      workspace: g.workspace,
+      name: g.name,
+      updatedAt: g.updatedAt,
+      sessions,
+      children,
+      totalSessions,
+      hasMoreSessions: totalSessions > sessions.length,
+    };
+  });
+
+  return { projects, hasMore };
+}
+
+export function listProjectSessions(opts: {
+  workspace: string;
+  limit?: number;
+  beforeUpdatedAt?: number;
+}): {
+  sessions: SessionSummary[];
+  children: SessionSummary[];
+  hasMore: boolean;
+} {
+  const key = normalizeProjectKey(opts.workspace || "");
+  const all = listSessions();
+  const childrenByParent = new Map<string, SessionSummary[]>();
+  for (const session of all) {
+    if (!session.parentSessionId) continue;
+    const list = childrenByParent.get(session.parentSessionId) ?? [];
+    list.push(session);
+    childrenByParent.set(session.parentSessionId, list);
+  }
+  for (const [, list] of childrenByParent) {
+    list.sort((a, b) => b.updatedAt - a.updatedAt);
+  }
+
+  let topLevel = all
+    .filter((s) => {
+      if (s.parentSessionId) return false;
+      const ws = s.projectWorkspace || s.workspace;
+      return normalizeProjectKey(ws || "") === key;
+    })
+    .sort((a, b) => b.updatedAt - a.updatedAt);
+
+  if (opts.beforeUpdatedAt != null) {
+    const before = opts.beforeUpdatedAt;
+    topLevel = topLevel.filter((s) => s.updatedAt < before);
+  }
+
+  const limit =
+    opts.limit != null && opts.limit > 0 ? Math.min(Math.floor(opts.limit), 100) : 8;
+  const sessions = topLevel.slice(0, limit);
+  const hasMore = topLevel.length > sessions.length;
+  const children: SessionSummary[] = [];
+  for (const parent of sessions) {
+    const kids = childrenByParent.get(parent.id);
+    if (kids?.length) children.push(...kids);
+  }
+  return { sessions, children, hasMore };
 }
 
 export async function getSessionContext(
@@ -1056,11 +1247,14 @@ export async function rollbackToMessage(
   }
   schedulePersist();
 
+  const rolledPage = sliceMessagesPage(session.messages, { limit: 30 });
   broadcast({
     type: "rolled_back",
     sessionId,
     messageId: target.id,
-    messages: session.messages,
+    messages: rolledPage.messages,
+    hasMoreOlder: rolledPage.hasMoreOlder,
+    messageCount: rolledPage.messageCount,
     filesRestored,
     restoredPrompt,
   });

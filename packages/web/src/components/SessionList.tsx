@@ -1,24 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { MessageSquarePlus, Plus, Search, Trash2 } from "lucide-react";
-import type { ChildAgentStatus } from "../lib/api";
+import type { ChildAgentStatus, ProjectListItem, SessionSummary } from "../lib/api";
 import { formatRelativeShort } from "../lib/time";
 import { iconProps } from "./icons";
 
-type SessionItem = {
-  id: string;
-  title: string;
-  workspace: string;
-  updatedAt: number;
-  busy?: boolean;
-  parentSessionId?: string;
-  projectWorkspace?: string;
-  childStatus?: ChildAgentStatus;
-  agentBranch?: string;
-  childSessionIds?: string[];
-};
-
 type Props = {
-  sessions: SessionItem[];
+  projects: ProjectListItem[];
+  hasMoreProjects: boolean;
+  loadingMoreProjects?: boolean;
+  onLoadMoreProjects: () => void;
+  onLoadMoreSessions: (workspace: string, key: string) => void;
+  loadingSessionsKey?: string | null;
   activeId: string | null;
   busyIds?: ReadonlySet<string>;
   askPendingIds?: ReadonlySet<string>;
@@ -30,80 +22,6 @@ type Props = {
 
 function normalizeWorkspace(path: string): string {
   return path.replace(/\//g, "\\").replace(/\\+$/, "").toLowerCase();
-}
-
-function projectName(path: string): string {
-  const cleaned = path.replace(/[\\/]+$/, "");
-  const parts = cleaned.split(/[\\/]/).filter(Boolean);
-  return parts[parts.length - 1] || path || "Unknown";
-}
-
-type ProjectGroup = {
-  key: string;
-  workspace: string;
-  name: string;
-  /** Top-level sessions only (children nested via byParent). */
-  sessions: SessionItem[];
-  updatedAt: number;
-  anyBusy: boolean;
-  anyAsk: boolean;
-};
-
-function groupByProject(
-  sessions: SessionItem[],
-  busyIds?: ReadonlySet<string>,
-  askPendingIds?: ReadonlySet<string>,
-): { groups: ProjectGroup[]; childrenByParent: Map<string, SessionItem[]> } {
-  const childrenByParent = new Map<string, SessionItem[]>();
-  for (const session of sessions) {
-    if (!session.parentSessionId) continue;
-    const list = childrenByParent.get(session.parentSessionId) ?? [];
-    list.push(session);
-    childrenByParent.set(session.parentSessionId, list);
-  }
-  for (const [, list] of childrenByParent) {
-    list.sort((a, b) => b.updatedAt - a.updatedAt);
-  }
-
-  const map = new Map<string, ProjectGroup>();
-  for (const session of sessions) {
-    if (session.parentSessionId) continue; // nested under parent row
-    const parentWs = session.projectWorkspace || session.workspace;
-    const key = normalizeWorkspace(parentWs || "");
-    const existing = map.get(key);
-    const sessionBusy = Boolean(session.busy) || Boolean(busyIds?.has(session.id));
-    const kids = childrenByParent.get(session.id) ?? [];
-    const kidsBusy = kids.some((k) => k.busy || busyIds?.has(k.id));
-    const sessionAsk = Boolean(askPendingIds?.has(session.id));
-    const kidsAsk = kids.some((k) => askPendingIds?.has(k.id));
-    if (existing) {
-      existing.sessions.push(session);
-      existing.updatedAt = Math.max(
-        existing.updatedAt,
-        session.updatedAt,
-        ...kids.map((k) => k.updatedAt),
-      );
-      existing.anyBusy = existing.anyBusy || sessionBusy || kidsBusy;
-      existing.anyAsk = existing.anyAsk || sessionAsk || kidsAsk;
-    } else {
-      map.set(key, {
-        key,
-        workspace: parentWs,
-        name: projectName(parentWs),
-        sessions: [session],
-        updatedAt: Math.max(session.updatedAt, ...kids.map((k) => k.updatedAt)),
-        anyBusy: sessionBusy || kidsBusy,
-        anyAsk: sessionAsk || kidsAsk,
-      });
-    }
-  }
-  const groups = [...map.values()]
-    .map((group) => ({
-      ...group,
-      sessions: [...group.sessions].sort((a, b) => b.updatedAt - a.updatedAt),
-    }))
-    .sort((a, b) => b.updatedAt - a.updatedAt);
-  return { groups, childrenByParent };
 }
 
 function BusyDot({ title }: { title?: string }) {
@@ -166,7 +84,12 @@ function useNow(intervalMs = 60_000): number {
 }
 
 export function SessionList({
-  sessions,
+  projects,
+  hasMoreProjects,
+  loadingMoreProjects,
+  onLoadMoreProjects,
+  onLoadMoreSessions,
+  loadingSessionsKey,
   activeId,
   busyIds,
   askPendingIds,
@@ -180,34 +103,81 @@ export function SessionList({
   const [renameDraft, setRenameDraft] = useState("");
   const now = useNow();
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const listRef = useRef<HTMLDivElement>(null);
 
-  const filtered = useMemo(() => {
+  const filteredProjects = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return sessions;
-    return sessions.filter(
-      (s) =>
-        s.title.toLowerCase().includes(q) ||
-        s.workspace.toLowerCase().includes(q) ||
-        (s.agentBranch || "").toLowerCase().includes(q),
-    );
-  }, [sessions, query]);
+    if (!q) return projects;
+    return projects
+      .map((project) => {
+        const sessions = project.sessions.filter(
+          (s) =>
+            s.title.toLowerCase().includes(q) ||
+            s.workspace.toLowerCase().includes(q) ||
+            (s.agentBranch || "").toLowerCase().includes(q) ||
+            project.name.toLowerCase().includes(q) ||
+            project.workspace.toLowerCase().includes(q),
+        );
+        if (
+          sessions.length === 0 &&
+          !project.name.toLowerCase().includes(q) &&
+          !project.workspace.toLowerCase().includes(q)
+        ) {
+          return null;
+        }
+        return { ...project, sessions: sessions.length ? sessions : project.sessions };
+      })
+      .filter(Boolean) as ProjectListItem[];
+  }, [projects, query]);
 
-  const { groups, childrenByParent } = useMemo(
-    () => groupByProject(filtered, busyIds, askPendingIds),
-    [filtered, busyIds, askPendingIds],
-  );
-  const activeSession = sessions.find((s) => s.id === activeId);
+  const childrenByParent = useMemo(() => {
+    const map = new Map<string, SessionSummary[]>();
+    for (const project of filteredProjects) {
+      for (const child of project.children) {
+        if (!child.parentSessionId) continue;
+        const list = map.get(child.parentSessionId) ?? [];
+        list.push(child);
+        map.set(child.parentSessionId, list);
+      }
+    }
+    for (const [, list] of map) {
+      list.sort((a, b) => b.updatedAt - a.updatedAt);
+    }
+    return map;
+  }, [filteredProjects]);
+
+  const allSessions = useMemo(() => {
+    const out: SessionSummary[] = [];
+    for (const project of projects) {
+      out.push(...project.sessions, ...project.children);
+    }
+    return out;
+  }, [projects]);
+
+  const activeSession = allSessions.find((s) => s.id === activeId);
   const activeWorkspace =
     activeSession?.projectWorkspace ||
     (activeSession?.parentSessionId
-      ? sessions.find((s) => s.id === activeSession.parentSessionId)?.workspace
+      ? allSessions.find((s) => s.id === activeSession.parentSessionId)?.workspace
       : activeSession?.workspace);
+
+  useEffect(() => {
+    const el = listRef.current;
+    if (!el || query.trim()) return;
+    function onScroll() {
+      if (!el || !hasMoreProjects || loadingMoreProjects) return;
+      const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
+      if (distance < 120) onLoadMoreProjects();
+    }
+    el.addEventListener("scroll", onScroll);
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [hasMoreProjects, loadingMoreProjects, onLoadMoreProjects, query]);
 
   function toggle(key: string) {
     setCollapsed((prev) => ({ ...prev, [key]: !prev[key] }));
   }
 
-  function startRename(session: SessionItem) {
+  function startRename(session: SessionSummary) {
     if (!onRename) return;
     setRenamingId(session.id);
     setRenameDraft(session.title);
@@ -219,13 +189,13 @@ export function SessionList({
       return;
     }
     const next = renameDraft.trim();
-    const current = sessions.find((s) => s.id === renamingId);
+    const current = allSessions.find((s) => s.id === renamingId);
     setRenamingId(null);
     if (!next || !current || next === current.title) return;
     onRename(renamingId, next);
   }
 
-  function renderSessionRow(session: SessionItem, opts?: { nested?: boolean }) {
+  function renderSessionRow(session: SessionSummary, opts?: { nested?: boolean }) {
     const isBusy = Boolean(session.busy) || Boolean(busyIds?.has(session.id));
     const hasAsk = Boolean(askPendingIds?.has(session.id));
     const active = activeId === session.id;
@@ -343,17 +313,26 @@ export function SessionList({
         </label>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-3 pt-0.5">
-        {groups.length === 0 ? (
+      <div
+        ref={listRef}
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-3 pt-0.5"
+      >
+        {filteredProjects.length === 0 ? (
           <p className="px-2 py-10 text-center text-sm text-muted">
             {query.trim() ? "No matching chats" : "No projects yet"}
           </p>
         ) : null}
 
-        {groups.map((group) => {
+        {filteredProjects.map((group) => {
           const isCollapsed = collapsed[group.key] === true;
           const isActiveProject =
             activeWorkspace && normalizeWorkspace(activeWorkspace) === group.key;
+          const anyBusy =
+            group.sessions.some((s) => s.busy || busyIds?.has(s.id)) ||
+            group.children.some((c) => c.busy || busyIds?.has(c.id));
+          const anyAsk =
+            group.sessions.some((s) => askPendingIds?.has(s.id)) ||
+            group.children.some((c) => askPendingIds?.has(c.id));
 
           return (
             <section
@@ -373,8 +352,8 @@ export function SessionList({
                 >
                   <div className="flex items-center gap-1.5">
                     <p className="truncate text-[13px] font-medium text-ink">{group.name}</p>
-                    {group.anyAsk ? <AskBadge /> : null}
-                    {group.anyBusy ? (
+                    {anyAsk ? <AskBadge /> : null}
+                    {anyBusy ? (
                       <BusyDot title="A chat in this project is working" />
                     ) : null}
                   </div>
@@ -400,11 +379,31 @@ export function SessionList({
               >
                 <ul className="mt-0.5 min-h-0 space-y-0.5 overflow-hidden border-l border-line/50 ml-3 pl-2">
                   {group.sessions.map((session) => renderSessionRow(session))}
+                  {!query.trim() && group.hasMoreSessions ? (
+                    <li className="pt-0.5">
+                      <button
+                        type="button"
+                        disabled={loadingSessionsKey === group.key}
+                        onClick={() => onLoadMoreSessions(group.workspace, group.key)}
+                        className="w-full rounded-md px-2 py-1 text-left text-[11px] text-muted transition-colors hover:bg-white/[0.03] hover:text-ink disabled:opacity-50"
+                      >
+                        {loadingSessionsKey === group.key
+                          ? "Loading…"
+                          : `Show more chats (${group.totalSessions - group.sessions.length})`}
+                      </button>
+                    </li>
+                  ) : null}
                 </ul>
               </div>
             </section>
           );
         })}
+
+        {!query.trim() && hasMoreProjects ? (
+          <p className="px-2 py-2 text-center text-[11px] text-muted">
+            {loadingMoreProjects ? "Loading projects…" : "Scroll for more projects"}
+          </p>
+        ) : null}
       </div>
     </aside>
   );

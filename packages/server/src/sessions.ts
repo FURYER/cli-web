@@ -17,7 +17,6 @@ import {
   updateSession,
   type AskQuestionAnswer,
   type AskQuestionHandlerResult,
-  type ProjectListItem,
   type SendImageInput,
   type SessionSummary,
 } from "./agent.js";

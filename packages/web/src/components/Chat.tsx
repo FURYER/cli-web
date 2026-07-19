@@ -58,6 +58,9 @@ type Props = {
   sessionId?: string | null;
   auth?: AuthMode;
   askSubmittingId?: string | null;
+  hasMoreOlder?: boolean;
+  loadingOlder?: boolean;
+  onLoadOlder?: () => void | Promise<void>;
   onRollback?: (messageId: string) => void;
   onImplementPlan?: () => void;
   onAnswerQuestion?: (callId: string, answers: AskQuestionAnswer[]) => void;
@@ -1500,6 +1503,9 @@ export function Chat({
   sessionId,
   auth,
   askSubmittingId,
+  hasMoreOlder,
+  loadingOlder,
+  onLoadOlder,
   onRollback,
   onImplementPlan,
   onAnswerQuestion,
@@ -1510,6 +1516,10 @@ export function Chat({
   const stickToBottomRef = useRef(true);
   const prevMessageCountRef = useRef(0);
   const lastScrollTopRef = useRef(0);
+  const pendingScrollRestoreRef = useRef<{ height: number; top: number } | null>(
+    null,
+  );
+  const loadOlderLockRef = useRef(false);
   const [showJumpToBottom, setShowJumpToBottom] = useState(false);
 
   const persistedActivityIds = new Set(
@@ -1675,12 +1685,42 @@ export function Chat({
     }
     prevMessageCountRef.current = messages.length;
 
-    if (!stickToBottomRef.current) return;
+    const pending = pendingScrollRestoreRef.current;
     const el = scrollerRef.current;
+    if (pending && el) {
+      el.scrollTop = el.scrollHeight - pending.height + pending.top;
+      pendingScrollRestoreRef.current = null;
+      return;
+    }
+
+    if (!stickToBottomRef.current) return;
     if (!el) return;
     // Avoid scrolling on every thinking tick — that reflows video and jitters the chat.
     el.scrollTop = el.scrollHeight;
   }, [messages.length, streamingText, timelineLive.length, timeline.length, showPlanning]);
+
+  useEffect(() => {
+    if (!loadingOlder) loadOlderLockRef.current = false;
+  }, [loadingOlder]);
+
+  async function tryLoadOlder() {
+    if (!hasMoreOlder || !onLoadOlder || loadingOlder || loadOlderLockRef.current) {
+      return;
+    }
+    const el = scrollerRef.current;
+    if (!el) return;
+    loadOlderLockRef.current = true;
+    pendingScrollRestoreRef.current = {
+      height: el.scrollHeight,
+      top: el.scrollTop,
+    };
+    try {
+      await onLoadOlder();
+    } catch {
+      pendingScrollRestoreRef.current = null;
+      loadOlderLockRef.current = false;
+    }
+  }
 
   // Keep pinned to bottom when auto-expanded steps grow the layout.
   useLayoutEffect(() => {
@@ -1709,6 +1749,10 @@ export function Chat({
           stickToBottomRef.current = nearBottom;
           setShowJumpToBottom(!nearBottom);
 
+          if (el.scrollTop < 80) {
+            void tryLoadOlder();
+          }
+
           if (onScrollDirection) {
             const top = el.scrollTop;
             const delta = top - lastScrollTopRef.current;
@@ -1724,6 +1768,19 @@ export function Chat({
         }}
       >
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-3 pb-2">
+          {hasMoreOlder ? (
+            <div className="flex justify-center py-2">
+              <button
+                type="button"
+                disabled={loadingOlder}
+                onClick={() => void tryLoadOlder()}
+                className="rounded-md px-3 py-1 text-[11px] text-muted transition-colors hover:bg-white/[0.04] hover:text-ink disabled:opacity-50"
+              >
+                {loadingOlder ? "Loading earlier…" : "Load earlier messages"}
+              </button>
+            </div>
+          ) : null}
+
           {messages.length === 0 && !streamingText && !showPlanning && timeline.length === 0 && (
             <p className="py-16 text-center text-sm text-muted">
               Send a message to start talking to the local agent.

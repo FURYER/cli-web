@@ -20,8 +20,10 @@ import {
   getSession,
   listModels,
   listPendingAskQuestions,
-  listSessions,
+  listProjects,
+  listProjectSessions,
   loadStoredToken,
+  MESSAGE_PAGE_SIZE,
   rollbackMessage,
   sendMessage,
   storeToken,
@@ -33,6 +35,7 @@ import {
   type ChatMessage,
   type DeployStatus,
   type ModelOption,
+  type ProjectListItem,
   type SendImagePayload,
   type SessionSummary,
   type StreamEvent,
@@ -55,6 +58,49 @@ const MODEL_KEY_LEGACY = "cursor-cli.lastModel";
 const MODE_KEY_LEGACY = "cursor-cli.lastMode";
 const SESSION_KEY = "webcli.lastSessionId";
 const SESSION_KEY_LEGACY = "cursor-cli.lastSessionId";
+const PROJECT_PAGE_SIZE = 12;
+const SESSIONS_PER_PROJECT = 8;
+
+function flattenProjects(projects: ProjectListItem[]): SessionSummary[] {
+  const out: SessionSummary[] = [];
+  for (const project of projects) {
+    out.push(...project.sessions, ...project.children);
+  }
+  return out;
+}
+
+function mergeSessionLists(
+  prev: SessionSummary[],
+  extra: SessionSummary[],
+): SessionSummary[] {
+  const map = new Map(prev.map((s) => [s.id, s]));
+  for (const s of extra) map.set(s.id, s);
+  return [...map.values()];
+}
+
+/** Keep already-loaded older messages when refreshing the newest page. */
+function mergeTailRefresh(
+  serverTail: ChatMessage[],
+  prev: ChatMessage[],
+): ChatMessage[] {
+  const pending = prev.filter((m) => {
+    if (m.role !== "user" || !String(m.id).startsWith("local-")) return false;
+    return !serverTail.some(
+      (s) =>
+        s.role === "user" &&
+        s.content === m.content &&
+        Math.abs((s.createdAt || 0) - (m.createdAt || 0)) < 180_000,
+    );
+  });
+  if (!serverTail.length) {
+    return pending.length ? [...serverTail, ...pending] : serverTail;
+  }
+  const anchor = serverTail[0]!.id;
+  const anchorIdx = prev.findIndex((m) => m.id === anchor);
+  const older = anchorIdx > 0 ? prev.slice(0, anchorIdx) : [];
+  const merged = [...older, ...serverTail];
+  return pending.length ? [...merged, ...pending] : merged;
+}
 
 type LiveActivity = ActivityItem & { startedAt?: number };
 
@@ -134,8 +180,14 @@ export default function App() {
   const [tokenDraft, setTokenDraft] = useState(accessToken);
   const [isStand, setIsStand] = useState(false);
   const [sessions, setSessions] = useState<SessionSummary[]>([]);
+  const [projectItems, setProjectItems] = useState<ProjectListItem[]>([]);
+  const [hasMoreProjects, setHasMoreProjects] = useState(false);
+  const [loadingMoreProjects, setLoadingMoreProjects] = useState(false);
+  const [loadingSessionsKey, setLoadingSessionsKey] = useState<string | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [hasMoreOlder, setHasMoreOlder] = useState(false);
+  const [loadingOlder, setLoadingOlder] = useState(false);
   const [workspace, setWorkspace] = useState("");
   const [model, setModel] = useState(loadStoredModel);
   const [mode, setMode] = useState<"agent" | "plan">(loadStoredMode);
@@ -168,6 +220,7 @@ export default function App() {
   const [notifyBusy, setNotifyBusy] = useState(false);
   const activeIdRef = useRef<string | null>(null);
   const sessionsRef = useRef<SessionSummary[]>([]);
+  const projectItemsRef = useRef<ProjectListItem[]>([]);
   const sendingRef = useRef<Set<string>>(new Set());
   const busyIdsRef = useRef<Set<string>>(new Set());
   const deployOfflineSeenRef = useRef(false);
@@ -196,6 +249,10 @@ export default function App() {
   useEffect(() => {
     sessionsRef.current = sessions;
   }, [sessions]);
+
+  useEffect(() => {
+    projectItemsRef.current = projectItems;
+  }, [projectItems]);
 
   useEffect(() => {
     activeIdRef.current = activeId;
@@ -349,25 +406,10 @@ export default function App() {
   async function resyncFromServer(opts?: { reloadActive?: boolean }) {
     if (!authenticated) return;
     try {
-      const items = await listSessions(auth);
-      setSessions(items);
-      setBusyIds((prev) => {
-        const next = new Set(prev);
-        for (const item of items) {
-          if (item.busy) next.add(item.id);
-          else if (!sendingRef.current.has(item.id)) next.delete(item.id);
-        }
-        for (const id of [...next]) {
-          if (!items.some((item) => item.id === id) && !sendingRef.current.has(id)) {
-            next.delete(id);
-          }
-        }
-        return next;
-      });
-
+      await refreshSessions();
       const id = activeIdRef.current;
       if (!id) return;
-      const summary = items.find((item) => item.id === id);
+      const summary = sessionsRef.current.find((item) => item.id === id);
       const serverBusy = Boolean(summary?.busy);
 
       if (!serverBusy && !sendingRef.current.has(id)) {
@@ -378,8 +420,16 @@ export default function App() {
       }
 
       if (opts?.reloadActive !== false) {
-        const detail = await getSession(auth, id);
-        setMessages((prev) => mergeServerMessages(detail.messages, prev));
+        const detail = await getSession(auth, id, { limit: MESSAGE_PAGE_SIZE });
+        setMessages((prev) => {
+          const merged = mergeTailRefresh(detail.messages, prev);
+          setHasMoreOlder(
+            Boolean(detail.hasMoreOlder) ||
+              (merged.length > detail.messages.length &&
+                merged[0]?.id !== detail.messages[0]?.id),
+          );
+          return merged;
+        });
         const keepLocalBusy = sendingRef.current.has(id);
         markBusy(id, Boolean(detail.busy) || keepLocalBusy);
         if (!detail.busy && !keepLocalBusy) {
@@ -493,8 +543,14 @@ export default function App() {
     void (async () => {
       setBootLoading(true);
       try {
-        const items = await listSessions(auth);
+        const { projects, hasMore } = await listProjects(auth, {
+          limit: PROJECT_PAGE_SIZE,
+          sessionsLimit: SESSIONS_PER_PROJECT,
+        });
         if (cancelled) return;
+        setProjectItems(projects);
+        setHasMoreProjects(hasMore);
+        const items = flattenProjects(projects);
         setSessions(items);
         let lastId: string | null = null;
         try {
@@ -515,6 +571,9 @@ export default function App() {
           await openSession(lastId);
         } else if (items[0]) {
           await openSession(items[0].id);
+        } else if (lastId) {
+          // Session may exist but be outside the first project page — open by id.
+          await openSession(lastId);
         } else {
           setShowNew(true);
         }
@@ -880,6 +939,7 @@ export default function App() {
               setPendingQuestions([]);
               setAskSubmittingId(null);
               setMessages(event.messages);
+              setHasMoreOlder(Boolean(event.hasMoreOlder));
               if (event.restoredPrompt) {
                 setComposerDraft(event.restoredPrompt);
                 setComposerDraftKey((k) => k + 1);
@@ -983,13 +1043,29 @@ export default function App() {
 
   async function refreshSessions() {
     try {
-      const items = await listSessions(auth);
+      const projectCount = Math.max(PROJECT_PAGE_SIZE, projectItemsRef.current.length);
+      const sessionsLimit = Math.max(
+        SESSIONS_PER_PROJECT,
+        ...projectItemsRef.current.map((p) => p.sessions.length),
+      );
+      const { projects, hasMore } = await listProjects(auth, {
+        limit: projectCount,
+        sessionsLimit,
+      });
+      setProjectItems(projects);
+      setHasMoreProjects(hasMore);
+      const items = flattenProjects(projects);
       setSessions(items);
       setBusyIds((prev) => {
         const next = new Set(prev);
         for (const item of items) {
           if (item.busy) next.add(item.id);
           else if (!sendingRef.current.has(item.id)) next.delete(item.id);
+        }
+        for (const id of [...next]) {
+          if (!items.some((item) => item.id === id) && !sendingRef.current.has(id)) {
+            next.delete(id);
+          }
         }
         return next;
       });
@@ -998,29 +1074,110 @@ export default function App() {
     }
   }
 
-  function mergeServerMessages(
-    server: ChatMessage[],
-    prev: ChatMessage[],
-  ): ChatMessage[] {
-    const pending = prev.filter((m) => {
-      if (m.role !== "user" || !String(m.id).startsWith("local-")) return false;
-      return !server.some(
-        (s) =>
-          s.role === "user" &&
-          s.content === m.content &&
-          Math.abs((s.createdAt || 0) - (m.createdAt || 0)) < 180_000,
+  async function loadMoreProjects() {
+    if (loadingMoreProjects || !hasMoreProjects) return;
+    const last = projectItems[projectItems.length - 1];
+    if (!last) return;
+    setLoadingMoreProjects(true);
+    try {
+      const { projects, hasMore } = await listProjects(auth, {
+        limit: PROJECT_PAGE_SIZE,
+        beforeUpdatedAt: last.updatedAt,
+        sessionsLimit: SESSIONS_PER_PROJECT,
+      });
+      setProjectItems((prev) => {
+        const seen = new Set(prev.map((p) => p.key));
+        return [...prev, ...projects.filter((p) => !seen.has(p.key))];
+      });
+      setHasMoreProjects(hasMore);
+      setSessions((prev) => mergeSessionLists(prev, flattenProjects(projects)));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLoadingMoreProjects(false);
+    }
+  }
+
+  async function loadMoreProjectSessions(workspacePath: string, key: string) {
+    if (loadingSessionsKey) return;
+    const project = projectItems.find((p) => p.key === key);
+    const last = project?.sessions[project.sessions.length - 1];
+    if (!project || !last) return;
+    setLoadingSessionsKey(key);
+    try {
+      const { sessions: more, children, hasMore } = await listProjectSessions(auth, {
+        workspace: workspacePath,
+        limit: SESSIONS_PER_PROJECT,
+        beforeUpdatedAt: last.updatedAt,
+      });
+      setProjectItems((prev) =>
+        prev.map((p) => {
+          if (p.key !== key) return p;
+          const seen = new Set(p.sessions.map((s) => s.id));
+          const sessions = [...p.sessions, ...more.filter((s) => !seen.has(s.id))];
+          const childSeen = new Set(p.children.map((s) => s.id));
+          const nextChildren = [
+            ...p.children,
+            ...children.filter((s) => !childSeen.has(s.id)),
+          ];
+          return {
+            ...p,
+            sessions,
+            children: nextChildren,
+            hasMoreSessions: hasMore,
+            totalSessions: Math.max(p.totalSessions, sessions.length + (hasMore ? 1 : 0)),
+          };
+        }),
       );
-    });
-    return pending.length ? [...server, ...pending] : server;
+      setSessions((prev) => mergeSessionLists(prev, [...more, ...children]));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLoadingSessionsKey(null);
+    }
   }
 
   async function refreshActive() {
     if (!activeIdRef.current) return;
     try {
-      const detail = await getSession(auth, activeIdRef.current);
-      setMessages((prev) => mergeServerMessages(detail.messages, prev));
+      const detail = await getSession(auth, activeIdRef.current, {
+        limit: MESSAGE_PAGE_SIZE,
+      });
+      setMessages((prev) => {
+        const merged = mergeTailRefresh(detail.messages, prev);
+        setHasMoreOlder(
+          Boolean(detail.hasMoreOlder) ||
+            (merged.length > detail.messages.length &&
+              merged[0]?.id !== detail.messages[0]?.id),
+        );
+        return merged;
+      });
     } catch {
       /* ignore race */
+    }
+  }
+
+  async function loadOlderMessages() {
+    const id = activeIdRef.current;
+    if (!id || loadingOlder || !hasMoreOlder) return;
+    const oldest = messages[0];
+    if (!oldest) return;
+    setLoadingOlder(true);
+    try {
+      const detail = await getSession(auth, id, {
+        limit: MESSAGE_PAGE_SIZE,
+        before: oldest.id,
+      });
+      setMessages((prev) => {
+        const seen = new Set(prev.map((m) => m.id));
+        const older = detail.messages.filter((m) => !seen.has(m.id));
+        return [...older, ...prev];
+      });
+      setHasMoreOlder(Boolean(detail.hasMoreOlder));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLoadingOlder(false);
     }
   }
 
@@ -1030,6 +1187,7 @@ export default function App() {
     setSidebarOpen(false);
     setHeaderVisible(true);
     setMessages([]);
+    setHasMoreOlder(false);
     setChatLoading(true);
     setStreamingText("");
     setActivities([]);
@@ -1044,8 +1202,9 @@ export default function App() {
       /* ignore */
     }
     try {
-      const detail = await getSession(auth, id);
+      const detail = await getSession(auth, id, { limit: MESSAGE_PAGE_SIZE });
       setMessages(detail.messages);
+      setHasMoreOlder(Boolean(detail.hasMoreOlder));
       if (detail.context) {
         setLastContext(detail.context);
         setLastUsage(detail.usage ?? latestContextFromMessages(detail.messages)?.usage ?? null);
@@ -1118,6 +1277,8 @@ export default function App() {
       });
       setWorkspace(ws);
       setSessions((prev) => [session, ...prev]);
+      setHasMoreOlder(false);
+      await refreshSessions();
       setActiveId(session.id);
       try {
         localStorage.setItem(SESSION_KEY, session.id);
@@ -1155,9 +1316,23 @@ export default function App() {
         return next;
       });
       setSessions((prev) => prev.filter((s) => s.id !== id));
+      setProjectItems((prev) =>
+        prev
+          .map((p) => ({
+            ...p,
+            sessions: p.sessions.filter((s) => s.id !== id),
+            children: p.children.filter((s) => s.id !== id),
+            totalSessions: Math.max(
+              0,
+              p.totalSessions - (p.sessions.some((s) => s.id === id) ? 1 : 0),
+            ),
+          }))
+          .filter((p) => p.sessions.length > 0 || p.children.length > 0),
+      );
       if (activeId === id) {
         setActiveId(null);
         setMessages([]);
+        setHasMoreOlder(false);
         setLastUsage(null);
         setLastContext(null);
         setShowNew(true);
@@ -1172,6 +1347,17 @@ export default function App() {
       const updated = await updateSession(auth, id, { title });
       setSessions((prev) =>
         prev.map((s) => (s.id === id ? { ...s, title: updated.title } : s)),
+      );
+      setProjectItems((prev) =>
+        prev.map((p) => ({
+          ...p,
+          sessions: p.sessions.map((s) =>
+            s.id === id ? { ...s, title: updated.title } : s,
+          ),
+          children: p.children.map((s) =>
+            s.id === id ? { ...s, title: updated.title } : s,
+          ),
+        })),
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -1485,7 +1671,12 @@ export default function App() {
       >
         <div className="h-full w-[min(18rem,85vw)] md:w-72">
           <SessionList
-            sessions={sessions}
+            projects={projectItems}
+            hasMoreProjects={hasMoreProjects}
+            loadingMoreProjects={loadingMoreProjects}
+            onLoadMoreProjects={() => void loadMoreProjects()}
+            onLoadMoreSessions={(ws, key) => void loadMoreProjectSessions(ws, key)}
+            loadingSessionsKey={loadingSessionsKey}
             activeId={activeId}
             busyIds={busyIds}
             askPendingIds={askPendingIds}
@@ -1606,6 +1797,9 @@ export default function App() {
                 sessionId={activeId}
                 auth={auth}
                 askSubmittingId={askSubmittingId}
+                hasMoreOlder={hasMoreOlder}
+                loadingOlder={loadingOlder}
+                onLoadOlder={() => loadOlderMessages()}
                 onRollback={(messageId) => void handleRollback(messageId)}
                 onImplementPlan={handleImplementPlan}
                 onAnswerQuestion={(callId, answers) =>
