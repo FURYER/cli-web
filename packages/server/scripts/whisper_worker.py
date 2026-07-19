@@ -37,10 +37,29 @@ def log(msg: str) -> None:
     sys.stderr.buffer.flush()
 
 
+def configure_hub() -> None:
+    """Hugging Face hub: default to hf-mirror (reachable when huggingface.co is blocked)."""
+    endpoint = (os.environ.get("HF_ENDPOINT") or os.environ.get("WHISPER_HF_ENDPOINT") or "").strip()
+    if not endpoint:
+        endpoint = "https://hf-mirror.com"
+        os.environ["HF_ENDPOINT"] = endpoint
+    # Official hub if someone set the mirror empty via WHISPER_HF_ENDPOINT=off
+    if endpoint.lower() in ("off", "0", "false", "official", "huggingface"):
+        endpoint = "https://huggingface.co"
+        os.environ["HF_ENDPOINT"] = endpoint
+    log(f"HF_ENDPOINT={os.environ.get('HF_ENDPOINT')}")
+    proxy = os.environ.get("HTTPS_PROXY") or os.environ.get("HTTP_PROXY") or os.environ.get("https_proxy") or os.environ.get("http_proxy")
+    if proxy:
+        log(f"HTTP(S)_PROXY is set ({proxy.split('@')[-1] if '@' in proxy else proxy})")
+
+
 def load_model(model_size: str):
     from faster_whisper import WhisperModel
 
+    configure_hub()
+
     prefer = (os.environ.get("WHISPER_DEVICE") or "auto").strip().lower()
+    download_root = (os.environ.get("WHISPER_DOWNLOAD_ROOT") or "").strip() or None
     attempts = []
     if prefer == "cpu":
         attempts = [("cpu", "int8")]
@@ -52,8 +71,15 @@ def load_model(model_size: str):
     last_err = None
     for device, compute_type in attempts:
         try:
-            log(f"Loading Whisper model={model_size} device={device} compute={compute_type}")
-            model = WhisperModel(model_size, device=device, compute_type=compute_type)
+            log(
+                f"Loading Whisper model={model_size} device={device} "
+                f"compute={compute_type}"
+                + (f" download_root={download_root}" if download_root else "")
+            )
+            kwargs = {"device": device, "compute_type": compute_type}
+            if download_root:
+                kwargs["download_root"] = download_root
+            model = WhisperModel(model_size, **kwargs)
             log(f"Whisper ready model={model_size} device={device}")
             return model, device
         except Exception as exc:  # noqa: BLE001

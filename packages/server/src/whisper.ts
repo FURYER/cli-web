@@ -176,6 +176,12 @@ export async function ensureWhisperReady(): Promise<WorkerReady> {
     readyInfo = null;
     stdoutBuf = "";
 
+    const hfEndpoint = (
+      process.env.HF_ENDPOINT ||
+      process.env.WHISPER_HF_ENDPOINT ||
+      "https://hf-mirror.com"
+    ).trim();
+
     const proc = spawn(pythonBin(), ["-X", "utf8", SCRIPT], {
       env: {
         ...process.env,
@@ -183,6 +189,7 @@ export async function ensureWhisperReady(): Promise<WorkerReady> {
         PYTHONUTF8: "1",
         PYTHONIOENCODING: "utf-8",
         HF_HUB_DISABLE_SYMLINKS_WARNING: "1",
+        HF_ENDPOINT: hfEndpoint,
         WHISPER_MODEL: modelName(),
         WHISPER_LANGUAGE: process.env.WHISPER_LANGUAGE || "ru",
         WHISPER_DEVICE: process.env.WHISPER_DEVICE || "auto",
@@ -193,8 +200,22 @@ export async function ensureWhisperReady(): Promise<WorkerReady> {
     child = proc;
     attachChild(proc);
 
-    const timeoutMs = Number(process.env.WHISPER_START_TIMEOUT_MS || 180_000);
-    return waitUntilReady(proc, Number.isFinite(timeoutMs) ? timeoutMs : 180_000);
+    // large-v3 via mirror can take many minutes on a slow link
+    const timeoutMs = Number(process.env.WHISPER_START_TIMEOUT_MS || 900_000);
+    try {
+      return await waitUntilReady(proc, Number.isFinite(timeoutMs) ? timeoutMs : 900_000);
+    } catch (err) {
+      if (child === proc) {
+        try {
+          proc.kill();
+        } catch {
+          /* ignore */
+        }
+        child = null;
+        readyInfo = null;
+      }
+      throw err;
+    }
   })().catch((err) => {
     startPromise = null;
     throw err;

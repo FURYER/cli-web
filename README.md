@@ -121,6 +121,9 @@ Serves the built SPA from Fastify on `PORT` (default `8787`).
 | `WHISPER_LANGUAGE` | no | Default `ru`; use `auto` to detect |
 | `WHISPER_PYTHON` | no | Python binary (default `python`) |
 | `WHISPER_DEVICE` | no | `auto` (CUDA then CPU), `cuda`, or `cpu` |
+| `HF_ENDPOINT` | no | Hugging Face hub URL (default `https://hf-mirror.com`) |
+| `WHISPER_START_TIMEOUT_MS` | no | Model load/download wait (default `900000` = 15 min) |
+| `HTTP_PROXY` / `HTTPS_PROXY` | no | Optional proxy for model download |
 
 Voice input records in the browser and transcribes on this PC with **local Whisper** (no Google Web Speech). Install once:
 
@@ -128,7 +131,13 @@ Voice input records in the browser and transcribes on this PC with **local Whisp
 pip install -r packages/server/scripts/requirements-whisper.txt
 ```
 
-Needs `ffmpeg` on PATH for webm/m4a from the phone browser.
+Weights are pulled from Hugging Face on first use (`large-v3` is several GB). If `huggingface.co` is blocked, the default mirror is **hf-mirror.com**. Pre-download (recommended behind slow/blocked links):
+
+```bat
+download-whisper.bat
+```
+
+Or set a proxy in `.env` (`HTTPS_PROXY=…`) / use the official hub (`HF_ENDPOINT=https://huggingface.co`). Needs `ffmpeg` on PATH for webm/m4a from the phone browser.
 
 ## CloudPub (HTTPS tunnel)
 
