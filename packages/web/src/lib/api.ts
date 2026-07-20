@@ -102,6 +102,15 @@ export type BoardColumn = {
   order: number;
 };
 
+export type BoardAttachment = {
+  id: string;
+  name: string;
+  mimeType: string;
+  size: number;
+  path: string;
+  createdAt: number;
+};
+
 export type BoardCard = {
   id: string;
   columnId: string;
@@ -110,6 +119,7 @@ export type BoardCard = {
   order: number;
   createdAt: number;
   updatedAt: number;
+  attachments?: BoardAttachment[];
 };
 
 export type Board = {
@@ -639,6 +649,45 @@ export function deleteBoardCard(
     auth,
     { method: "DELETE" },
   );
+}
+
+export function uploadBoardAttachment(
+  auth: AuthMode,
+  workspace: string,
+  cardId: string,
+  input: { name: string; mimeType: string; data: string },
+): Promise<Board> {
+  return request(
+    `/api/board/cards/${encodeURIComponent(cardId)}/attachments${boardQs(workspace)}`,
+    auth,
+    { method: "POST", body: JSON.stringify(input) },
+  );
+}
+
+export function deleteBoardAttachment(
+  auth: AuthMode,
+  workspace: string,
+  cardId: string,
+  attachmentId: string,
+): Promise<Board> {
+  return request(
+    `/api/board/cards/${encodeURIComponent(cardId)}/attachments/${encodeURIComponent(attachmentId)}${boardQs(workspace)}`,
+    auth,
+    { method: "DELETE" },
+  );
+}
+
+export function boardAttachmentUrl(
+  auth: AuthMode,
+  workspace: string,
+  cardId: string,
+  attachmentId: string,
+  opts?: { download?: boolean },
+): string {
+  const params = new URLSearchParams({ workspace });
+  if (auth.accessToken) params.set("token", auth.accessToken);
+  if (opts?.download) params.set("download", "1");
+  return `/api/board/cards/${encodeURIComponent(cardId)}/attachments/${encodeURIComponent(attachmentId)}?${params}`;
 }
 
 export function saveMcp(

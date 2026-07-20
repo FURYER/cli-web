@@ -30,6 +30,8 @@ import {
 import { listDirectory } from "./fs.js";
 import {
   contentDispositionAttachment,
+  isPathInsideRoot,
+  mediaMimeType,
   openMediaStream,
   resolveSessionMedia,
 } from "./media.js";
@@ -44,7 +46,7 @@ import {
   type McpServersMap,
 } from "./mcp.js";
 import { listModels } from "./models.js";
-import { hasAgentApiKey, isStandMode } from "./paths.js";
+import { boardFilesDir, hasAgentApiKey, isStandMode } from "./paths.js";
 import {
   getVapidPublicKey,
   removePushSubscription,
@@ -58,18 +60,23 @@ import {
 } from "./deploy.js";
 import {
   addCard,
+  addCardAttachment,
   addColumn,
   deleteCard,
   deleteColumn,
+  getCardAttachment,
   loadBoard,
   moveCard,
   patchCard,
   patchColumn,
   putBoard,
+  removeCardAttachment,
   type Board,
 } from "./board.js";
 import { getWhisperStatus, transcribeAudioBuffer } from "./whisper.js";
 import type { FastifyInstance } from "fastify";
+import { createReadStream, existsSync } from "node:fs";
+import { basename } from "node:path";
 
 export async function registerSessionRoutes(app: FastifyInstance): Promise<void> {
   app.addHook("preHandler", async (request, reply) => {
@@ -788,6 +795,74 @@ export async function registerSessionRoutes(app: FastifyInstance): Promise<void>
     if (!workspace) return reply.code(400).send({ error: "workspace is required" });
     try {
       return await deleteCard(workspace, request.params.id);
+    } catch (err) {
+      return boardError(reply, err);
+    }
+  });
+
+  app.post<{
+    Params: { id: string };
+    Querystring: { workspace?: string };
+    Body: { name?: string; mimeType?: string; data?: string };
+  }>("/api/board/cards/:id/attachments", async (request, reply) => {
+    const workspace = request.query.workspace?.trim() || "";
+    if (!workspace) return reply.code(400).send({ error: "workspace is required" });
+    const name = request.body?.name?.trim() || "file";
+    const mimeType = request.body?.mimeType?.trim() || "application/octet-stream";
+    const data = request.body?.data;
+    if (!data || typeof data !== "string") {
+      return reply.code(400).send({ error: "data (base64) is required" });
+    }
+    try {
+      return await addCardAttachment(workspace, request.params.id, {
+        name,
+        mimeType,
+        data,
+      });
+    } catch (err) {
+      return boardError(reply, err);
+    }
+  });
+
+  app.get<{
+    Params: { id: string; attId: string };
+    Querystring: { workspace?: string; download?: string; token?: string };
+  }>("/api/board/cards/:id/attachments/:attId", async (request, reply) => {
+    const workspace = request.query.workspace?.trim() || "";
+    if (!workspace) return reply.code(400).send({ error: "workspace is required" });
+    try {
+      const board = await loadBoard(workspace);
+      const att = getCardAttachment(board, request.params.id, request.params.attId);
+      if (!existsSync(att.path) || !isPathInsideRoot(boardFilesDir(workspace), att.path)) {
+        return reply.code(404).send({ error: "Attachment file missing" });
+      }
+      const download = request.query.download === "1" || request.query.download === "true";
+      const mime = att.mimeType || mediaMimeType(att.path);
+      void reply.header("Content-Type", mime);
+      if (download || !mime.startsWith("image/")) {
+        void reply.header(
+          "Content-Disposition",
+          contentDispositionAttachment(att.name || basename(att.path)),
+        );
+      }
+      return reply.send(createReadStream(att.path));
+    } catch (err) {
+      return boardError(reply, err);
+    }
+  });
+
+  app.delete<{
+    Params: { id: string; attId: string };
+    Querystring: { workspace?: string };
+  }>("/api/board/cards/:id/attachments/:attId", async (request, reply) => {
+    const workspace = request.query.workspace?.trim() || "";
+    if (!workspace) return reply.code(400).send({ error: "workspace is required" });
+    try {
+      return await removeCardAttachment(
+        workspace,
+        request.params.id,
+        request.params.attId,
+      );
     } catch (err) {
       return boardError(reply, err);
     }

@@ -82,6 +82,21 @@ type AskWaitPause = {
 };
 const askWaitPauseBySession = new Map<string, AskWaitPause>();
 
+/** tool-call-started id waiting to be bound to the next promptUserQuestions. */
+const pendingAskToolCallBySession = new Map<string, string>();
+
+export function notePendingAskToolCall(sessionId: string, toolCallId: string): void {
+  const id = toolCallId.trim();
+  if (!sessionId || !id) return;
+  pendingAskToolCallBySession.set(sessionId, id);
+}
+
+export function consumePendingAskToolCall(sessionId: string): string | undefined {
+  const id = pendingAskToolCallBySession.get(sessionId);
+  if (id) pendingAskToolCallBySession.delete(sessionId);
+  return id;
+}
+
 function getAskWaitPause(sessionId: string): AskWaitPause {
   let entry = askWaitPauseBySession.get(sessionId);
   if (!entry) {
@@ -266,8 +281,10 @@ export function promptUserQuestions(
   args: AskQuestionArgs,
   options?: { callId?: string; toolCallId?: string },
 ): Promise<AskQuestionHandlerResult> {
-  const callId = options?.callId?.trim() || randomUUID();
-  const toolCallId = options?.toolCallId?.trim() || callId;
+  const boundToolCallId = consumePendingAskToolCall(sessionId);
+  const toolCallId =
+    options?.toolCallId?.trim() || boundToolCallId || options?.callId?.trim() || randomUUID();
+  const callId = options?.callId?.trim() || toolCallId;
 
   const prompt: AskQuestionPrompt = {
     callId,

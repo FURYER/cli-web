@@ -40,6 +40,7 @@ import {
   askWaitPausedMs,
   endAskSession,
   hasPendingAskQuestions,
+  notePendingAskToolCall,
   type AskQuestionAnswer,
   type AskQuestionHandlerResult,
   type AskQuestionItem,
@@ -474,6 +475,14 @@ export type StreamEvent =
           order: number;
           createdAt: number;
           updatedAt: number;
+          attachments?: {
+            id: string;
+            name: string;
+            mimeType: string;
+            size: number;
+            path: string;
+            createdAt: number;
+          }[];
         }[];
       };
     };
@@ -1361,7 +1370,7 @@ function persistActivity(
     id: string;
     kind: ChatMessage["activityKind"];
     label: string;
-    status: "completed" | "error";
+    status: "running" | "completed" | "error";
     durationMs?: number;
     detail?: string;
     usage?: TokenUsage;
@@ -1473,7 +1482,13 @@ function emitActivity(
 
   // Transient bootstrap indicator — don't keep "Working" in history.
   if (activity.id === "working" || activity.id === "planning") return;
-  if (event.status === "completed" || event.status === "error") {
+  const toolKey = normalizeToolType(event.toolName || event.label || "");
+  const isAskTool =
+    toolKey.includes("askuser") ||
+    toolKey.includes("askquestion") ||
+    toolKey === "ask";
+  // Persist ask tools while running so the answer can be inserted after this row.
+  if (event.status === "completed" || event.status === "error" || (event.status === "running" && isAskTool)) {
     persistActivity(session, {
       id: event.id,
       kind: event.kind,
@@ -2437,6 +2452,12 @@ async function sendMessageNow(
             toolName: described.toolName,
             filePath: described.filePath,
           });
+          if (
+            normalizeToolType(update.toolCall.type).includes("askuser") ||
+            normalizeToolType(described.toolName).includes("askuser")
+          ) {
+            notePendingAskToolCall(sessionId, update.callId);
+          }
           return;
         }
 
@@ -2877,10 +2898,32 @@ export function submitAskQuestionAnswer(
     questionAnswers: result.outcome === "answered" ? result.answers : undefined,
     questionCallId: callId,
   };
-  session.messages.push(message);
-  session.updatedAt = Date.now();
-  session.messageCount = session.messages.length;
-  persistAppendMessage(session, message);
+  const anchorId = prompt.toolCallId || callId;
+  let activityIdx = session.messages.findIndex(
+    (m) => m.role === "activity" && m.activityId === anchorId,
+  );
+  if (activityIdx < 0) {
+    for (let i = session.messages.length - 1; i >= 0; i--) {
+      const m = session.messages[i]!;
+      if (m.role !== "activity") continue;
+      const key = normalizeToolType(m.toolName || m.content || "");
+      if (key.includes("askuser") || key.includes("askquestion")) {
+        activityIdx = i;
+        break;
+      }
+    }
+  }
+  if (activityIdx >= 0) {
+    session.messages.splice(activityIdx + 1, 0, message);
+    session.updatedAt = Date.now();
+    session.messageCount = session.messages.length;
+    persistReplaceMessages(session);
+  } else {
+    session.messages.push(message);
+    session.updatedAt = Date.now();
+    session.messageCount = session.messages.length;
+    persistAppendMessage(session, message);
+  }
   return message;
 }
 

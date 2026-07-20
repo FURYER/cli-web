@@ -1,18 +1,33 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Plus, X } from "lucide-react";
+import { Paperclip, Plus, X } from "lucide-react";
 import type { AuthMode, Board, BoardCard } from "../lib/api";
 import {
   addBoardCard,
   addBoardColumn,
+  boardAttachmentUrl,
+  deleteBoardAttachment,
   deleteBoardCard,
   deleteBoardColumn,
   getBoard,
   moveBoardCard,
   patchBoardCard,
   patchBoardColumn,
+  uploadBoardAttachment,
 } from "../lib/api";
 import { iconProps } from "./icons";
 import { VoiceCaptureButton } from "./VoiceCaptureButton";
+
+async function fileToBase64(file: File): Promise<{ name: string; mimeType: string; data: string }> {
+  const buf = await file.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  let binary = "";
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]!);
+  return {
+    name: file.name,
+    mimeType: file.type || "application/octet-stream",
+    data: btoa(binary),
+  };
+}
 
 type Props = {
   auth: AuthMode;
@@ -256,7 +271,12 @@ export function BoardPanel({
                           : "border-line/60 bg-surface/80 hover:border-line"
                       } ${dragCardId === card.id ? "opacity-50" : ""}`}
                     >
-                      <div className="text-[10px] font-mono text-muted">{card.id}</div>
+                      <div className="flex items-start justify-between gap-1">
+                        <div className="text-[10px] font-mono text-muted">{card.id}</div>
+                        {(card.attachments?.length ?? 0) > 0 ? (
+                          <Paperclip size={11} strokeWidth={1.75} className="mt-0.5 shrink-0 text-muted" />
+                        ) : null}
+                      </div>
                       <div className="break-words text-[13px] leading-snug text-ink">
                         {card.title}
                       </div>
@@ -365,11 +385,12 @@ export function BoardPanel({
                   <X {...iconProps} />
                 </button>
               </div>
-              <input
+              <textarea
                 value={draftTitle}
                 onChange={(e) => setDraftTitle(e.target.value)}
                 onBlur={() => void handleSaveCard({ ...selected, title: draftTitle })}
-                className="mb-2 w-full rounded-md border border-line bg-elevated/50 px-2.5 py-1.5 text-sm text-ink outline-none focus:border-accent/40"
+                rows={3}
+                className="mb-2 w-full resize-y rounded-md border border-line bg-elevated/50 px-2.5 py-1.5 text-sm leading-snug text-ink outline-none focus:border-accent/40 whitespace-pre-wrap break-words"
               />
               <textarea
                 value={selected.body}
@@ -395,6 +416,97 @@ export function BoardPanel({
                 rows={8}
                 className="mb-3 min-h-[8rem] w-full flex-1 resize-none rounded-md border border-line bg-elevated/50 px-2.5 py-2 text-[13px] leading-relaxed text-ink outline-none focus:border-accent/40"
               />
+              <div className="mb-3 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[12px] font-medium text-muted">Attachments</span>
+                  <label className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-line px-2 py-1 text-[11px] text-ink hover:bg-elevated">
+                    <Paperclip size={12} strokeWidth={1.75} />
+                    Add
+                    <input
+                      type="file"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+                        e.target.value = "";
+                        if (!files.length || !selected) return;
+                        void (async () => {
+                          try {
+                            let nextBoard = board;
+                            for (const file of files) {
+                              const payload = await fileToBase64(file);
+                              nextBoard = await uploadBoardAttachment(
+                                auth,
+                                workspace,
+                                selected.id,
+                                payload,
+                              );
+                            }
+                            if (nextBoard) setBoard(nextBoard);
+                          } catch (err) {
+                            onError(err instanceof Error ? err.message : String(err));
+                          }
+                        })();
+                      }}
+                    />
+                  </label>
+                </div>
+                {(selected.attachments || []).length === 0 ? (
+                  <p className="text-[11px] text-muted/80">No files yet.</p>
+                ) : (
+                  <ul className="space-y-1.5">
+                    {(selected.attachments || []).map((att) => {
+                      const href = boardAttachmentUrl(auth, workspace, selected.id, att.id);
+                      const isImage = att.mimeType.startsWith("image/");
+                      return (
+                        <li
+                          key={att.id}
+                          className="flex items-start gap-2 rounded-md border border-line/60 bg-elevated/30 px-2 py-1.5"
+                        >
+                          {isImage ? (
+                            <a href={href} target="_blank" rel="noreferrer" className="shrink-0">
+                              <img
+                                src={href}
+                                alt={att.name}
+                                className="h-12 w-12 rounded object-cover"
+                              />
+                            </a>
+                          ) : (
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded bg-surface text-[10px] text-muted">
+                              FILE
+                            </div>
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <a
+                              href={boardAttachmentUrl(auth, workspace, selected.id, att.id, {
+                                download: true,
+                              })}
+                              className="block truncate text-[12px] text-ink hover:underline"
+                            >
+                              {att.name}
+                            </a>
+                            <div className="text-[10px] text-muted">
+                              {att.size > 0 ? `${Math.max(1, Math.round(att.size / 1024))} KB` : ""}
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            className="rounded p-1 text-muted hover:bg-surface hover:text-ink"
+                            aria-label="Remove attachment"
+                            onClick={() =>
+                              void apply(
+                                deleteBoardAttachment(auth, workspace, selected.id, att.id),
+                              )
+                            }
+                          >
+                            <X size={14} strokeWidth={1.75} />
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
               <div className="flex flex-wrap gap-2 pb-[env(safe-area-inset-bottom)]">
                 {onInsertToChat ? (
                   <button

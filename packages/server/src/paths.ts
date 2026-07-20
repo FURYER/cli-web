@@ -77,6 +77,11 @@ export function boardFilePath(workspace: string): string {
   return join(workspace, WORKSPACE_META_DIR, "board.json");
 }
 
+export function boardFilesDir(workspace: string, cardId?: string): string {
+  const root = join(workspace, WORKSPACE_META_DIR, "board-files");
+  return cardId ? join(root, cardId) : root;
+}
+
 export function legacyBoardFilePath(workspace: string): string {
   return join(workspace, LEGACY_WORKSPACE_META_DIR, "board.json");
 }

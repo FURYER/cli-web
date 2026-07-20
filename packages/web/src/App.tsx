@@ -76,6 +76,36 @@ function isMissingSessionError(err: unknown): boolean {
   return message === "Session not found" || message.includes("HTTP 404");
 }
 
+/** Place an answered ask card after its tool activity row when possible. */
+function insertQuestionAfterActivity(
+  prev: ChatMessage[],
+  message: ChatMessage,
+  callId: string,
+): ChatMessage[] {
+  const pending = prev.find((p) => p.questionCallId === callId);
+  const toolCallId =
+    (pending as { questionToolCallId?: string } | undefined)?.questionToolCallId ||
+    callId;
+  let activityIdx = prev.findIndex(
+    (m) => m.role === "activity" && m.activityId === toolCallId,
+  );
+  if (activityIdx < 0) {
+    for (let i = prev.length - 1; i >= 0; i--) {
+      const m = prev[i]!;
+      if (m.role !== "activity") continue;
+      const key = `${m.toolName || ""} ${m.content || ""}`.toLowerCase().replace(/[_-]/g, "");
+      if (key.includes("askuser") || key.includes("askquestion")) {
+        activityIdx = i;
+        break;
+      }
+    }
+  }
+  if (activityIdx < 0) return [...prev, message];
+  const next = [...prev];
+  next.splice(activityIdx + 1, 0, message);
+  return next;
+}
+
 function flattenProjects(projects: ProjectListItem[]): SessionSummary[] {
   const out: SessionSummary[] = [];
   for (const project of projects) {
@@ -981,9 +1011,15 @@ export default function App() {
                 return [...withoutPlanning, next];
               });
               if (
-                (event.status === "completed" || event.status === "error") &&
                 event.id !== "working" &&
-                event.id !== "planning"
+                event.id !== "planning" &&
+                (event.status === "completed" ||
+                  event.status === "error" ||
+                  (event.status === "running" &&
+                    `${event.toolName || event.label || ""}`
+                      .toLowerCase()
+                      .replace(/[_-]/g, "")
+                      .includes("askuser")))
               ) {
                 setMessages((prev) => {
                   const existingIdx = prev.findIndex(
@@ -1621,7 +1657,7 @@ export default function App() {
         if (prev.some((m) => m.questionCallId === callId || m.id === result.message.id)) {
           return prev;
         }
-        return [...prev, result.message];
+        return insertQuestionAfterActivity(prev, result.message, callId);
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -1655,7 +1691,7 @@ export default function App() {
         if (prev.some((m) => m.questionCallId === callId || m.id === result.message.id)) {
           return prev;
         }
-        return [...prev, result.message];
+        return insertQuestionAfterActivity(prev, result.message, callId);
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));

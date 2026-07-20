@@ -875,7 +875,6 @@ function mergeSteps(persisted: StepItem[], live: StepItem[]): StepItem[] {
 function buildTimeline(
   messages: ChatMessage[],
   liveSteps: StepItem[],
-  busy: boolean,
 ): TimelineBlock[] {
   const visible = filterVisibleMessages(messages);
   const blocks: TimelineBlock[] = [];
@@ -920,7 +919,7 @@ function buildTimeline(
     const steps = mergeSteps(pendingSteps, liveSteps);
     if (steps.length > 0) {
       const keySeed = steps[0]?.id ?? String(workIndex);
-      const isLive = liveSteps.length > 0 || busy;
+      const isLive = steps.some((s) => s.status === "running");
       blocks.push({
         type: "work",
         key: `work-${keySeed}-${workIndex++}`,
@@ -1207,7 +1206,6 @@ function StepRow({
 function ExploredGroup({
   steps,
   now,
-  live = false,
 }: {
   steps: StepItem[];
   now?: number;
@@ -1219,7 +1217,7 @@ function ExploredGroup({
   const wasRunningRef = useRef(running);
   const label = `Explored ${n} file${n === 1 ? "" : "s"}`;
   const clock = now ?? Date.now();
-  const duration = workDurationMs(steps, clock, live || running);
+  const duration = workDurationMs(steps, clock, running);
 
   useLayoutEffect(() => {
     if (running) {
@@ -1663,7 +1661,7 @@ export function Chat({
       : undefined;
 
   const timeline = useMemo(
-    () => buildTimeline(messages, timelineLive.map(liveToStep), Boolean(busy)),
+    () => buildTimeline(messages, timelineLive.map(liveToStep)),
     // timelineLive contents drive live steps; identity changes every activity tick by design
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [messages, activities, busy, timelineLive, streamingText],

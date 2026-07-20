@@ -1,16 +1,28 @@
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
-import { dirname } from "node:path";
+import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { basename, dirname, join } from "node:path";
 import { randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
 import {
   boardFilePath,
+  boardFilesDir,
   legacyBoardFilePath,
 } from "./paths.js";
+import { isPathInsideRoot, MAX_MEDIA_BYTES } from "./media.js";
 
 export type BoardColumn = {
   id: string;
   title: string;
   order: number;
+};
+
+export type BoardAttachment = {
+  id: string;
+  name: string;
+  mimeType: string;
+  size: number;
+  /** Absolute path under workspace .webcli/board-files/… */
+  path: string;
+  createdAt: number;
 };
 
 export type BoardCard = {
@@ -21,6 +33,7 @@ export type BoardCard = {
   order: number;
   createdAt: number;
   updatedAt: number;
+  attachments?: BoardAttachment[];
 };
 
 export type Board = {
@@ -102,6 +115,7 @@ function normalizeBoard(raw: unknown): Board {
             typeof c.updatedAt === "number" && Number.isFinite(c.updatedAt)
               ? c.updatedAt
               : Date.now(),
+          attachments: normalizeAttachments(c.attachments),
         }))
     : [];
 
@@ -114,6 +128,34 @@ function normalizeBoard(raw: unknown): Board {
         }));
 
   return { version: 1, nextId, columns, cards };
+}
+
+function normalizeAttachments(raw: unknown): BoardAttachment[] | undefined {
+  if (!Array.isArray(raw) || raw.length === 0) return undefined;
+  const out: BoardAttachment[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue;
+    const a = item as Record<string, unknown>;
+    if (typeof a.id !== "string" || !a.id) continue;
+    if (typeof a.path !== "string" || !a.path) continue;
+    out.push({
+      id: a.id,
+      name: typeof a.name === "string" && a.name ? a.name : basename(a.path),
+      mimeType: typeof a.mimeType === "string" && a.mimeType ? a.mimeType : "application/octet-stream",
+      size: typeof a.size === "number" && Number.isFinite(a.size) ? a.size : 0,
+      path: a.path,
+      createdAt:
+        typeof a.createdAt === "number" && Number.isFinite(a.createdAt)
+          ? a.createdAt
+          : Date.now(),
+    });
+  }
+  return out.length ? out : undefined;
+}
+
+function sanitizeBoardFileName(name: string): string {
+  const base = basename(name.trim() || "file");
+  return base.replace(/[^\w.\-()+@]/g, "_") || "file";
 }
 
 async function atomicWrite(file: string, data: string): Promise<void> {
@@ -270,7 +312,80 @@ export async function deleteCard(
   const before = board.cards.length;
   board.cards = board.cards.filter((c) => c.id !== cardId);
   if (board.cards.length === before) throw new Error("Card not found");
+  const filesDir = boardFilesDir(workspace, cardId);
+  if (existsSync(filesDir)) {
+    await rm(filesDir, { recursive: true, force: true }).catch(() => undefined);
+  }
   return saveBoard(workspace, board);
+}
+
+export async function addCardAttachment(
+  workspace: string,
+  cardId: string,
+  input: { name: string; mimeType: string; data: string },
+): Promise<Board> {
+  const board = await loadBoard(workspace);
+  const card = board.cards.find((c) => c.id === cardId);
+  if (!card) throw new Error("Card not found");
+
+  const buf = Buffer.from(input.data, "base64");
+  if (!buf.length) throw new Error("Empty attachment");
+  if (buf.length > MAX_MEDIA_BYTES) {
+    throw new Error(`File too large (max ${MAX_MEDIA_BYTES} bytes)`);
+  }
+
+  const attId = `att_${randomUUID().slice(0, 10)}`;
+  const safeName = sanitizeBoardFileName(input.name);
+  const dir = boardFilesDir(workspace, cardId);
+  await mkdir(dir, { recursive: true });
+  const abs = join(dir, `${attId}-${safeName}`);
+  if (!isPathInsideRoot(boardFilesDir(workspace), abs)) {
+    throw new Error("Invalid attachment path");
+  }
+  await writeFile(abs, buf);
+
+  const attachment: BoardAttachment = {
+    id: attId,
+    name: input.name.trim() || safeName,
+    mimeType: input.mimeType.trim() || "application/octet-stream",
+    size: buf.length,
+    path: abs,
+    createdAt: Date.now(),
+  };
+  card.attachments = [...(card.attachments || []), attachment];
+  card.updatedAt = Date.now();
+  return saveBoard(workspace, board);
+}
+
+export async function removeCardAttachment(
+  workspace: string,
+  cardId: string,
+  attachmentId: string,
+): Promise<Board> {
+  const board = await loadBoard(workspace);
+  const card = board.cards.find((c) => c.id === cardId);
+  if (!card) throw new Error("Card not found");
+  const att = card.attachments?.find((a) => a.id === attachmentId);
+  if (!att) throw new Error("Attachment not found");
+  card.attachments = (card.attachments || []).filter((a) => a.id !== attachmentId);
+  if (!card.attachments.length) delete card.attachments;
+  card.updatedAt = Date.now();
+  if (existsSync(att.path) && isPathInsideRoot(boardFilesDir(workspace), att.path)) {
+    await rm(att.path, { force: true }).catch(() => undefined);
+  }
+  return saveBoard(workspace, board);
+}
+
+export function getCardAttachment(
+  board: Board,
+  cardId: string,
+  attachmentId: string,
+): BoardAttachment {
+  const card = board.cards.find((c) => c.id === cardId);
+  if (!card) throw new Error("Card not found");
+  const att = card.attachments?.find((a) => a.id === attachmentId);
+  if (!att) throw new Error("Attachment not found");
+  return att;
 }
 
 export async function moveCard(

@@ -9,6 +9,15 @@ export type BoardColumn = {
   order: number;
 };
 
+export type BoardAttachment = {
+  id: string;
+  name: string;
+  mimeType: string;
+  size: number;
+  path: string;
+  createdAt: number;
+};
+
 export type BoardCard = {
   id: string;
   columnId: string;
@@ -17,6 +26,7 @@ export type BoardCard = {
   order: number;
   createdAt: number;
   updatedAt: number;
+  attachments?: BoardAttachment[];
 };
 
 export type Board = {
@@ -94,6 +104,9 @@ function normalizeBoard(raw: unknown): Board {
             typeof c.updatedAt === "number" && Number.isFinite(c.updatedAt)
               ? c.updatedAt
               : Date.now(),
+          attachments: Array.isArray(c.attachments)
+            ? (c.attachments as BoardCard["attachments"])
+            : undefined,
         }))
     : [];
 
