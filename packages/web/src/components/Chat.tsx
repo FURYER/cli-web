@@ -85,6 +85,13 @@ type StepItem = {
   linesCreated?: number;
 };
 
+type WorkQuestionInsert = {
+  afterStepId: string;
+  key: string;
+  message?: ChatMessage;
+  pending?: PendingAskQuestion;
+};
+
 type TimelineBlock =
   | { type: "user"; key: string; message: ChatMessage }
   | { type: "assistant"; key: string; message: ChatMessage }
@@ -100,6 +107,8 @@ type TimelineBlock =
       steps: StepItem[];
       live: boolean;
       defaultOpen: boolean;
+      /** Ask cards rendered after the matching tool step inside this Working block. */
+      questions?: WorkQuestionInsert[];
     };
 
 const NEAR_BOTTOM_PX = 80;
@@ -884,152 +893,132 @@ function isAskToolStep(step: StepItem): boolean {
   return key.includes("askuser") || key.includes("askquestion");
 }
 
-function findAskSplitIndex(steps: StepItem[], anchorId?: string | null): number {
-  if (anchorId) {
-    const byId = steps.findIndex((s) => s.id === anchorId);
-    if (byId >= 0) return byId;
+function matchQuestionToSteps(
+  steps: StepItem[],
+  callId: string,
+  toolCallId?: string,
+): string | null {
+  const anchors = [toolCallId, callId].filter((id): id is string => Boolean(id));
+  for (const anchor of anchors) {
+    if (steps.some((s) => s.id === anchor)) return anchor;
   }
   for (let i = steps.length - 1; i >= 0; i--) {
-    if (isAskToolStep(steps[i]!)) return i;
+    if (isAskToolStep(steps[i]!)) return steps[i]!.id;
   }
-  return -1;
+  return null;
 }
 
 function buildTimeline(
   messages: ChatMessage[],
   liveSteps: StepItem[],
   pendingQuestions: PendingAskQuestion[] = [],
+  busy = false,
 ): TimelineBlock[] {
   const visible = filterVisibleMessages(messages);
   const blocks: TimelineBlock[] = [];
   let pendingSteps: StepItem[] = [];
+  let orphanQuestions: Array<{
+    key: string;
+    callId: string;
+    toolCallId?: string;
+    message?: ChatMessage;
+    pending?: PendingAskQuestion;
+  }> = [];
   let workIndex = 0;
-  const consumedLiveIds = new Set<string>();
   const placedPending = new Set<string>();
 
-  const availableLive = () =>
-    liveSteps.filter((s) => !consumedLiveIds.has(s.id));
-
-  const markConsumed = (steps: StepItem[]) => {
-    for (const s of steps) consumedLiveIds.add(s.id);
-  };
-
-  const pushWork = (steps: StepItem[]) => {
+  const flushWork = (opts: { live: boolean }) => {
+    const steps = opts.live
+      ? mergeSteps(pendingSteps, liveSteps)
+      : pendingSteps;
+    pendingSteps = [];
+    if (steps.length === 0 && !opts.live) return;
     if (steps.length === 0) return;
-    const isLive = steps.some((s) => s.status === "running");
-    const keySeed = steps.map((s) => s.id).join("-").slice(0, 48) || String(workIndex);
+
+    const questions: WorkQuestionInsert[] = [];
+    const stillOrphan: typeof orphanQuestions = [];
+    for (const q of orphanQuestions) {
+      const afterStepId = matchQuestionToSteps(steps, q.callId, q.toolCallId);
+      if (afterStepId) {
+        questions.push({
+          afterStepId,
+          key: q.key,
+          message: q.message,
+          pending: q.pending,
+        });
+        if (q.pending) placedPending.add(q.pending.callId);
+      } else {
+        stillOrphan.push(q);
+      }
+    }
+    orphanQuestions = stillOrphan;
+
+    for (const pq of pendingQuestions) {
+      if (placedPending.has(pq.callId)) continue;
+      const afterStepId = matchQuestionToSteps(steps, pq.callId, pq.toolCallId);
+      if (!afterStepId) continue;
+      placedPending.add(pq.callId);
+      questions.push({
+        afterStepId,
+        key: `pending-${pq.callId}`,
+        pending: pq,
+      });
+    }
+
+    const isLive = opts.live || steps.some((s) => s.status === "running");
+    const keySeed = steps[0]?.id ?? String(workIndex);
     blocks.push({
       type: "work",
-      key: `work-${workIndex++}-${keySeed}`,
+      key: `work-${keySeed}-${workIndex++}`,
       steps,
       live: isLive,
       defaultOpen: isLive,
-    });
-    markConsumed(steps);
-  };
-
-  const flushMerged = () => {
-    const steps = mergeSteps(pendingSteps, availableLive());
-    pendingSteps = [];
-    pushWork(steps);
-  };
-
-  /** Close a work segment through the ask tool, then emit the question card. */
-  const splitAtAskAndEmitQuestion = (input: {
-    anchorId?: string | null;
-    message?: ChatMessage;
-    pending?: PendingAskQuestion;
-    key: string;
-  }) => {
-    const merged = mergeSteps(pendingSteps, availableLive());
-    pendingSteps = [];
-    const splitAt = findAskSplitIndex(merged, input.anchorId);
-    if (splitAt >= 0) {
-      pushWork(merged.slice(0, splitAt + 1));
-      blocks.push({
-        type: "question",
-        key: input.key,
-        message: input.message,
-        pending: input.pending,
-      });
-      pendingSteps = merged.slice(splitAt + 1);
-      return;
-    }
-    if (merged.length > 0) pushWork(merged);
-    blocks.push({
-      type: "question",
-      key: input.key,
-      message: input.message,
-      pending: input.pending,
+      questions: questions.length ? questions : undefined,
     });
   };
 
   for (const message of visible) {
     if (message.role === "user") {
-      flushMerged();
+      flushWork({ live: false });
       blocks.push({ type: "user", key: message.id, message });
       continue;
     }
     if (message.role === "question") {
       const callId = message.questionCallId ?? message.id;
       placedPending.add(callId);
-      splitAtAskAndEmitQuestion({
-        anchorId: callId,
-        message,
+      const pendingMatch = pendingQuestions.find((p) => p.callId === callId);
+      orphanQuestions.push({
         key: message.id,
+        callId,
+        toolCallId: pendingMatch?.toolCallId ?? callId,
+        message,
       });
       continue;
     }
     if (isActivityMessage(message)) {
-      const step = messageToStep(message);
-      pendingSteps.push(step);
-      if (isAskToolStep(step)) {
-        const matchPending = pendingQuestions.find(
-          (q) =>
-            !placedPending.has(q.callId) &&
-            (q.toolCallId === step.id || q.callId === step.id),
-        );
-        if (matchPending) {
-          placedPending.add(matchPending.callId);
-          splitAtAskAndEmitQuestion({
-            anchorId: step.id,
-            pending: matchPending,
-            key: `pending-${matchPending.callId}`,
-          });
-        }
-      }
+      pendingSteps.push(messageToStep(message));
       continue;
     }
-    flushMerged();
+    flushWork({ live: false });
     blocks.push({ type: "assistant", key: message.id, message });
   }
 
-  // Pending asks whose tool row is only live (not yet in messages).
-  for (const q of pendingQuestions) {
-    if (placedPending.has(q.callId)) continue;
-    const liveAsk = availableLive().find(
-      (s) => s.id === q.toolCallId || s.id === q.callId || isAskToolStep(s),
-    );
-    if (liveAsk) {
-      placedPending.add(q.callId);
-      splitAtAskAndEmitQuestion({
-        anchorId: liveAsk.id,
-        pending: q,
-        key: `pending-${q.callId}`,
-      });
-    }
-  }
+  flushWork({ live: liveSteps.length > 0 || busy });
 
-  const trailing = mergeSteps(pendingSteps, availableLive());
-  if (trailing.length > 0) pushWork(trailing);
-
-  // Any leftover pending cards (no matching tool yet) stay after the timeline.
-  for (const q of pendingQuestions) {
-    if (placedPending.has(q.callId)) continue;
+  for (const q of orphanQuestions) {
     blocks.push({
       type: "question",
-      key: `pending-${q.callId}`,
-      pending: q,
+      key: q.key,
+      message: q.message,
+      pending: q.pending,
+    });
+  }
+  for (const pq of pendingQuestions) {
+    if (placedPending.has(pq.callId)) continue;
+    blocks.push({
+      type: "question",
+      key: `pending-${pq.callId}`,
+      pending: pq,
     });
   }
 
@@ -1407,25 +1396,29 @@ function WorkBlock({
   live,
   defaultOpen,
   clockPaused = false,
+  questions = [],
+  askSubmittingId,
+  onAnswerQuestion,
+  onSkipQuestion,
 }: {
   steps: StepItem[];
   live: boolean;
   defaultOpen: boolean;
-  /** Freeze wall-clock while user answers ask_user / AskQuestion. */
   clockPaused?: boolean;
+  questions?: WorkQuestionInsert[];
+  askSubmittingId?: string | null;
+  onAnswerQuestion?: (callId: string, answers: AskQuestionAnswer[]) => void;
+  onSkipQuestion?: (callId: string) => void;
 }) {
-  const [open, setOpen] = useState(defaultOpen);
+  const [open, setOpen] = useState(Boolean(defaultOpen || live));
   const [now, setNow] = useState(Date.now());
   const prevLiveRef = useRef(live);
-  /** Fallback when steps lack startedAt (brand-new live segment). */
-  const [fallbackStart, setFallbackStart] = useState<number | null>(null);
+  const [blockStart, setBlockStart] = useState<number | null>(null);
   const [blockEnd, setBlockEnd] = useState<number | null>(null);
   const [pausedAccumMs, setPausedAccumMs] = useState(0);
   const clockPauseStartedRef = useRef<number | null>(null);
-  const segmentRef = useRef<string>("");
 
   const usageSteps = steps.filter(isUsageStep);
-  // Bootstrap planning placeholder / noisy step counters stay out of the nested list.
   const bodySteps = steps.filter(
     (s) =>
       !isUsageStep(s) &&
@@ -1440,30 +1433,17 @@ function WorkBlock({
     (live && bodySteps.length === 0);
   const durationSteps = bodySteps.length > 0 ? bodySteps : steps;
 
-  // Anchor this Working segment to its first step so appending steps does not reset the clock.
-  const segmentId = durationSteps[0]?.id ?? `empty-${live ? "live" : "done"}`;
-
-  const rawStart = (() => {
+  useLayoutEffect(() => {
     const startedAts = durationSteps
       .map((s) => s.startedAt)
       .filter((t): t is number => typeof t === "number" && t > 0);
-    return startedAts.length > 0 ? Math.min(...startedAts) : null;
-  })();
-
-  useLayoutEffect(() => {
-    if (segmentRef.current === segmentId) return;
-    segmentRef.current = segmentId;
-    clockPauseStartedRef.current = null;
-    setPausedAccumMs(0);
-    setBlockEnd(null);
-    setFallbackStart(live ? Date.now() : null);
-  }, [segmentId, live]);
-
-  useLayoutEffect(() => {
-    if (rawStart != null) return;
-    if (!live) return;
-    setFallbackStart((prev) => prev ?? Date.now());
-  }, [rawStart, live]);
+    const earliest = startedAts.length > 0 ? Math.min(...startedAts) : null;
+    setBlockStart((prev) => {
+      if (earliest != null) return prev ?? earliest;
+      if (prev == null && live) return Date.now();
+      return prev;
+    });
+  }, [durationSteps, live]);
 
   useLayoutEffect(() => {
     if (live) {
@@ -1500,7 +1480,6 @@ function WorkBlock({
   }, [clockPaused]);
 
   useLayoutEffect(() => {
-    // Tick while live, but freeze during ask wait.
     if (!live || clockPaused) return;
     setNow(Date.now());
     const timer = window.setInterval(() => setNow(Date.now()), 250);
@@ -1508,15 +1487,11 @@ function WorkBlock({
   }, [live, clockPaused]);
 
   useLayoutEffect(() => {
-    if (!prevLiveRef.current && live) {
-      setOpen(true);
-    } else if (prevLiveRef.current && !live) {
-      setOpen(false);
-    }
+    if (live) setOpen(true);
+    else if (prevLiveRef.current && !live) setOpen(false);
     prevLiveRef.current = live;
   }, [live]);
 
-  const blockStart = rawStart ?? fallbackStart;
   const openPauseMs =
     clockPaused && clockPauseStartedRef.current != null
       ? Math.max(0, now - clockPauseStartedRef.current)
@@ -1553,6 +1528,42 @@ function WorkBlock({
   const summary = !open ? workSummary(bodySteps) : null;
   const soleDetail = soleThought?.detail?.trim();
   const showSoleDetail = Boolean(open && soleThought && soleDetail);
+  const questionsByStep = new Map<string, WorkQuestionInsert[]>();
+  for (const q of questions) {
+    const list = questionsByStep.get(q.afterStepId) ?? [];
+    list.push(q);
+    questionsByStep.set(q.afterStepId, list);
+  }
+
+  function renderQuestionInsert(q: WorkQuestionInsert) {
+    if (q.pending) {
+      return (
+        <div key={q.key} className="py-1">
+          <AskQuestionCard
+            callId={q.pending.callId}
+            title={q.pending.title}
+            questions={q.pending.questions}
+            status="pending"
+            submitting={askSubmittingId === q.pending.callId}
+            onSubmit={(answers) => onAnswerQuestion?.(q.pending!.callId, answers)}
+            onSkip={() => onSkipQuestion?.(q.pending!.callId)}
+          />
+        </div>
+      );
+    }
+    if (!q.message) return null;
+    return (
+      <div key={q.key} className="py-1">
+        <AskQuestionCard
+          callId={q.message.questionCallId ?? q.message.id}
+          title={q.message.questionTitle}
+          questions={q.message.questionItems ?? []}
+          status={q.message.questionStatus ?? "answered"}
+          answers={q.message.questionAnswers}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
@@ -1580,24 +1591,33 @@ function WorkBlock({
       ) : null}
       {open && !soleThought ? (
         <div className="ml-1 mt-1.5 space-y-1 border-l border-line/60 pl-3">
-          {clustered.map((view) =>
-            view.type === "explored" ? (
-              <ExploredGroup key={view.id} steps={view.steps} now={now} live={live} />
-            ) : (
-              <StepRow
-                key={view.step.id}
-                label={view.step.label}
-                status={view.step.status}
-                durationMs={view.step.durationMs}
-                startedAt={view.step.startedAt}
-                detail={view.step.detail}
-                now={now}
-                linesAdded={view.step.linesAdded}
-                linesRemoved={view.step.linesRemoved}
-                linesCreated={view.step.linesCreated}
-              />
-            ),
-          )}
+          {clustered.map((view) => {
+            const stepIds =
+              view.type === "explored"
+                ? view.steps.map((s) => s.id)
+                : [view.step.id];
+            const inserts = stepIds.flatMap((id) => questionsByStep.get(id) ?? []);
+            return (
+              <div key={view.type === "explored" ? view.id : view.step.id}>
+                {view.type === "explored" ? (
+                  <ExploredGroup steps={view.steps} now={now} live={live} />
+                ) : (
+                  <StepRow
+                    label={view.step.label}
+                    status={view.step.status}
+                    durationMs={view.step.durationMs}
+                    startedAt={view.step.startedAt}
+                    detail={view.step.detail}
+                    now={now}
+                    linesAdded={view.step.linesAdded}
+                    linesRemoved={view.step.linesRemoved}
+                    linesCreated={view.step.linesCreated}
+                  />
+                )}
+                {inserts.map(renderQuestionInsert)}
+              </div>
+            );
+          })}
           {usageSteps.map((step) => (
             <p key={step.id} className="text-[11px] text-muted/80">
               {step.label}
@@ -1614,6 +1634,9 @@ function WorkBlock({
           ))}
         </div>
       ) : null}
+      {!open
+        ? questions.filter((q) => q.pending).map(renderQuestionInsert)
+        : null}
     </div>
   );
 }
@@ -1786,7 +1809,13 @@ export function Chat({
       : undefined;
 
   const timeline = useMemo(
-    () => buildTimeline(messages, timelineLive.map(liveToStep), pendingQuestions),
+    () =>
+      buildTimeline(
+        messages,
+        timelineLive.map(liveToStep),
+        pendingQuestions,
+        Boolean(busy),
+      ),
     // timelineLive contents drive live steps; identity changes every activity tick by design
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [messages, activities, busy, timelineLive, streamingText, pendingQuestions],
@@ -1991,6 +2020,10 @@ export function Chat({
                   live={block.live}
                   defaultOpen={block.defaultOpen}
                   clockPaused={askWaiting && block.live}
+                  questions={block.questions}
+                  askSubmittingId={askSubmittingId}
+                  onAnswerQuestion={onAnswerQuestion}
+                  onSkipQuestion={onSkipQuestion}
                 />
               );
             }
