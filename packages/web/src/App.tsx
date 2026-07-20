@@ -81,14 +81,18 @@ function insertQuestionAfterActivity(
   prev: ChatMessage[],
   message: ChatMessage,
   callId: string,
+  toolCallId?: string,
 ): ChatMessage[] {
-  const pending = prev.find((p) => p.questionCallId === callId);
-  const toolCallId =
-    (pending as { questionToolCallId?: string } | undefined)?.questionToolCallId ||
-    callId;
-  let activityIdx = prev.findIndex(
-    (m) => m.role === "activity" && m.activityId === toolCallId,
+  const anchorIds = [toolCallId, callId, message.questionCallId].filter(
+    (id): id is string => Boolean(id),
   );
+  let activityIdx = -1;
+  for (const anchor of anchorIds) {
+    activityIdx = prev.findIndex(
+      (m) => m.role === "activity" && m.activityId === anchor,
+    );
+    if (activityIdx >= 0) break;
+  }
   if (activityIdx < 0) {
     for (let i = prev.length - 1; i >= 0; i--) {
       const m = prev[i]!;
@@ -1113,8 +1117,8 @@ export default function App() {
                   const questionStatus = event.status;
                   setMessages((prev) => {
                     if (prev.some((m) => m.questionCallId === event.callId)) return prev;
-                    return [
-                      ...prev,
+                    return insertQuestionAfterActivity(
+                      prev,
                       {
                         id: `question-${event.callId}`,
                         role: "question",
@@ -1129,7 +1133,9 @@ export default function App() {
                         questionAnswers: event.answers,
                         questionCallId: event.callId,
                       },
-                    ];
+                      event.callId,
+                      event.toolCallId,
+                    );
                   });
                 }
               }
@@ -1634,6 +1640,8 @@ export default function App() {
 
   async function handleAnswerQuestion(callId: string, answers: AskQuestionAnswer[]) {
     if (!activeId) return;
+    const toolCallId =
+      pendingQuestions.find((q) => q.callId === callId)?.toolCallId || callId;
     setAskSubmittingId(callId);
     setError(null);
     try {
@@ -1657,7 +1665,7 @@ export default function App() {
         if (prev.some((m) => m.questionCallId === callId || m.id === result.message.id)) {
           return prev;
         }
-        return insertQuestionAfterActivity(prev, result.message, callId);
+        return insertQuestionAfterActivity(prev, result.message, callId, toolCallId);
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -1668,6 +1676,8 @@ export default function App() {
 
   async function handleSkipQuestion(callId: string) {
     if (!activeId) return;
+    const toolCallId =
+      pendingQuestions.find((q) => q.callId === callId)?.toolCallId || callId;
     setAskSubmittingId(callId);
     setError(null);
     try {
@@ -1691,7 +1701,7 @@ export default function App() {
         if (prev.some((m) => m.questionCallId === callId || m.id === result.message.id)) {
           return prev;
         }
-        return insertQuestionAfterActivity(prev, result.message, callId);
+        return insertQuestionAfterActivity(prev, result.message, callId, toolCallId);
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));

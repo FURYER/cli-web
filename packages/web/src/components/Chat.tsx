@@ -88,7 +88,12 @@ type StepItem = {
 type TimelineBlock =
   | { type: "user"; key: string; message: ChatMessage }
   | { type: "assistant"; key: string; message: ChatMessage }
-  | { type: "question"; key: string; message: ChatMessage }
+  | {
+      type: "question";
+      key: string;
+      message?: ChatMessage;
+      pending?: PendingAskQuestion;
+    }
   | {
       type: "work";
       key: string;
@@ -872,64 +877,161 @@ function mergeSteps(persisted: StepItem[], live: StepItem[]): StepItem[] {
   return order.map((id) => byId.get(id)!);
 }
 
+function isAskToolStep(step: StepItem): boolean {
+  const key = `${step.toolName || ""} ${step.label || ""}`
+    .toLowerCase()
+    .replace(/[_-]/g, "");
+  return key.includes("askuser") || key.includes("askquestion");
+}
+
+function findAskSplitIndex(steps: StepItem[], anchorId?: string | null): number {
+  if (anchorId) {
+    const byId = steps.findIndex((s) => s.id === anchorId);
+    if (byId >= 0) return byId;
+  }
+  for (let i = steps.length - 1; i >= 0; i--) {
+    if (isAskToolStep(steps[i]!)) return i;
+  }
+  return -1;
+}
+
 function buildTimeline(
   messages: ChatMessage[],
   liveSteps: StepItem[],
+  pendingQuestions: PendingAskQuestion[] = [],
 ): TimelineBlock[] {
   const visible = filterVisibleMessages(messages);
   const blocks: TimelineBlock[] = [];
   let pendingSteps: StepItem[] = [];
   let workIndex = 0;
+  const consumedLiveIds = new Set<string>();
+  const placedPending = new Set<string>();
 
-  const flushWork = (opts: { live: boolean; defaultOpen: boolean }) => {
-    if (pendingSteps.length === 0 && !opts.live) return;
-    const steps = opts.live ? mergeSteps(pendingSteps, liveSteps) : pendingSteps;
+  const availableLive = () =>
+    liveSteps.filter((s) => !consumedLiveIds.has(s.id));
+
+  const markConsumed = (steps: StepItem[]) => {
+    for (const s of steps) consumedLiveIds.add(s.id);
+  };
+
+  const pushWork = (steps: StepItem[]) => {
     if (steps.length === 0) return;
+    const isLive = steps.some((s) => s.status === "running");
     const keySeed = steps[0]?.id ?? String(workIndex);
     blocks.push({
       type: "work",
       key: `work-${keySeed}-${workIndex++}`,
       steps,
-      live: opts.live,
-      defaultOpen: opts.defaultOpen,
+      live: isLive,
+      defaultOpen: isLive,
     });
+    markConsumed(steps);
+  };
+
+  const flushMerged = () => {
+    const steps = mergeSteps(pendingSteps, availableLive());
     pendingSteps = [];
+    pushWork(steps);
+  };
+
+  /** Close a work segment through the ask tool, then emit the question card. */
+  const splitAtAskAndEmitQuestion = (input: {
+    anchorId?: string | null;
+    message?: ChatMessage;
+    pending?: PendingAskQuestion;
+    key: string;
+  }) => {
+    const merged = mergeSteps(pendingSteps, availableLive());
+    pendingSteps = [];
+    const splitAt = findAskSplitIndex(merged, input.anchorId);
+    if (splitAt >= 0) {
+      pushWork(merged.slice(0, splitAt + 1));
+      blocks.push({
+        type: "question",
+        key: input.key,
+        message: input.message,
+        pending: input.pending,
+      });
+      pendingSteps = merged.slice(splitAt + 1);
+      return;
+    }
+    if (merged.length > 0) pushWork(merged);
+    blocks.push({
+      type: "question",
+      key: input.key,
+      message: input.message,
+      pending: input.pending,
+    });
   };
 
   for (const message of visible) {
     if (message.role === "user") {
-      flushWork({ live: false, defaultOpen: false });
+      flushMerged();
       blocks.push({ type: "user", key: message.id, message });
       continue;
     }
     if (message.role === "question") {
-      flushWork({ live: false, defaultOpen: false });
-      blocks.push({ type: "question", key: message.id, message });
+      const callId = message.questionCallId ?? message.id;
+      placedPending.add(callId);
+      splitAtAskAndEmitQuestion({
+        anchorId: callId,
+        message,
+        key: message.id,
+      });
       continue;
     }
     if (isActivityMessage(message)) {
-      pendingSteps.push(messageToStep(message));
+      const step = messageToStep(message);
+      pendingSteps.push(step);
+      if (isAskToolStep(step)) {
+        const matchPending = pendingQuestions.find(
+          (q) =>
+            !placedPending.has(q.callId) &&
+            (q.toolCallId === step.id || q.callId === step.id),
+        );
+        if (matchPending) {
+          placedPending.add(matchPending.callId);
+          splitAtAskAndEmitQuestion({
+            anchorId: step.id,
+            pending: matchPending,
+            key: `pending-${matchPending.callId}`,
+          });
+        }
+      }
       continue;
     }
-    flushWork({ live: false, defaultOpen: false });
+    flushMerged();
     blocks.push({ type: "assistant", key: message.id, message });
   }
 
-  if (liveSteps.length > 0 || pendingSteps.length > 0) {
-    const steps = mergeSteps(pendingSteps, liveSteps);
-    if (steps.length > 0) {
-      const keySeed = steps[0]?.id ?? String(workIndex);
-      const isLive = steps.some((s) => s.status === "running");
-      blocks.push({
-        type: "work",
-        key: `work-${keySeed}-${workIndex++}`,
-        steps,
-        live: isLive,
-        defaultOpen: isLive,
+  // Pending asks whose tool row is only live (not yet in messages).
+  for (const q of pendingQuestions) {
+    if (placedPending.has(q.callId)) continue;
+    const liveAsk = availableLive().find(
+      (s) => s.id === q.toolCallId || s.id === q.callId || isAskToolStep(s),
+    );
+    if (liveAsk) {
+      placedPending.add(q.callId);
+      splitAtAskAndEmitQuestion({
+        anchorId: liveAsk.id,
+        pending: q,
+        key: `pending-${q.callId}`,
       });
     }
   }
-  // Empty busy gap is rendered as "Planning next moves" in Chat, not as Thinking.
+
+  const trailing = mergeSteps(pendingSteps, availableLive());
+  if (trailing.length > 0) pushWork(trailing);
+
+  // Any leftover pending cards (no matching tool yet) stay after the timeline.
+  for (const q of pendingQuestions) {
+    if (placedPending.has(q.callId)) continue;
+    blocks.push({
+      type: "question",
+      key: `pending-${q.callId}`,
+      pending: q,
+    });
+  }
 
   return blocks;
 }
@@ -1661,10 +1763,10 @@ export function Chat({
       : undefined;
 
   const timeline = useMemo(
-    () => buildTimeline(messages, timelineLive.map(liveToStep)),
+    () => buildTimeline(messages, timelineLive.map(liveToStep), pendingQuestions),
     // timelineLive contents drive live steps; identity changes every activity tick by design
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [messages, activities, busy, timelineLive, streamingText],
+    [messages, activities, busy, timelineLive, streamingText, pendingQuestions],
   );
 
   const hasRunningLive = timelineLive.some((item) => item.status === "running");
@@ -1870,7 +1972,23 @@ export function Chat({
               );
             }
             if (block.type === "question") {
+              if (block.pending) {
+                const question = block.pending;
+                return (
+                  <AskQuestionCard
+                    key={block.key}
+                    callId={question.callId}
+                    title={question.title}
+                    questions={question.questions}
+                    status="pending"
+                    submitting={askSubmittingId === question.callId}
+                    onSubmit={(answers) => onAnswerQuestion?.(question.callId, answers)}
+                    onSkip={() => onSkipQuestion?.(question.callId)}
+                  />
+                );
+              }
               const message = block.message;
+              if (!message) return null;
               return (
                 <AskQuestionCard
                   key={block.key}
@@ -1902,19 +2020,6 @@ export function Chat({
               />
             );
           })}
-
-          {pendingQuestions.map((question) => (
-            <AskQuestionCard
-              key={question.callId}
-              callId={question.callId}
-              title={question.title}
-              questions={question.questions}
-              status="pending"
-              submitting={askSubmittingId === question.callId}
-              onSubmit={(answers) => onAnswerQuestion?.(question.callId, answers)}
-              onSkip={() => onSkipQuestion?.(question.callId)}
-            />
-          ))}
 
           {streamingText ? (
             <div className="w-full">
