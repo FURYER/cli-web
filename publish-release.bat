@@ -35,8 +35,10 @@ if errorlevel 1 (
 
 :run_tunnel
 echo.
-echo [%TIME%] Starting clo publish...
-clo publish -n "webcli" http 8787
+echo [%TIME%] Starting clo run ^(all registered CloudPub services^)...
+rem Was: clo publish -n "webcli" http 8787
+rem `clo run` keeps webcli + other pubs (e.g. trade-bot) on one agent channel.
+clo run
 set "EXITCODE=!ERRORLEVEL!"
 echo.
 echo [%TIME%] CloudPub exited ^(code !EXITCODE!^) — reconnecting in 3s...

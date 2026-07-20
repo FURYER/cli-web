@@ -282,8 +282,13 @@ export function promptUserQuestions(
   options?: { callId?: string; toolCallId?: string },
 ): Promise<AskQuestionHandlerResult> {
   const boundToolCallId = consumePendingAskToolCall(sessionId);
+  // Prefer the live tool-call activity id when present so the answer card
+  // inserts under that MCP/ask step in the Working timeline.
   const toolCallId =
-    options?.toolCallId?.trim() || boundToolCallId || options?.callId?.trim() || randomUUID();
+    boundToolCallId ||
+    options?.toolCallId?.trim() ||
+    options?.callId?.trim() ||
+    randomUUID();
   const callId = options?.callId?.trim() || toolCallId;
 
   const prompt: AskQuestionPrompt = {
@@ -293,23 +298,8 @@ export function promptUserQuestions(
     questions: args.questions,
   };
 
-  broadcast({
-    type: "ask_question",
-    sessionId,
-    callId,
-    toolCallId,
-    title: prompt.title,
-    questions: prompt.questions,
-    status: "pending",
-  });
-
-  void notifyAskWaiting({
-    sessionId,
-    questionTitle: prompt.title || prompt.questions[0]?.prompt,
-  });
-
-  noteAskWaitStart(sessionId);
-
+  // Register before broadcast so a concurrent listPendingAskQuestions cannot
+  // return [] and wipe the card the WS handler just added.
   return new Promise<AskQuestionHandlerResult>((resolve) => {
     pendingByCallId.set(callId, {
       sessionId,
@@ -320,6 +310,23 @@ export function promptUserQuestions(
         resolve(result);
       },
     });
+
+    noteAskWaitStart(sessionId);
+
+    broadcast({
+      type: "ask_question",
+      sessionId,
+      callId,
+      toolCallId,
+      title: prompt.title,
+      questions: prompt.questions,
+      status: "pending",
+    });
+
+    void notifyAskWaiting({
+      sessionId,
+      questionTitle: prompt.title || prompt.questions[0]?.prompt,
+    });
   });
 }
 
@@ -329,7 +336,9 @@ export function startUserQuestions(
   args: AskQuestionArgs,
 ): { callId: string; done: Promise<AskQuestionHandlerResult> } {
   const callId = randomUUID();
-  const done = promptUserQuestions(sessionId, args, { callId, toolCallId: callId });
+  // Do not force toolCallId=callId — let promptUserQuestions bind the pending
+  // MCP/ask activity id from notePendingAskToolCall when available.
+  const done = promptUserQuestions(sessionId, args, { callId });
   waitersByCallId.set(callId, done);
   void done.finally(() => {
     // Keep settled entry; drop waiter after a tick so wait can still attach.

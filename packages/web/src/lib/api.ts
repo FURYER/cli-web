@@ -325,21 +325,53 @@ export function cancelDeploy(auth: AuthMode): Promise<DeployStatus> {
 async function request<T>(
   path: string,
   auth: AuthMode,
-  init?: RequestInit,
+  init?: RequestInit & { timeoutMs?: number },
 ): Promise<T> {
-  const hasBody = init?.body != null && init.body !== "";
-  const res = await fetch(path, {
-    ...init,
-    headers: {
-      ...authHeaders(auth, hasBody),
-      ...(init?.headers ?? {}),
-    },
-  });
-  const body = (await res.json().catch(() => ({}))) as T & { error?: string };
-  if (!res.ok) {
-    throw new Error(body.error || `HTTP ${res.status}`);
+  const timeoutMs = init?.timeoutMs;
+  const { timeoutMs: _timeoutMs, signal: outerSignal, ...rest } = init ?? {};
+  const hasBody = rest.body != null && rest.body !== "";
+
+  let signal = outerSignal;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let onOuterAbort: (() => void) | undefined;
+  if (typeof timeoutMs === "number" && timeoutMs > 0) {
+    const ctrl = new AbortController();
+    if (outerSignal) {
+      if (outerSignal.aborted) ctrl.abort();
+      else {
+        onOuterAbort = () => ctrl.abort();
+        outerSignal.addEventListener("abort", onOuterAbort);
+      }
+    }
+    timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    signal = ctrl.signal;
   }
-  return body;
+
+  try {
+    const res = await fetch(path, {
+      ...rest,
+      signal,
+      headers: {
+        ...authHeaders(auth, hasBody),
+        ...(rest.headers ?? {}),
+      },
+    });
+    const body = (await res.json().catch(() => ({}))) as T & { error?: string };
+    if (!res.ok) {
+      throw new Error(body.error || `HTTP ${res.status}`);
+    }
+    return body;
+  } catch (err) {
+    if (signal?.aborted) {
+      throw new Error("Request timed out");
+    }
+    throw err;
+  } finally {
+    if (timer !== undefined) clearTimeout(timer);
+    if (outerSignal && onOuterAbort) {
+      outerSignal.removeEventListener("abort", onOuterAbort);
+    }
+  }
 }
 
 export function listSessions(auth: AuthMode): Promise<SessionSummary[]> {
@@ -359,7 +391,12 @@ export type ProjectListItem = {
 
 export function listProjects(
   auth: AuthMode,
-  opts?: { limit?: number; beforeUpdatedAt?: number; sessionsLimit?: number },
+  opts?: {
+    limit?: number;
+    beforeUpdatedAt?: number;
+    sessionsLimit?: number;
+    timeoutMs?: number;
+  },
 ): Promise<{ projects: ProjectListItem[]; hasMore: boolean }> {
   const params = new URLSearchParams();
   if (opts?.limit != null) params.set("limit", String(opts.limit));
@@ -370,7 +407,9 @@ export function listProjects(
     params.set("sessionsLimit", String(opts.sessionsLimit));
   }
   const qs = params.toString();
-  return request(`/api/projects${qs ? `?${qs}` : ""}`, auth);
+  return request(`/api/projects${qs ? `?${qs}` : ""}`, auth, {
+    timeoutMs: opts?.timeoutMs,
+  });
 }
 
 export function listProjectSessions(
@@ -395,7 +434,7 @@ export const MESSAGE_PAGE_SIZE = 30;
 export function getSession(
   auth: AuthMode,
   id: string,
-  opts?: { limit?: number; before?: string },
+  opts?: { limit?: number; before?: string; timeoutMs?: number },
 ): Promise<
   SessionSummary & {
     messages: ChatMessage[];
@@ -408,7 +447,9 @@ export function getSession(
   if (opts?.limit != null) params.set("limit", String(opts.limit));
   if (opts?.before) params.set("before", opts.before);
   const qs = params.toString();
-  return request(`/api/sessions/${id}${qs ? `?${qs}` : ""}`, auth);
+  return request(`/api/sessions/${id}${qs ? `?${qs}` : ""}`, auth, {
+    timeoutMs: opts?.timeoutMs,
+  });
 }
 
 export function createSession(
@@ -494,6 +535,7 @@ export function answerAskQuestion(
 export function listPendingAskQuestions(
   auth: AuthMode,
   sessionId: string,
+  opts?: { timeoutMs?: number },
 ): Promise<{
   pending: Array<{
     callId: string;
@@ -502,7 +544,9 @@ export function listPendingAskQuestions(
     questions: AskQuestionItem[];
   }>;
 }> {
-  return request(`/api/sessions/${sessionId}/ask-questions`, auth);
+  return request(`/api/sessions/${sessionId}/ask-questions`, auth, {
+    timeoutMs: opts?.timeoutMs,
+  });
 }
 
 export function updateSessionMode(

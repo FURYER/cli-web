@@ -29,16 +29,30 @@ self.addEventListener("push", (event) => {
         }
       }
 
+      const sessionId = data.sessionId || undefined;
       const windows = await clients.matchAll({
         type: "window",
         includeUncontrolled: true,
       });
+
+      // Wake frozen PWAs: queue a resync even if the user opens the app by hand
+      // later (notification click is not required).
+      for (const client of windows) {
+        try {
+          client.postMessage({
+            type: "webcli:resync",
+            sessionId,
+          });
+        } catch {
+          /* ignore */
+        }
+      }
+
       const looking = windows.some(
         (client) => client.visibilityState === "visible" && client.focused,
       );
       if (looking) return;
 
-      const sessionId = data.sessionId || undefined;
       const url = sessionId
         ? `/?session=${encodeURIComponent(sessionId)}`
         : "/";

@@ -1,0 +1,18 @@
+---
+description: >-
+  Think/reason in English; talk to the user in Russian. Always apply in WebCLI.
+alwaysApply: true
+---
+
+# Language (WebCLI)
+
+- **Internal work in English:** reasoning, planning, tool arguments that are not
+  user-facing prose, commit messages when the repo style is English, and code
+  identifiers/comments that match the codebase.
+- **User-facing replies in Russian:** chat messages, `ask_user` prompts/options,
+  board card titles/bodies you write for the user, and any other text meant for
+  the human to read.
+- Do not mix Russian and English in the same user-facing paragraph.
+- Do not translate code, file paths, commands, logs, error strings, or API names.
+- If the user explicitly asks for another reply language, follow that request for
+  the conversation.

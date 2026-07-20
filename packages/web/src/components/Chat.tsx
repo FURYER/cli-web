@@ -85,12 +85,14 @@ type StepItem = {
   linesCreated?: number;
 };
 
-type WorkQuestionInsert = {
-  afterStepId: string;
-  key: string;
-  message?: ChatMessage;
-  pending?: PendingAskQuestion;
-};
+type WorkPiece =
+  | { type: "steps"; key: string; steps: StepItem[] }
+  | {
+      type: "question";
+      key: string;
+      message?: ChatMessage;
+      pending?: PendingAskQuestion;
+    };
 
 type TimelineBlock =
   | { type: "user"; key: string; message: ChatMessage }
@@ -105,10 +107,9 @@ type TimelineBlock =
       type: "work";
       key: string;
       steps: StepItem[];
+      pieces: WorkPiece[];
       live: boolean;
       defaultOpen: boolean;
-      /** Ask cards rendered after the matching tool step inside this Working block. */
-      questions?: WorkQuestionInsert[];
     };
 
 const NEAR_BOTTOM_PX = 80;
@@ -887,25 +888,73 @@ function mergeSteps(persisted: StepItem[], live: StepItem[]): StepItem[] {
 }
 
 function isAskToolStep(step: StepItem): boolean {
-  const key = `${step.toolName || ""} ${step.label || ""}`
+  const key = `${step.toolName || ""} ${step.label || ""} ${step.detail || ""}`
     .toLowerCase()
     .replace(/[_-]/g, "");
-  return key.includes("askuser") || key.includes("askquestion");
+  return (
+    key.includes("askuser") ||
+    key.includes("askquestion") ||
+    // Bare MCP row often wraps custom-user-tools ask_user.
+    (/\bmcp\b/.test(key) && key.includes("ask"))
+  );
 }
 
-function matchQuestionToSteps(
-  steps: StepItem[],
-  callId: string,
-  toolCallId?: string,
-): string | null {
-  const anchors = [toolCallId, callId].filter((id): id is string => Boolean(id));
-  for (const anchor of anchors) {
-    if (steps.some((s) => s.id === anchor)) return anchor;
+function isAskActivityMessage(message: ChatMessage): boolean {
+  if (message.role !== "activity") return false;
+  const key = `${message.toolName || ""} ${message.content || ""} ${message.detail || ""}`
+    .toLowerCase()
+    .replace(/[_-]/g, "");
+  return (
+    key.includes("askuser") ||
+    key.includes("askquestion") ||
+    (/\bmcp\b/.test(key) && key.includes("ask"))
+  );
+}
+
+/**
+ * Ask rows stay `running` while the card is open. After skip/stop/answer the
+ * server should mark them completed; heal older/stuck rows so timers stop.
+ * While the turn is still busy, do not heal — the ask_question WS can lag the
+ * tool-call activity, and healing would hide a live Ask user step.
+ */
+function healStuckAskActivities(
+  messages: ChatMessage[],
+  pendingQuestions: PendingAskQuestion[],
+  busy = false,
+): ChatMessage[] {
+  if (busy) return messages;
+  const liveIds = new Set<string>();
+  for (const pq of pendingQuestions) {
+    liveIds.add(pq.callId);
+    if (pq.toolCallId) liveIds.add(pq.toolCallId);
   }
-  for (let i = steps.length - 1; i >= 0; i--) {
-    if (isAskToolStep(steps[i]!)) return steps[i]!.id;
-  }
-  return null;
+  let changed = false;
+  const next = messages.map((message, index) => {
+    if (!isAskActivityMessage(message) || message.activityStatus !== "running") {
+      return message;
+    }
+    const activityId = message.activityId || message.id;
+    if (liveIds.has(activityId)) return message;
+
+    const after = messages[index + 1];
+    const endAt =
+      typeof after?.createdAt === "number" ? after.createdAt : message.createdAt;
+    const durationMs =
+      typeof message.durationMs === "number" && message.durationMs >= 0
+        ? message.durationMs
+        : Math.max(0, endAt - message.createdAt);
+    changed = true;
+    return {
+      ...message,
+      activityStatus: "completed" as const,
+      durationMs,
+    };
+  });
+  return changed ? next : messages;
+}
+
+function flattenWorkPieces(pieces: WorkPiece[]): StepItem[] {
+  return pieces.flatMap((piece) => (piece.type === "steps" ? piece.steps : []));
 }
 
 function buildTimeline(
@@ -914,66 +963,67 @@ function buildTimeline(
   pendingQuestions: PendingAskQuestion[] = [],
   busy = false,
 ): TimelineBlock[] {
-  const visible = filterVisibleMessages(messages);
+  const visible = filterVisibleMessages(
+    healStuckAskActivities(messages, pendingQuestions, busy),
+  );
   const blocks: TimelineBlock[] = [];
-  let pendingSteps: StepItem[] = [];
-  let orphanQuestions: Array<{
-    key: string;
-    callId: string;
-    toolCallId?: string;
-    message?: ChatMessage;
-    pending?: PendingAskQuestion;
-  }> = [];
+  let currentSteps: StepItem[] = [];
+  let pieces: WorkPiece[] = [];
+  let stepPieceIndex = 0;
   let workIndex = 0;
   const placedPending = new Set<string>();
 
+  const pushStepsPiece = () => {
+    if (currentSteps.length === 0) return;
+    pieces.push({
+      type: "steps",
+      key: `steps-${stepPieceIndex++}-${currentSteps[0]!.id}`,
+      steps: currentSteps,
+    });
+    currentSteps = [];
+  };
+
   const flushWork = (opts: { live: boolean }) => {
-    const steps = opts.live
-      ? mergeSteps(pendingSteps, liveSteps)
-      : pendingSteps;
-    pendingSteps = [];
-    if (steps.length === 0 && !opts.live) return;
-    if (steps.length === 0) return;
-
-    const questions: WorkQuestionInsert[] = [];
-    const stillOrphan: typeof orphanQuestions = [];
-    for (const q of orphanQuestions) {
-      const afterStepId = matchQuestionToSteps(steps, q.callId, q.toolCallId);
-      if (afterStepId) {
-        questions.push({
-          afterStepId,
-          key: q.key,
-          message: q.message,
-          pending: q.pending,
-        });
-        if (q.pending) placedPending.add(q.pending.callId);
-      } else {
-        stillOrphan.push(q);
+    if (opts.live) {
+      const liveIds = new Set<string>();
+      for (const pq of pendingQuestions) {
+        liveIds.add(pq.callId);
+        if (pq.toolCallId) liveIds.add(pq.toolCallId);
       }
+      // While busy, keep running ask steps even if the pending card WS lagged.
+      const healedLive = busy
+        ? liveSteps
+        : liveSteps.map((step) => {
+            if (step.status !== "running" || !isAskToolStep(step)) return step;
+            if (liveIds.has(step.id)) return step;
+            return {
+              ...step,
+              status: "completed" as const,
+              durationMs:
+                step.durationMs ??
+                (typeof step.startedAt === "number"
+                  ? Math.max(0, Date.now() - step.startedAt)
+                  : undefined),
+            };
+          });
+      currentSteps = mergeSteps(currentSteps, healedLive);
     }
-    orphanQuestions = stillOrphan;
+    pushStepsPiece();
 
-    for (const pq of pendingQuestions) {
-      if (placedPending.has(pq.callId)) continue;
-      const afterStepId = matchQuestionToSteps(steps, pq.callId, pq.toolCallId);
-      if (!afterStepId) continue;
-      placedPending.add(pq.callId);
-      questions.push({
-        afterStepId,
-        key: `pending-${pq.callId}`,
-        pending: pq,
-      });
-    }
+    const outPieces = pieces;
+    pieces = [];
+    if (outPieces.length === 0) return;
 
+    const steps = flattenWorkPieces(outPieces);
     const isLive = opts.live || steps.some((s) => s.status === "running");
-    const keySeed = steps[0]?.id ?? String(workIndex);
+    const keySeed = steps[0]?.id ?? outPieces[0]?.key ?? String(workIndex);
     blocks.push({
       type: "work",
       key: `work-${keySeed}-${workIndex++}`,
       steps,
+      pieces: outPieces,
       live: isLive,
       defaultOpen: isLive,
-      questions: questions.length ? questions : undefined,
     });
   };
 
@@ -985,18 +1035,21 @@ function buildTimeline(
     }
     if (message.role === "question") {
       const callId = message.questionCallId ?? message.id;
+      // Still waiting — render as a top-level pending card (never bury in Working).
+      if (pendingQuestions.some((p) => p.callId === callId)) {
+        continue;
+      }
       placedPending.add(callId);
-      const pendingMatch = pendingQuestions.find((p) => p.callId === callId);
-      orphanQuestions.push({
+      pushStepsPiece();
+      pieces.push({
+        type: "question",
         key: message.id,
-        callId,
-        toolCallId: pendingMatch?.toolCallId ?? callId,
         message,
       });
       continue;
     }
     if (isActivityMessage(message)) {
-      pendingSteps.push(messageToStep(message));
+      currentSteps.push(messageToStep(message));
       continue;
     }
     flushWork({ live: false });
@@ -1005,14 +1058,7 @@ function buildTimeline(
 
   flushWork({ live: liveSteps.length > 0 || busy });
 
-  for (const q of orphanQuestions) {
-    blocks.push({
-      type: "question",
-      key: q.key,
-      message: q.message,
-      pending: q.pending,
-    });
-  }
+  // Pending asks are always top-level so compact/collapsed Working cannot hide them.
   for (const pq of pendingQuestions) {
     if (placedPending.has(pq.callId)) continue;
     blocks.push({
@@ -1393,19 +1439,19 @@ function clusterSteps(steps: StepItem[]): StepView[] {
 
 function WorkBlock({
   steps,
+  pieces,
   live,
   defaultOpen,
   clockPaused = false,
-  questions = [],
   askSubmittingId,
   onAnswerQuestion,
   onSkipQuestion,
 }: {
   steps: StepItem[];
+  pieces: WorkPiece[];
   live: boolean;
   defaultOpen: boolean;
   clockPaused?: boolean;
-  questions?: WorkQuestionInsert[];
   askSubmittingId?: string | null;
   onAnswerQuestion?: (callId: string, answers: AskQuestionAnswer[]) => void;
   onSkipQuestion?: (callId: string) => void;
@@ -1425,9 +1471,18 @@ function WorkBlock({
       !isPlanningPlaceholderId(s.id) &&
       s.kind !== "step",
   );
+  const questionPieces = pieces.filter(
+    (piece): piece is Extract<WorkPiece, { type: "question" }> =>
+      piece.type === "question",
+  );
   const onlyThinking =
     bodySteps.length > 0 && bodySteps.every(isThinkingStep);
-  const soleThought = onlyThinking && bodySteps.length === 1 ? bodySteps[0]! : null;
+  // Compact sole-thought UI hides the pieces list — never use it while ask
+  // cards live in this Working block (pending or answered).
+  const soleThought =
+    onlyThinking && bodySteps.length === 1 && questionPieces.length === 0
+      ? bodySteps[0]!
+      : null;
   const hasRunning =
     bodySteps.some((s) => s.status === "running") ||
     (live && bodySteps.length === 0);
@@ -1505,7 +1560,7 @@ function WorkBlock({
       : workDurationMs(durationSteps, now, live);
 
   let title: string;
-  if (onlyThinking) {
+  if (onlyThinking && questionPieces.length === 0) {
     title =
       hasRunning || soleThought?.status === "running"
         ? duration != null
@@ -1524,43 +1579,68 @@ function WorkBlock({
         : "Worked";
   }
 
-  const clustered = clusterSteps(bodySteps);
   const summary = !open ? workSummary(bodySteps) : null;
   const soleDetail = soleThought?.detail?.trim();
   const showSoleDetail = Boolean(open && soleThought && soleDetail);
-  const questionsByStep = new Map<string, WorkQuestionInsert[]>();
-  for (const q of questions) {
-    const list = questionsByStep.get(q.afterStepId) ?? [];
-    list.push(q);
-    questionsByStep.set(q.afterStepId, list);
-  }
 
-  function renderQuestionInsert(q: WorkQuestionInsert) {
-    if (q.pending) {
+  function renderQuestionPiece(piece: Extract<WorkPiece, { type: "question" }>) {
+    if (piece.pending) {
       return (
-        <div key={q.key} className="py-1">
+        <div key={piece.key} className="py-1">
           <AskQuestionCard
-            callId={q.pending.callId}
-            title={q.pending.title}
-            questions={q.pending.questions}
+            callId={piece.pending.callId}
+            title={piece.pending.title}
+            questions={piece.pending.questions}
             status="pending"
-            submitting={askSubmittingId === q.pending.callId}
-            onSubmit={(answers) => onAnswerQuestion?.(q.pending!.callId, answers)}
-            onSkip={() => onSkipQuestion?.(q.pending!.callId)}
+            submitting={askSubmittingId === piece.pending.callId}
+            onSubmit={(answers) => onAnswerQuestion?.(piece.pending!.callId, answers)}
+            onSkip={() => onSkipQuestion?.(piece.pending!.callId)}
           />
         </div>
       );
     }
-    if (!q.message) return null;
+    if (!piece.message) return null;
     return (
-      <div key={q.key} className="py-1">
+      <div key={piece.key} className="py-1">
         <AskQuestionCard
-          callId={q.message.questionCallId ?? q.message.id}
-          title={q.message.questionTitle}
-          questions={q.message.questionItems ?? []}
-          status={q.message.questionStatus ?? "answered"}
-          answers={q.message.questionAnswers}
+          callId={piece.message.questionCallId ?? piece.message.id}
+          title={piece.message.questionTitle}
+          questions={piece.message.questionItems ?? []}
+          status={piece.message.questionStatus ?? "answered"}
+          answers={piece.message.questionAnswers}
         />
+      </div>
+    );
+  }
+
+  function renderStepsCluster(pieceSteps: StepItem[], pieceKey: string) {
+    const visible = pieceSteps.filter(
+      (s) =>
+        !isUsageStep(s) &&
+        !isPlanningPlaceholderId(s.id) &&
+        s.kind !== "step",
+    );
+    const clustered = clusterSteps(visible);
+    return (
+      <div key={pieceKey} className="space-y-1">
+        {clustered.map((view) =>
+          view.type === "explored" ? (
+            <ExploredGroup key={view.id} steps={view.steps} now={now} live={live} />
+          ) : (
+            <StepRow
+              key={view.step.id}
+              label={view.step.label}
+              status={view.step.status}
+              durationMs={view.step.durationMs}
+              startedAt={view.step.startedAt}
+              detail={view.step.detail}
+              now={now}
+              linesAdded={view.step.linesAdded}
+              linesRemoved={view.step.linesRemoved}
+              linesCreated={view.step.linesCreated}
+            />
+          ),
+        )}
       </div>
     );
   }
@@ -1591,33 +1671,11 @@ function WorkBlock({
       ) : null}
       {open && !soleThought ? (
         <div className="ml-1 mt-1.5 space-y-1 border-l border-line/60 pl-3">
-          {clustered.map((view) => {
-            const stepIds =
-              view.type === "explored"
-                ? view.steps.map((s) => s.id)
-                : [view.step.id];
-            const inserts = stepIds.flatMap((id) => questionsByStep.get(id) ?? []);
-            return (
-              <div key={view.type === "explored" ? view.id : view.step.id}>
-                {view.type === "explored" ? (
-                  <ExploredGroup steps={view.steps} now={now} live={live} />
-                ) : (
-                  <StepRow
-                    label={view.step.label}
-                    status={view.step.status}
-                    durationMs={view.step.durationMs}
-                    startedAt={view.step.startedAt}
-                    detail={view.step.detail}
-                    now={now}
-                    linesAdded={view.step.linesAdded}
-                    linesRemoved={view.step.linesRemoved}
-                    linesCreated={view.step.linesCreated}
-                  />
-                )}
-                {inserts.map(renderQuestionInsert)}
-              </div>
-            );
-          })}
+          {pieces.map((piece) =>
+            piece.type === "question"
+              ? renderQuestionPiece(piece)
+              : renderStepsCluster(piece.steps, piece.key),
+          )}
           {usageSteps.map((step) => (
             <p key={step.id} className="text-[11px] text-muted/80">
               {step.label}
@@ -1634,8 +1692,11 @@ function WorkBlock({
           ))}
         </div>
       ) : null}
-      {!open
-        ? questions.filter((q) => q.pending).map(renderQuestionInsert)
+      {/* Pending cards must stay visible when Working is collapsed or sole-thought. */}
+      {!open || soleThought
+        ? questionPieces
+            .filter((piece) => piece.pending)
+            .map((piece) => renderQuestionPiece(piece))
         : null}
     </div>
   );
@@ -1851,7 +1912,7 @@ export function Chat({
     if (!el) return;
     // Avoid scrolling on every thinking tick — that reflows video and jitters the chat.
     el.scrollTop = el.scrollHeight;
-  }, [messages.length, streamingText, timelineLive.length, timeline.length, showPlanning]);
+  }, [messages.length, streamingText, timelineLive.length, timeline.length, showPlanning, pendingQuestions.length]);
 
   useEffect(() => {
     if (!loadingOlder) loadOlderLockRef.current = false;
@@ -2017,10 +2078,10 @@ export function Chat({
                 <WorkBlock
                   key={block.key}
                   steps={block.steps}
+                  pieces={block.pieces}
                   live={block.live}
                   defaultOpen={block.defaultOpen}
                   clockPaused={askWaiting && block.live}
-                  questions={block.questions}
                   askSubmittingId={askSubmittingId}
                   onAnswerQuestion={onAnswerQuestion}
                   onSkipQuestion={onSkipQuestion}

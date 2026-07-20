@@ -278,6 +278,7 @@ export default function App() {
   const hiddenAtRef = useRef<number | null>(null);
   const foregroundResyncTimerRef = useRef<number | undefined>(undefined);
   const resyncInFlightRef = useRef<Promise<boolean> | null>(null);
+  const resyncStartedAtRef = useRef<number | null>(null);
 
   const auth: AuthMode = { accessToken };
   const authenticated = Boolean(auth.accessToken);
@@ -445,11 +446,68 @@ export default function App() {
     sendingRef.current.delete(sessionId);
   }
 
-  function clearLiveRunUi() {
+  function clearLiveRunUi(opts?: { keepPendingQuestions?: boolean }) {
     setStreamingText("");
     setActivities([]);
-    setPendingQuestions([]);
-    setAskSubmittingId(null);
+    if (!opts?.keepPendingQuestions) {
+      setPendingQuestions([]);
+      setAskSubmittingId(null);
+    }
+  }
+
+  /** Apply /api/.../ask-questions into local card state. */
+  function applyPendingFromServer(
+    sessionId: string,
+    items: Array<{
+      callId: string;
+      toolCallId: string;
+      title?: string;
+      questions: PendingAskQuestion["questions"];
+    }>,
+  ) {
+    const mapped: PendingAskQuestion[] = items.map((item) => ({
+      callId: item.callId,
+      toolCallId: item.toolCallId,
+      title: item.title,
+      questions: item.questions,
+    }));
+    setPendingQuestions((prev) => {
+      if (mapped.length > 0) return mapped;
+      // Empty list must not wipe a card that just arrived via WS while an
+      // in-flight listPending raced ahead of pendingByCallId registration.
+      if (
+        prev.length > 0 &&
+        (busyIdsRef.current.has(sessionId) || sendingRef.current.has(sessionId))
+      ) {
+        return prev;
+      }
+      return [];
+    });
+    setAskPendingIds((prev) => {
+      const next = new Set(prev);
+      if (mapped.length > 0) next.add(sessionId);
+      else if (
+        !busyIdsRef.current.has(sessionId) &&
+        !sendingRef.current.has(sessionId)
+      ) {
+        next.delete(sessionId);
+      }
+      return next;
+    });
+    if (mapped.length === 0 && !busyIdsRef.current.has(sessionId)) {
+      setAskSubmittingId(null);
+    }
+  }
+
+  function pullPendingAskQuestions(sessionId: string) {
+    void listPendingAskQuestions(auth, sessionId)
+      .then((pending) => {
+        if (activeIdRef.current !== sessionId) return;
+        applyPendingFromServer(sessionId, pending.pending);
+      })
+      .catch(() => {
+        /* keep existing cards */
+      });
   }
 
   /**
@@ -457,30 +515,97 @@ export default function App() {
    * active chat so busy/ticking UI cannot stick forever.
    * @returns true when the active chat was refreshed (or there is no active chat).
    */
-  async function resyncFromServer(opts?: { reloadActive?: boolean }): Promise<boolean> {
+  async function resyncFromServer(opts?: {
+    reloadActive?: boolean;
+    /** Longer away → treat hung sockets / stale merge more aggressively. */
+    longAway?: boolean;
+  }): Promise<boolean> {
     if (!authenticated) return false;
-    if (resyncInFlightRef.current) return resyncInFlightRef.current;
+
+    // A hung fetch after mobile suspend used to block every later resync forever.
+    const inFlight = resyncInFlightRef.current;
+    if (inFlight) {
+      const age =
+        resyncStartedAtRef.current != null
+          ? Date.now() - resyncStartedAtRef.current
+          : 0;
+      if (age < 15_000) return inFlight;
+      resyncInFlightRef.current = null;
+      resyncStartedAtRef.current = null;
+    }
+
+    const timeoutMs = opts?.longAway ? 12_000 : 10_000;
+    resyncStartedAtRef.current = Date.now();
 
     const run = (async (): Promise<boolean> => {
       try {
-        const items = await refreshSessions();
-        if (!items) return false;
+        const projectCount = Math.max(PROJECT_PAGE_SIZE, projectItemsRef.current.length);
+        const sessionsLimit = Math.max(
+          SESSIONS_PER_PROJECT,
+          ...projectItemsRef.current.map((p) => p.sessions.length),
+        );
+        const { projects, hasMore } = await listProjects(auth, {
+          limit: projectCount,
+          sessionsLimit,
+          timeoutMs,
+        });
+        setProjectItems(projects);
+        projectItemsRef.current = projects;
+        setHasMoreProjects(hasMore);
+        const items = flattenProjects(projects);
+        setSessions(items);
+        sessionsRef.current = items;
+        setBusyIds((prev) => {
+          const next = new Set(prev);
+          for (const item of items) {
+            if (item.busy) next.add(item.id);
+            else if (!sendingRef.current.has(item.id)) next.delete(item.id);
+          }
+          for (const id of [...next]) {
+            if (!items.some((item) => item.id === id) && !sendingRef.current.has(id)) {
+              next.delete(id);
+            }
+          }
+          busyIdsRef.current = next;
+          return next;
+        });
+
         const id = activeIdRef.current;
         if (!id) return true;
         const summary = items.find((item) => item.id === id);
         const serverBusy = Boolean(summary?.busy);
 
+        // Don't wipe ask cards before we re-fetch pending from the server.
         if (!serverBusy && !sendingRef.current.has(id)) {
           markBusy(id, false);
-          clearLiveRunUi();
+          clearLiveRunUi({ keepPendingQuestions: true });
         } else if (serverBusy) {
           markBusy(id, true);
         }
 
         if (opts?.reloadActive === false) return true;
 
-        const detail = await getSession(auth, id, { limit: MESSAGE_PAGE_SIZE });
+        const detail = await getSession(auth, id, {
+          limit: MESSAGE_PAGE_SIZE,
+          timeoutMs,
+        });
         setMessages((prev) => {
+          // After a long suspend, prefer the server page outright — merge can
+          // keep a confusing half-stale timeline if ids drifted while frozen.
+          if (opts?.longAway) {
+            const pending = prev.filter((m) => {
+              if (m.role !== "user" || !String(m.id).startsWith("local-")) return false;
+              return !detail.messages.some(
+                (s) =>
+                  s.role === "user" &&
+                  s.content === m.content &&
+                  Math.abs((s.createdAt || 0) - (m.createdAt || 0)) < 180_000,
+              );
+            });
+            return pending.length
+              ? [...detail.messages, ...pending]
+              : detail.messages;
+          }
           const merged = mergeTailRefresh(detail.messages, prev);
           setHasMoreOlder(
             Boolean(detail.hasMoreOlder) ||
@@ -489,10 +614,13 @@ export default function App() {
           );
           return merged;
         });
+        if (opts?.longAway) {
+          setHasMoreOlder(Boolean(detail.hasMoreOlder));
+        }
         const keepLocalBusy = sendingRef.current.has(id);
         markBusy(id, Boolean(detail.busy) || keepLocalBusy);
         if (!detail.busy && !keepLocalBusy) {
-          clearLiveRunUi();
+          clearLiveRunUi({ keepPendingQuestions: true });
         }
         if (detail.context) {
           setLastContext(detail.context);
@@ -503,17 +631,10 @@ export default function App() {
           setLastContext(latest?.context ?? null);
         }
         try {
-          const pending = await listPendingAskQuestions(auth, id);
-          setPendingQuestions(
-            pending.pending.map((item) => ({
-              callId: item.callId,
-              toolCallId: item.toolCallId,
-              title: item.title,
-              questions: item.questions,
-            })),
-          );
+          const pending = await listPendingAskQuestions(auth, id, { timeoutMs });
+          applyPendingFromServer(id, pending.pending);
         } catch {
-          /* older server / race */
+          /* older server / race — keep existing pending cards */
         }
         return true;
       } catch (err) {
@@ -532,6 +653,7 @@ export default function App() {
         return false;
       } finally {
         resyncInFlightRef.current = null;
+        resyncStartedAtRef.current = null;
       }
     })();
 
@@ -550,9 +672,22 @@ export default function App() {
     const hiddenForMs =
       hiddenAtRef.current != null ? Date.now() - hiddenAtRef.current : 0;
     // Keep hiddenAt until we actually start — coalesced focus/visibility events share it.
-    const shouldForceWs = hiddenForMs >= 20_000 || reason === "online";
+    // Unknown duration (freeze without visibility) → assume we need a fresh socket.
+    const shouldForceWs =
+      reason === "online" ||
+      reason === "sw" ||
+      reason === "resume" ||
+      hiddenAtRef.current == null ||
+      hiddenForMs >= 3_000;
+    const longAway =
+      hiddenForMs >= 60_000 ||
+      reason === "resume" ||
+      reason === "sw" ||
+      // Never saw "hidden" (frozen PWA) — assume a long suspend.
+      (hiddenAtRef.current == null &&
+        (reason === "visibility" || reason === "pageshow" || reason === "focus"));
 
-    const delays = [0, 400, 1_200, 3_000, 7_000];
+    const delays = [0, 400, 1_200, 3_000, 7_000, 15_000];
     let attempt = 0;
 
     const tick = () => {
@@ -562,7 +697,7 @@ export default function App() {
         if (shouldForceWs) socketRef.current?.reconnectNow();
       }
       void (async () => {
-        const ok = await resyncFromServer();
+        const ok = await resyncFromServer({ longAway });
         if (ok || attempt >= delays.length - 1) return;
         if (document.visibilityState === "hidden") return;
         attempt += 1;
@@ -578,9 +713,13 @@ export default function App() {
   useEffect(() => {
     if (!authenticated) return;
 
+    const markHidden = () => {
+      if (hiddenAtRef.current == null) hiddenAtRef.current = Date.now();
+    };
+
     const onVisibility = () => {
       if (document.visibilityState === "hidden") {
-        hiddenAtRef.current = Date.now();
+        markHidden();
         return;
       }
       scheduleForegroundResync("visibility");
@@ -591,12 +730,19 @@ export default function App() {
       }
     };
     const onFocus = () => {
-      if (document.visibilityState === "visible") {
-        scheduleForegroundResync("focus");
-      }
+      // Only when we actually left the foreground — avoids WS thrash on every tap.
+      if (document.visibilityState !== "visible") return;
+      if (hiddenAtRef.current == null) return;
+      scheduleForegroundResync("focus");
     };
     const onOnline = () => {
       scheduleForegroundResync("online");
+    };
+    const onFreeze = () => {
+      markHidden();
+    };
+    const onResume = () => {
+      scheduleForegroundResync("resume");
     };
     const onSwMessage = (event: MessageEvent) => {
       const data = event.data as { type?: string; sessionId?: string } | null;
@@ -611,12 +757,18 @@ export default function App() {
     window.addEventListener("pageshow", onPageShow);
     window.addEventListener("focus", onFocus);
     window.addEventListener("online", onOnline);
+    // Chromium Page Lifecycle — fires when the tab is frozen/resumed without a
+    // reliable visibilitychange (common on Android PWAs after 10+ minutes).
+    document.addEventListener("freeze", onFreeze);
+    document.addEventListener("resume", onResume);
     navigator.serviceWorker?.addEventListener("message", onSwMessage);
     return () => {
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("pageshow", onPageShow);
       window.removeEventListener("focus", onFocus);
       window.removeEventListener("online", onOnline);
+      document.removeEventListener("freeze", onFreeze);
+      document.removeEventListener("resume", onResume);
       navigator.serviceWorker?.removeEventListener("message", onSwMessage);
       if (foregroundResyncTimerRef.current !== undefined) {
         window.clearTimeout(foregroundResyncTimerRef.current);
@@ -826,6 +978,21 @@ export default function App() {
                 next.add(event.sessionId);
                 return next;
               });
+              // Keep card state even if a later filter races; active chat renders it.
+              if (event.sessionId === activeIdRef.current) {
+                setPendingQuestions((prev) => {
+                  const without = prev.filter((item) => item.callId !== event.callId);
+                  return [
+                    ...without,
+                    {
+                      callId: event.callId,
+                      toolCallId: event.toolCallId,
+                      title: event.title,
+                      questions: event.questions,
+                    },
+                  ];
+                });
+              }
               const chatTitle =
                 sessionsRef.current.find((s) => s.id === event.sessionId)?.title ||
                 event.title;
@@ -842,6 +1009,12 @@ export default function App() {
                 next.delete(event.sessionId);
                 return next;
               });
+              if (event.sessionId === activeIdRef.current) {
+                setPendingQuestions((prev) =>
+                  prev.filter((item) => item.callId !== event.callId),
+                );
+                setAskSubmittingId((prev) => (prev === event.callId ? null : prev));
+              }
             }
           }
 
@@ -1014,16 +1187,19 @@ export default function App() {
                 }
                 return [...withoutPlanning, next];
               });
+              const askKey = `${event.toolName || ""} ${event.label || ""} ${event.detail || ""}`
+                .toLowerCase()
+                .replace(/[_-]/g, "");
+              const isAskActivity =
+                askKey.includes("askuser") ||
+                askKey.includes("askquestion") ||
+                (/\bmcp\b/.test(askKey) && askKey.includes("ask"));
               if (
                 event.id !== "working" &&
                 event.id !== "planning" &&
                 (event.status === "completed" ||
                   event.status === "error" ||
-                  (event.status === "running" &&
-                    `${event.toolName || event.label || ""}`
-                      .toLowerCase()
-                      .replace(/[_-]/g, "")
-                      .includes("askuser")))
+                  (event.status === "running" && isAskActivity))
               ) {
                 setMessages((prev) => {
                   const existingIdx = prev.findIndex(
@@ -1054,6 +1230,14 @@ export default function App() {
                   }
                   return [...prev, row];
                 });
+              }
+              // Tool row can appear before ask_question WS — pull cards from HTTP.
+              if (event.status === "running" && isAskActivity) {
+                const id = activeIdRef.current;
+                if (id) {
+                  window.setTimeout(() => pullPendingAskQuestions(id), 50);
+                  window.setTimeout(() => pullPendingAskQuestions(id), 400);
+                }
               }
               break;
             case "status":
@@ -1113,12 +1297,47 @@ export default function App() {
                   prev.filter((item) => item.callId !== event.callId),
                 );
                 setAskSubmittingId((prev) => (prev === event.callId ? null : prev));
-                if (event.status === "answered" || event.status === "skipped") {
-                  const questionStatus = event.status;
-                  setMessages((prev) => {
-                    if (prev.some((m) => m.questionCallId === event.callId)) return prev;
+                // Freeze Ask user activity timer when the card closes.
+                const askIds = new Set(
+                  [event.callId, event.toolCallId].filter(Boolean) as string[],
+                );
+                setMessages((prev) => {
+                  let changed = false;
+                  const patched = prev.map((message) => {
+                    if (
+                      message.role !== "activity" ||
+                      message.activityStatus !== "running"
+                    ) {
+                      return message;
+                    }
+                    const id = message.activityId || message.id;
+                    const key = `${message.toolName || ""} ${message.content || ""}`
+                      .toLowerCase()
+                      .replace(/[_-]/g, "");
+                    const isAsk =
+                      askIds.has(id) ||
+                      key.includes("askuser") ||
+                      key.includes("askquestion");
+                    if (!isAsk) return message;
+                    changed = true;
+                    const durationMs =
+                      typeof message.durationMs === "number"
+                        ? message.durationMs
+                        : Math.max(0, Date.now() - message.createdAt);
+                    return {
+                      ...message,
+                      activityStatus: "completed" as const,
+                      durationMs,
+                    };
+                  });
+                  if (event.status === "answered" || event.status === "skipped") {
+                    const questionStatus = event.status;
+                    const base = changed ? patched : prev;
+                    if (base.some((m) => m.questionCallId === event.callId)) {
+                      return changed ? patched : prev;
+                    }
                     return insertQuestionAfterActivity(
-                      prev,
+                      base,
                       {
                         id: `question-${event.callId}`,
                         role: "question",
@@ -1136,8 +1355,30 @@ export default function App() {
                       event.callId,
                       event.toolCallId,
                     );
-                  });
-                }
+                  }
+                  return changed ? patched : prev;
+                });
+                setActivities((prev) =>
+                  prev.map((item) => {
+                    const key = `${item.toolName || ""} ${item.label || ""}`
+                      .toLowerCase()
+                      .replace(/[_-]/g, "");
+                    const isAsk =
+                      askIds.has(item.id) ||
+                      key.includes("askuser") ||
+                      key.includes("askquestion");
+                    if (!isAsk || item.status !== "running") return item;
+                    return {
+                      ...item,
+                      status: "completed" as const,
+                      durationMs:
+                        item.durationMs ??
+                        (typeof item.startedAt === "number"
+                          ? Math.max(0, Date.now() - item.startedAt)
+                          : undefined),
+                    };
+                  }),
+                );
               }
               break;
             case "media":
@@ -1152,6 +1393,11 @@ export default function App() {
               if (event.usage) setLastUsage(event.usage);
               if (event.context) setLastContext(event.context);
               void refreshActive();
+              // Re-pull pending asks — done can race ahead of ask_question WS.
+              {
+                const id = activeIdRef.current;
+                if (id) pullPendingAskQuestions(id);
+              }
               break;
           }
         },
@@ -1373,24 +1619,12 @@ export default function App() {
       }
       markBusy(id, Boolean(detail.busy) || sendingRef.current.has(id));
       if (!detail.busy && !sendingRef.current.has(id)) {
-        clearLiveRunUi();
+        // Keep any race-y WS cards until listPendingAskQuestions below.
+        clearLiveRunUi({ keepPendingQuestions: true });
       }
       try {
         const pending = await listPendingAskQuestions(auth, id);
-        setPendingQuestions(
-          pending.pending.map((item) => ({
-            callId: item.callId,
-            toolCallId: item.toolCallId,
-            title: item.title,
-            questions: item.questions,
-          })),
-        );
-        setAskPendingIds((prev) => {
-          const next = new Set(prev);
-          if (pending.pending.length > 0) next.add(id);
-          else next.delete(id);
-          return next;
-        });
+        applyPendingFromServer(id, pending.pending);
       } catch {
         /* ignore */
       }

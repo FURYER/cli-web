@@ -708,6 +708,7 @@ function healStuckBusy(session: SessionRecord): void {
   session.activeRun = null;
   endAskSession(session.id);
   cancelAskQuestionsForSession(session.id, "Recovered stuck session");
+  completeAskToolActivity(session);
   broadcast({
     type: "done",
     sessionId: session.id,
@@ -1456,6 +1457,50 @@ function clearActivityStarts(sessionId: string): void {
   activityStartedAt.delete(sessionId);
 }
 
+function isAskActivityMessage(message: ChatMessage): boolean {
+  if (message.role !== "activity") return false;
+  const key = normalizeToolType(
+    `${message.toolName || ""} ${message.content || ""} ${message.detail || ""}`,
+  );
+  return (
+    key.includes("askuser") ||
+    key.includes("askquestion") ||
+    key === "ask" ||
+    (key.includes("mcp") && key.includes("ask"))
+  );
+}
+
+/** Stop the Ask user step timer when the card is answered / skipped / cancelled. */
+function completeAskToolActivity(
+  session: SessionRecord,
+  toolCallId?: string,
+): void {
+  const anchor = toolCallId?.trim();
+  const targets = session.messages.filter((message) => {
+    if (!isAskActivityMessage(message)) return false;
+    if (message.activityStatus !== "running") return false;
+    if (!anchor) return true;
+    return message.activityId === anchor;
+  });
+  for (const message of targets) {
+    const id = message.activityId || message.id;
+    emitActivity(session, {
+      type: "activity",
+      sessionId: session.id,
+      id,
+      kind: message.activityKind || "tool",
+      label: message.content || "Ask user",
+      status: "completed",
+      detail: message.detail,
+      toolName: message.toolName || "ask_user",
+      filePath: message.filePath,
+      linesAdded: message.linesAdded,
+      linesRemoved: message.linesRemoved,
+      linesCreated: message.linesCreated,
+    });
+  }
+}
+
 function emitActivity(
   session: SessionRecord,
   activity: Extract<StreamEvent, { type: "activity" }>,
@@ -1486,7 +1531,9 @@ function emitActivity(
   const isAskTool =
     toolKey.includes("askuser") ||
     toolKey.includes("askquestion") ||
-    toolKey === "ask";
+    toolKey === "ask" ||
+    isAskUserToolCall(event.toolName || "", undefined) ||
+    isAskUserToolCall(event.label || "", undefined);
   // Persist ask tools while running so the answer can be inserted after this row.
   if (event.status === "completed" || event.status === "error" || (event.status === "running" && isAskTool)) {
     persistActivity(session, {
@@ -1548,6 +1595,46 @@ function truncateOneLine(text: string, max = 72): string {
 
 function normalizeToolType(type: string): string {
   return type.replace(/[_-]/g, "").toLowerCase();
+}
+
+/** True when this tool call is (or wraps) ask_user / AskQuestion. */
+function isAskUserToolCall(type: string, args?: unknown): boolean {
+  const t = normalizeToolType(type);
+  if (t.includes("askuser") || t.includes("askquestion") || t === "ask") {
+    return true;
+  }
+  if (!isRecord(args)) return false;
+  const candidates = [
+    args.toolName,
+    args.name,
+    args.tool,
+    args.tool_name,
+    isRecord(args.arguments) ? args.arguments.toolName : undefined,
+    isRecord(args.input) ? args.input.toolName : undefined,
+  ];
+  for (const raw of candidates) {
+    if (typeof raw !== "string") continue;
+    const n = normalizeToolType(raw);
+    if (n.includes("askuser") || n.includes("askquestion") || n === "ask") {
+      return true;
+    }
+  }
+  // CallMcpTool / MCP wrapper: server + toolName pair
+  const server =
+    (typeof args.server === "string" && args.server) ||
+    (typeof args.mcpServer === "string" && args.mcpServer) ||
+    "";
+  const tool =
+    (typeof args.toolName === "string" && args.toolName) ||
+    (typeof args.name === "string" && args.name) ||
+    "";
+  if (
+    /custom-?user-?tools/i.test(server) &&
+    normalizeToolType(tool).includes("ask")
+  ) {
+    return true;
+  }
+  return false;
 }
 
 function parseSwitchModeTarget(args: unknown): AgentModeOption | null {
@@ -1711,6 +1798,25 @@ function describeToolCall(
     "";
 
   let label = base;
+  let toolNameOut = type;
+
+  if (isAskUserToolCall(type, a)) {
+    label = "Ask user";
+    const title =
+      (typeof a.title === "string" && a.title.trim()) ||
+      (isRecord(a.arguments) &&
+        typeof a.arguments.title === "string" &&
+        a.arguments.title.trim()) ||
+      "";
+    if (title) label = `Ask user · ${truncateOneLine(title, 40)}`;
+    toolNameOut = "ask_user";
+    if (title) lines.push(title);
+    return {
+      label,
+      detail: lines.join("\n").trim() || "ask_user",
+      toolName: toolNameOut,
+    };
+  }
 
   // CreatePlan: short activity row; full body is committed as an assistant message.
   if (isCreatePlanTool(type)) {
@@ -2453,8 +2559,10 @@ async function sendMessageNow(
             filePath: described.filePath,
           });
           if (
-            normalizeToolType(update.toolCall.type).includes("askuser") ||
-            normalizeToolType(described.toolName).includes("askuser")
+            isAskUserToolCall(
+              update.toolCall.type,
+              "args" in update.toolCall ? update.toolCall.args : undefined,
+            )
           ) {
             notePendingAskToolCall(sessionId, update.callId);
           }
@@ -2863,7 +2971,12 @@ async function sendMessageNow(
   }
   } // while
   } finally {
-    cancelAskQuestionsForSession(sessionId, "Run finished");
+    // Do not cancel open ask cards here — ask_user / MCP wait can outlive a
+    // premature done, and the UI keeps pending questions until answered.
+    if (!hasPendingAskQuestions(sessionId)) {
+      cancelAskQuestionsForSession(sessionId, "Run finished");
+      completeAskToolActivity(session);
+    }
     setSessionBusy(session, false);
     session.activeRun = null;
     endAskSession(sessionId);
@@ -2924,6 +3037,8 @@ export function submitAskQuestionAnswer(
     session.messageCount = session.messages.length;
     persistAppendMessage(session, message);
   }
+  // Running ask rows are persisted early; freeze their clock on answer/skip.
+  completeAskToolActivity(session, prompt.toolCallId || callId);
   return message;
 }
 
@@ -2972,6 +3087,8 @@ export async function cancelSessionRun(sessionId: string): Promise<void> {
   const session = sessions.get(sessionId);
   if (!session) throw new Error("Session not found");
   cancelAskQuestionsForSession(sessionId, "Cancelled by user");
+  // Cancel skips the answer path — still freeze any running Ask user timers.
+  completeAskToolActivity(session);
   const run = session.activeRun;
   if (run) {
     try {
