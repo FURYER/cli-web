@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { copyFile, mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
   Agent,
@@ -491,6 +492,45 @@ function sessionsFile(): string {
   return join(dataDir(), "sessions.json");
 }
 
+function sessionsBackupFile(): string {
+  return `${sessionsFile()}.bak`;
+}
+
+function sessionsTempFile(): string {
+  return `${sessionsFile()}.tmp`;
+}
+
+function parseSessionsPayload(raw: string): PersistedSession[] {
+  const parsed = JSON.parse(raw) as { sessions?: PersistedSession[] };
+  return Array.isArray(parsed.sessions) ? parsed.sessions : [];
+}
+
+function hydratePersistedSession(item: PersistedSession): SessionRecord | null {
+  if (!item?.id || !item.agentId) return null;
+  return {
+    id: item.id,
+    agentId: item.agentId,
+    workspace: item.workspace,
+    model: item.model || defaultModel(),
+    title: item.title || "Chat",
+    createdAt: item.createdAt || Date.now(),
+    updatedAt: item.updatedAt || Date.now(),
+    messageCount: item.messages?.length ?? 0,
+    messages: sanitizeMessages(Array.isArray(item.messages) ? item.messages : []),
+    mode: item.mode === "plan" ? "plan" : "agent",
+    agent: null,
+    parentSessionId: item.parentSessionId,
+    projectWorkspace: item.projectWorkspace || item.workspace,
+    agentBranch: item.agentBranch,
+    worktreePath: item.worktreePath,
+    agentBaseSha: item.agentBaseSha,
+    childStatus: item.childStatus,
+    childSessionIds: Array.isArray(item.childSessionIds)
+      ? item.childSessionIds
+      : undefined,
+  };
+}
+
 export function setBroadcaster(fn: Broadcaster): void {
   broadcast = fn;
 }
@@ -565,7 +605,21 @@ async function writeSessions(): Promise<void> {
     version: 1,
     sessions: [...sessions.values()].map(toPersisted),
   };
-  await writeFile(sessionsFile(), JSON.stringify(payload, null, 2), "utf8");
+  const file = sessionsFile();
+  const tmp = sessionsTempFile();
+  const bak = sessionsBackupFile();
+  const text = JSON.stringify(payload, null, 2);
+  await writeFile(tmp, text, "utf8");
+  if (existsSync(file)) {
+    await copyFile(file, bak);
+  }
+  try {
+    await rename(tmp, file);
+  } catch {
+    // Windows can block rename over an open file — fall back to direct write.
+    await writeFile(file, text, "utf8");
+    await unlink(tmp).catch(() => undefined);
+  }
 }
 
 function schedulePersist(): void {
@@ -576,43 +630,50 @@ function schedulePersist(): void {
     });
 }
 
-export async function loadPersistedSessions(): Promise<number> {
-  try {
-    const raw = await readFile(sessionsFile(), "utf8");
-    const parsed = JSON.parse(raw) as { sessions?: PersistedSession[] };
-    const items = Array.isArray(parsed.sessions) ? parsed.sessions : [];
-    for (const item of items) {
-      if (!item?.id || !item.agentId) continue;
-      sessions.set(item.id, {
-        id: item.id,
-        agentId: item.agentId,
-        workspace: item.workspace,
-        model: item.model || defaultModel(),
-        title: item.title || "Chat",
-        createdAt: item.createdAt || Date.now(),
-        updatedAt: item.updatedAt || Date.now(),
-        messageCount: item.messages?.length ?? 0,
-        messages: sanitizeMessages(Array.isArray(item.messages) ? item.messages : []),
-        mode: item.mode === "plan" ? "plan" : "agent",
-        agent: null,
-        parentSessionId: item.parentSessionId,
-        projectWorkspace: item.projectWorkspace || item.workspace,
-        agentBranch: item.agentBranch,
-        worktreePath: item.worktreePath,
-        agentBaseSha: item.agentBaseSha,
-        childStatus: item.childStatus,
-        childSessionIds: Array.isArray(item.childSessionIds)
-          ? item.childSessionIds
-          : undefined,
-      });
-    }
-    return sessions.size;
-  } catch (err) {
-    const code = (err as NodeJS.ErrnoException).code;
-    if (code === "ENOENT") return 0;
-    console.error("Failed to load sessions:", err);
-    return 0;
+function loadPersistedItems(items: PersistedSession[]): number {
+  sessions.clear();
+  for (const item of items) {
+    const session = hydratePersistedSession(item);
+    if (session) sessions.set(session.id, session);
   }
+  return sessions.size;
+}
+
+export async function loadPersistedSessions(): Promise<number> {
+  const file = sessionsFile();
+  const candidates = [file, sessionsBackupFile()];
+  let lastErr: unknown;
+
+  for (const candidate of candidates) {
+    try {
+      const raw = await readFile(candidate, "utf8");
+      const items = parseSessionsPayload(raw);
+      const count = loadPersistedItems(items);
+      if (candidate !== file) {
+        console.warn(`Recovered ${count} session(s) from backup ${candidate}`);
+        void schedulePersist();
+      }
+      return count;
+    } catch (err) {
+      const code = (err as NodeJS.ErrnoException).code;
+      if (code === "ENOENT") continue;
+      lastErr = err;
+      console.error(`Failed to load sessions from ${candidate}:`, err);
+    }
+  }
+
+  if (lastErr) {
+    const corrupt = join(dataDir(), `sessions.corrupt-${Date.now()}.json`);
+    try {
+      if (existsSync(file)) {
+        await copyFile(file, corrupt);
+        console.error(`Saved unreadable sessions file to ${corrupt}`);
+      }
+    } catch (copyErr) {
+      console.error("Failed to quarantine corrupt sessions file:", copyErr);
+    }
+  }
+  return 0;
 }
 
 function sanitizeMessages(messages: ChatMessage[]): ChatMessage[] {

@@ -62,6 +62,20 @@ const SESSION_KEY_LEGACY = "cursor-cli.lastSessionId";
 const PROJECT_PAGE_SIZE = 12;
 const SESSIONS_PER_PROJECT = 8;
 
+function clearStoredSessionId(): void {
+  try {
+    localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(SESSION_KEY_LEGACY);
+  } catch {
+    /* ignore */
+  }
+}
+
+function isMissingSessionError(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err);
+  return message === "Session not found" || message.includes("HTTP 404");
+}
+
 function flattenProjects(projects: ProjectListItem[]): SessionSummary[] {
   const out: SessionSummary[] = [];
   for (const project of projects) {
@@ -459,6 +473,17 @@ export default function App() {
         }
       }
     } catch (err) {
+      if (isMissingSessionError(err)) {
+        clearStoredSessionId();
+        const fallback = sessionsRef.current.find((s) => s.id !== activeIdRef.current);
+        if (fallback) {
+          await openSession(fallback.id);
+          return;
+        }
+        setActiveId(null);
+        setShowNew(true);
+        return;
+      }
       console.warn("resync failed", err);
     }
   }
@@ -1251,6 +1276,17 @@ export default function App() {
         /* ignore */
       }
     } catch (err) {
+      if (isMissingSessionError(err)) {
+        clearStoredSessionId();
+        const fallback = sessionsRef.current.find((s) => s.id !== id);
+        if (fallback) {
+          await openSession(fallback.id);
+          return;
+        }
+        setActiveId(null);
+        setShowNew(true);
+        return;
+      }
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setChatLoading(false);
