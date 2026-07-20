@@ -917,10 +917,10 @@ function buildTimeline(
   const pushWork = (steps: StepItem[]) => {
     if (steps.length === 0) return;
     const isLive = steps.some((s) => s.status === "running");
-    const keySeed = steps[0]?.id ?? String(workIndex);
+    const keySeed = steps.map((s) => s.id).join("-").slice(0, 48) || String(workIndex);
     blocks.push({
       type: "work",
-      key: `work-${keySeed}-${workIndex++}`,
+      key: `work-${workIndex++}-${keySeed}`,
       steps,
       live: isLive,
       defaultOpen: isLive,
@@ -1417,9 +1417,12 @@ function WorkBlock({
   const [open, setOpen] = useState(defaultOpen);
   const [now, setNow] = useState(Date.now());
   const prevLiveRef = useRef(live);
-  const [blockStart, setBlockStart] = useState<number | null>(null);
+  /** Fallback when steps lack startedAt (brand-new live segment). */
+  const [fallbackStart, setFallbackStart] = useState<number | null>(null);
   const [blockEnd, setBlockEnd] = useState<number | null>(null);
+  const [pausedAccumMs, setPausedAccumMs] = useState(0);
   const clockPauseStartedRef = useRef<number | null>(null);
+  const segmentRef = useRef<string>("");
 
   const usageSteps = steps.filter(isUsageStep);
   // Bootstrap planning placeholder / noisy step counters stay out of the nested list.
@@ -1437,17 +1440,30 @@ function WorkBlock({
     (live && bodySteps.length === 0);
   const durationSteps = bodySteps.length > 0 ? bodySteps : steps;
 
-  useLayoutEffect(() => {
+  // Anchor this Working segment to its first step so appending steps does not reset the clock.
+  const segmentId = durationSteps[0]?.id ?? `empty-${live ? "live" : "done"}`;
+
+  const rawStart = (() => {
     const startedAts = durationSteps
       .map((s) => s.startedAt)
       .filter((t): t is number => typeof t === "number" && t > 0);
-    const earliest = startedAts.length > 0 ? Math.min(...startedAts) : null;
-    setBlockStart((prev) => {
-      if (earliest != null && (prev == null || earliest < prev)) return earliest;
-      if (prev == null && live) return Date.now();
-      return prev;
-    });
-  }, [durationSteps, live]);
+    return startedAts.length > 0 ? Math.min(...startedAts) : null;
+  })();
+
+  useLayoutEffect(() => {
+    if (segmentRef.current === segmentId) return;
+    segmentRef.current = segmentId;
+    clockPauseStartedRef.current = null;
+    setPausedAccumMs(0);
+    setBlockEnd(null);
+    setFallbackStart(live ? Date.now() : null);
+  }, [segmentId, live]);
+
+  useLayoutEffect(() => {
+    if (rawStart != null) return;
+    if (!live) return;
+    setFallbackStart((prev) => prev ?? Date.now());
+  }, [rawStart, live]);
 
   useLayoutEffect(() => {
     if (live) {
@@ -1478,8 +1494,7 @@ function WorkBlock({
     if (clockPauseStartedRef.current != null) {
       const delta = Math.max(0, Date.now() - clockPauseStartedRef.current);
       clockPauseStartedRef.current = null;
-      // Shift start forward so ask-wait is excluded from wall-clock.
-      setBlockStart((s) => (s != null ? s + delta : s));
+      setPausedAccumMs((ms) => ms + delta);
       setNow(Date.now());
     }
   }, [clockPaused]);
@@ -1501,9 +1516,17 @@ function WorkBlock({
     prevLiveRef.current = live;
   }, [live]);
 
+  const blockStart = rawStart ?? fallbackStart;
+  const openPauseMs =
+    clockPaused && clockPauseStartedRef.current != null
+      ? Math.max(0, now - clockPauseStartedRef.current)
+      : 0;
   const duration =
     blockStart != null
-      ? Math.max(0, (live ? now : (blockEnd ?? now)) - blockStart)
+      ? Math.max(
+          0,
+          (live ? now : (blockEnd ?? now)) - blockStart - pausedAccumMs - openPauseMs,
+        )
       : workDurationMs(durationSteps, now, live);
 
   let title: string;
@@ -1967,7 +1990,7 @@ export function Chat({
                   steps={block.steps}
                   live={block.live}
                   defaultOpen={block.defaultOpen}
-                  clockPaused={askWaiting}
+                  clockPaused={askWaiting && block.live}
                 />
               );
             }
