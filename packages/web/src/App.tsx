@@ -240,6 +240,10 @@ export default function App() {
   const busyIdsRef = useRef<Set<string>>(new Set());
   const deployOfflineSeenRef = useRef(false);
   const deployScheduledRef = useRef(false);
+  const socketRef = useRef<ReturnType<typeof connectSocket> | null>(null);
+  const hiddenAtRef = useRef<number | null>(null);
+  const foregroundResyncTimerRef = useRef<number | undefined>(undefined);
+  const resyncInFlightRef = useRef<Promise<boolean> | null>(null);
 
   const auth: AuthMode = { accessToken };
   const authenticated = Boolean(auth.accessToken);
@@ -417,24 +421,30 @@ export default function App() {
   /**
    * After backgrounding / WS drop we often miss `done`. Re-pull session list +
    * active chat so busy/ticking UI cannot stick forever.
+   * @returns true when the active chat was refreshed (or there is no active chat).
    */
-  async function resyncFromServer(opts?: { reloadActive?: boolean }) {
-    if (!authenticated) return;
-    try {
-      await refreshSessions();
-      const id = activeIdRef.current;
-      if (!id) return;
-      const summary = sessionsRef.current.find((item) => item.id === id);
-      const serverBusy = Boolean(summary?.busy);
+  async function resyncFromServer(opts?: { reloadActive?: boolean }): Promise<boolean> {
+    if (!authenticated) return false;
+    if (resyncInFlightRef.current) return resyncInFlightRef.current;
 
-      if (!serverBusy && !sendingRef.current.has(id)) {
-        markBusy(id, false);
-        clearLiveRunUi();
-      } else if (serverBusy) {
-        markBusy(id, true);
-      }
+    const run = (async (): Promise<boolean> => {
+      try {
+        const items = await refreshSessions();
+        if (!items) return false;
+        const id = activeIdRef.current;
+        if (!id) return true;
+        const summary = items.find((item) => item.id === id);
+        const serverBusy = Boolean(summary?.busy);
 
-      if (opts?.reloadActive !== false) {
+        if (!serverBusy && !sendingRef.current.has(id)) {
+          markBusy(id, false);
+          clearLiveRunUi();
+        } else if (serverBusy) {
+          markBusy(id, true);
+        }
+
+        if (opts?.reloadActive === false) return true;
+
         const detail = await getSession(auth, id, { limit: MESSAGE_PAGE_SIZE });
         setMessages((prev) => {
           const merged = mergeTailRefresh(detail.messages, prev);
@@ -471,53 +481,113 @@ export default function App() {
         } catch {
           /* older server / race */
         }
-      }
-    } catch (err) {
-      if (isMissingSessionError(err)) {
-        clearStoredSessionId();
-        const fallback = sessionsRef.current.find((s) => s.id !== activeIdRef.current);
-        if (fallback) {
-          await openSession(fallback.id);
-          return;
+        return true;
+      } catch (err) {
+        if (isMissingSessionError(err)) {
+          clearStoredSessionId();
+          const fallback = sessionsRef.current.find((s) => s.id !== activeIdRef.current);
+          if (fallback) {
+            await openSession(fallback.id);
+            return true;
+          }
+          setActiveId(null);
+          setShowNew(true);
+          return true;
         }
-        setActiveId(null);
-        setShowNew(true);
-        return;
+        console.warn("resync failed", err);
+        return false;
+      } finally {
+        resyncInFlightRef.current = null;
       }
-      console.warn("resync failed", err);
+    })();
+
+    resyncInFlightRef.current = run;
+    return run;
+  }
+
+  /** Resume after long background: force WS + retry HTTP resync while network wakes up. */
+  function scheduleForegroundResync(reason: string) {
+    if (!authenticated) return;
+    if (foregroundResyncTimerRef.current !== undefined) {
+      window.clearTimeout(foregroundResyncTimerRef.current);
+      foregroundResyncTimerRef.current = undefined;
     }
+
+    const hiddenForMs =
+      hiddenAtRef.current != null ? Date.now() - hiddenAtRef.current : 0;
+    // Keep hiddenAt until we actually start — coalesced focus/visibility events share it.
+    const shouldForceWs = hiddenForMs >= 20_000 || reason === "online";
+
+    const delays = [0, 400, 1_200, 3_000, 7_000];
+    let attempt = 0;
+
+    const tick = () => {
+      foregroundResyncTimerRef.current = undefined;
+      if (attempt === 0) {
+        hiddenAtRef.current = null;
+        if (shouldForceWs) socketRef.current?.reconnectNow();
+      }
+      void (async () => {
+        const ok = await resyncFromServer();
+        if (ok || attempt >= delays.length - 1) return;
+        if (document.visibilityState === "hidden") return;
+        attempt += 1;
+        foregroundResyncTimerRef.current = window.setTimeout(tick, delays[attempt]!);
+      })();
+    };
+
+    // Debounce stacked visibility/focus/pageshow on mobile resume.
+    foregroundResyncTimerRef.current = window.setTimeout(tick, 120);
   }
 
   // Foreground / bfcache restore — phone often missed WS `done` while suspended.
   useEffect(() => {
     if (!authenticated) return;
 
-    const onVisible = () => {
-      if (document.visibilityState === "visible") {
-        void resyncFromServer();
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        hiddenAtRef.current = Date.now();
+        return;
       }
+      scheduleForegroundResync("visibility");
     };
     const onPageShow = (event: PageTransitionEvent) => {
       if (event.persisted || document.visibilityState === "visible") {
-        void resyncFromServer();
+        scheduleForegroundResync("pageshow");
       }
+    };
+    const onFocus = () => {
+      if (document.visibilityState === "visible") {
+        scheduleForegroundResync("focus");
+      }
+    };
+    const onOnline = () => {
+      scheduleForegroundResync("online");
     };
     const onSwMessage = (event: MessageEvent) => {
       const data = event.data as { type?: string; sessionId?: string } | null;
       const type = data?.type;
-      if (type === "webcli:resync") void resyncFromServer();
+      if (type === "webcli:resync") scheduleForegroundResync("sw");
       if (type === "webcli:open-session" && data?.sessionId) {
         void openSession(data.sessionId);
       }
     };
 
-    document.addEventListener("visibilitychange", onVisible);
+    document.addEventListener("visibilitychange", onVisibility);
     window.addEventListener("pageshow", onPageShow);
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("online", onOnline);
     navigator.serviceWorker?.addEventListener("message", onSwMessage);
     return () => {
-      document.removeEventListener("visibilitychange", onVisible);
+      document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("pageshow", onPageShow);
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("online", onOnline);
       navigator.serviceWorker?.removeEventListener("message", onSwMessage);
+      if (foregroundResyncTimerRef.current !== undefined) {
+        window.clearTimeout(foregroundResyncTimerRef.current);
+        foregroundResyncTimerRef.current = undefined;
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authenticated, accessToken]);
@@ -1066,16 +1136,18 @@ export default function App() {
           }
         },
       );
+      socketRef.current = handle;
     }, 50);
     return () => {
       cancelled = true;
       window.clearTimeout(timer);
+      socketRef.current = null;
       handle?.close();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authenticated, accessToken]);
 
-  async function refreshSessions() {
+  async function refreshSessions(): Promise<SessionSummary[] | null> {
     try {
       const projectCount = Math.max(PROJECT_PAGE_SIZE, projectItemsRef.current.length);
       const sessionsLimit = Math.max(
@@ -1087,9 +1159,11 @@ export default function App() {
         sessionsLimit,
       });
       setProjectItems(projects);
+      projectItemsRef.current = projects;
       setHasMoreProjects(hasMore);
       const items = flattenProjects(projects);
       setSessions(items);
+      sessionsRef.current = items;
       setBusyIds((prev) => {
         const next = new Set(prev);
         for (const item of items) {
@@ -1101,10 +1175,13 @@ export default function App() {
             next.delete(id);
           }
         }
+        busyIdsRef.current = next;
         return next;
       });
+      return items;
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
+      return null;
     }
   }
 

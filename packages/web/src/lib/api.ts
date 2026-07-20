@@ -945,6 +945,8 @@ export function getConfigDoc(
 
 export type SocketHandle = {
   close: () => void;
+  /** Force a fresh socket (zombie connections after long background). */
+  reconnectNow: () => void;
 };
 
 function buildWsUrl(auth: AuthMode): string {
@@ -967,6 +969,9 @@ export function connectSocket(
   let reconnectTimer: number | undefined;
   let pingTimer: number | undefined;
   let attempt = 0;
+  let lastRxAt = Date.now();
+  /** Bumped on each open so stale close handlers from a forced reconnect are ignored. */
+  let connGen = 0;
 
   const clearTimers = () => {
     if (reconnectTimer !== undefined) {
@@ -982,18 +987,15 @@ export function connectSocket(
   const detach = () => {
     clearTimers();
     if (!socket) return;
-    socket.onopen = null;
-    socket.onclose = null;
-    socket.onerror = null;
-    socket.onmessage = null;
+    const ws = socket;
+    socket = null;
     try {
-      if (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) {
-        socket.close();
+      if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+        ws.close();
       }
     } catch {
       /* ignore */
     }
-    socket = null;
   };
 
   const scheduleReconnect = () => {
@@ -1009,6 +1011,7 @@ export function connectSocket(
 
   const open = () => {
     if (stopped) return;
+    const myGen = ++connGen;
     detach();
 
     let ws: WebSocket;
@@ -1021,20 +1024,32 @@ export function connectSocket(
     socket = ws;
 
     ws.addEventListener("open", () => {
+      if (myGen !== connGen) return;
       attempt = 0;
+      lastRxAt = Date.now();
       onConnectionChange?.("open");
       pingTimer = window.setInterval(() => {
-        if (ws.readyState === WebSocket.OPEN) {
+        if (myGen !== connGen || ws.readyState !== WebSocket.OPEN) return;
+        // Zombie socket: looks open but no frames after long suspend.
+        if (Date.now() - lastRxAt > 45_000) {
           try {
-            ws.send(JSON.stringify({ type: "ping", t: Date.now() }));
+            ws.close();
           } catch {
             /* ignore */
           }
+          return;
+        }
+        try {
+          ws.send(JSON.stringify({ type: "ping", t: Date.now() }));
+        } catch {
+          /* ignore */
         }
       }, 20_000);
     });
 
     ws.addEventListener("message", (ev) => {
+      if (myGen !== connGen) return;
+      lastRxAt = Date.now();
       try {
         const data = JSON.parse(String(ev.data)) as StreamEvent;
         if (data.type === "ping") {
@@ -1051,8 +1066,9 @@ export function connectSocket(
     });
 
     ws.addEventListener("close", () => {
+      if (myGen !== connGen) return;
       clearTimers();
-      socket = null;
+      if (socket === ws) socket = null;
       if (stopped) {
         onConnectionChange?.("closed");
         return;
@@ -1070,8 +1086,15 @@ export function connectSocket(
   return {
     close: () => {
       stopped = true;
+      connGen += 1;
       detach();
       onConnectionChange?.("closed");
+    },
+    reconnectNow: () => {
+      if (stopped) return;
+      attempt = 0;
+      clearTimers();
+      open();
     },
   };
 }
