@@ -31,6 +31,7 @@ import {
   clearAskWaitPause,
   askWaitPausedMs,
   endAskSession,
+  hasPendingAskQuestions,
   type AskQuestionAnswer,
   type AskQuestionHandlerResult,
   type AskQuestionItem,
@@ -634,13 +635,18 @@ function sanitizeMessages(messages: ChatMessage[]): ChatMessage[] {
 /** Clear busy if the run is terminal, or prepare phase exceeded grace (missed finally / crash). */
 function healStuckBusy(session: SessionRecord): void {
   if (!session.busy) return;
+
+  // agent.send blocks inside ask_user before activeRun is set — can wait hours.
+  if (hasPendingAskQuestions(session.id)) return;
+
   const run = session.activeRun;
 
   if (!run) {
     // Still in prepare (checkpoint / ensureAgent / agent.send) — not stuck.
     // Old bug: treating !run as terminal unlocked the composer + played the done chime.
-    const started = session.busyStartedAt ?? 0;
-    if (!started || Date.now() - started < BUSY_PREPARE_GRACE_MS) return;
+    // Exclude time spent waiting on AskQuestion cards (overnight is OK).
+    const elapsed = busyElapsedMs(session);
+    if (elapsed == null || elapsed < BUSY_PREPARE_GRACE_MS) return;
   } else {
     const status = run.status;
     const terminal =
