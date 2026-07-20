@@ -1,7 +1,4 @@
 import { randomUUID } from "node:crypto";
-import { existsSync } from "node:fs";
-import { copyFile, mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises";
-import { join } from "node:path";
 import {
   Agent,
   type AgentModeOption,
@@ -23,8 +20,18 @@ import { loadMcpServers } from "./mcp.js";
 import { createAskUserCustomTool } from "./ask-user-tool.js";
 import { createSubagentTools } from "./delegate-tools.js";
 import { notifyDeployIdleCheck } from "./deploy.js";
-import { dataDir, requireAgentApiKey } from "./paths.js";
+import { requireAgentApiKey } from "./paths.js";
 import { notifyAgentFinished } from "./push.js";
+import {
+  closeSessionStore,
+  deleteStoredSession,
+  loadAllStoredSessions,
+  openAndMigrateSessionStore,
+  replaceMessages as storeReplaceMessages,
+  upsertMessage as storeUpsertMessage,
+  upsertSessionMeta,
+  type StoredSessionMeta,
+} from "./session-store.js";
 import {
   answerAskQuestion as resolveAskQuestion,
   beginAskSession,
@@ -134,11 +141,6 @@ export type SessionRecord = SessionSummary & {
   mode?: AgentModeOption;
 };
 
-type PersistedSession = Omit<
-  SessionRecord,
-  "agent" | "messageCount" | "busy" | "busyStartedAt" | "activeRun"
->;
-
 /** How long we may wait for checkpoint / ensureAgent / send before treating as stuck. */
 const BUSY_PREPARE_GRACE_MS = 5 * 60 * 1000;
 
@@ -191,7 +193,7 @@ function markChildRunFinished(session: SessionRecord, status: string): void {
     status === "finished" || status === "completed" || status === "success";
   session.childStatus = ok ? "done" : "error";
   session.updatedAt = Date.now();
-  schedulePersist();
+  persistMeta(session);
   broadcast({
     type: "child_agent",
     sessionId: session.parentSessionId,
@@ -486,50 +488,6 @@ type Broadcaster = (event: StreamEvent) => void;
 
 const sessions = new Map<string, SessionRecord>();
 let broadcast: Broadcaster = () => {};
-let persistReady = Promise.resolve();
-
-function sessionsFile(): string {
-  return join(dataDir(), "sessions.json");
-}
-
-function sessionsBackupFile(): string {
-  return `${sessionsFile()}.bak`;
-}
-
-function sessionsTempFile(): string {
-  return `${sessionsFile()}.tmp`;
-}
-
-function parseSessionsPayload(raw: string): PersistedSession[] {
-  const parsed = JSON.parse(raw) as { sessions?: PersistedSession[] };
-  return Array.isArray(parsed.sessions) ? parsed.sessions : [];
-}
-
-function hydratePersistedSession(item: PersistedSession): SessionRecord | null {
-  if (!item?.id || !item.agentId) return null;
-  return {
-    id: item.id,
-    agentId: item.agentId,
-    workspace: item.workspace,
-    model: item.model || defaultModel(),
-    title: item.title || "Chat",
-    createdAt: item.createdAt || Date.now(),
-    updatedAt: item.updatedAt || Date.now(),
-    messageCount: item.messages?.length ?? 0,
-    messages: sanitizeMessages(Array.isArray(item.messages) ? item.messages : []),
-    mode: item.mode === "plan" ? "plan" : "agent",
-    agent: null,
-    parentSessionId: item.parentSessionId,
-    projectWorkspace: item.projectWorkspace || item.workspace,
-    agentBranch: item.agentBranch,
-    worktreePath: item.worktreePath,
-    agentBaseSha: item.agentBaseSha,
-    childStatus: item.childStatus,
-    childSessionIds: Array.isArray(item.childSessionIds)
-      ? item.childSessionIds
-      : undefined,
-  };
-}
 
 export function setBroadcaster(fn: Broadcaster): void {
   broadcast = fn;
@@ -575,7 +533,7 @@ function toSummary(session: SessionRecord): SessionSummary {
   };
 }
 
-function toPersisted(session: SessionRecord): PersistedSession {
+function toStoredMeta(session: SessionRecord): StoredSessionMeta {
   return {
     id: session.id,
     agentId: session.agentId,
@@ -584,7 +542,6 @@ function toPersisted(session: SessionRecord): PersistedSession {
     title: session.title,
     createdAt: session.createdAt,
     updatedAt: session.updatedAt,
-    messages: session.messages,
     mode: session.mode || "agent",
     parentSessionId: session.parentSessionId,
     projectWorkspace: session.projectWorkspace || session.workspace,
@@ -595,85 +552,107 @@ function toPersisted(session: SessionRecord): PersistedSession {
     childSessionIds: session.childSessionIds?.length
       ? [...session.childSessionIds]
       : undefined,
+    skipParentWake: session.skipParentWake,
   };
 }
 
-async function writeSessions(): Promise<void> {
-  const dir = dataDir();
-  await mkdir(dir, { recursive: true });
-  const payload = {
-    version: 1,
-    sessions: [...sessions.values()].map(toPersisted),
-  };
-  const file = sessionsFile();
-  const tmp = sessionsTempFile();
-  const bak = sessionsBackupFile();
-  const text = JSON.stringify(payload, null, 2);
-  await writeFile(tmp, text, "utf8");
-  if (existsSync(file)) {
-    await copyFile(file, bak);
-  }
+function persistMeta(session: SessionRecord): void {
   try {
-    await rename(tmp, file);
-  } catch {
-    // Windows can block rename over an open file — fall back to direct write.
-    await writeFile(file, text, "utf8");
-    await unlink(tmp).catch(() => undefined);
+    upsertSessionMeta(toStoredMeta(session));
+  } catch (err) {
+    console.error("Failed to persist session meta:", err);
   }
 }
 
-function schedulePersist(): void {
-  persistReady = persistReady
-    .then(() => writeSessions())
-    .catch((err) => {
-      console.error("Failed to persist sessions:", err);
-    });
+function persistAppendMessage(session: SessionRecord, message: ChatMessage): void {
+  try {
+    upsertSessionMeta(toStoredMeta(session));
+    storeUpsertMessage(session.id, message);
+  } catch (err) {
+    console.error("Failed to persist message:", err);
+  }
 }
 
-function loadPersistedItems(items: PersistedSession[]): number {
-  sessions.clear();
-  for (const item of items) {
-    const session = hydratePersistedSession(item);
-    if (session) sessions.set(session.id, session);
+function persistReplaceMessages(session: SessionRecord): void {
+  try {
+    upsertSessionMeta(toStoredMeta(session));
+    storeReplaceMessages(session.id, session.messages);
+  } catch (err) {
+    console.error("Failed to replace session messages:", err);
   }
-  return sessions.size;
+}
+
+function persistDelete(sessionId: string): void {
+  try {
+    deleteStoredSession(sessionId);
+  } catch (err) {
+    console.error("Failed to delete stored session:", err);
+  }
+}
+
+function hydratePersistedSession(item: {
+  id: string;
+  agentId: string;
+  workspace: string;
+  model?: string;
+  title?: string;
+  createdAt?: number;
+  updatedAt?: number;
+  messages?: ChatMessage[];
+  mode?: string;
+  parentSessionId?: string;
+  projectWorkspace?: string;
+  agentBranch?: string;
+  worktreePath?: string;
+  agentBaseSha?: string;
+  childStatus?: ChildAgentStatus;
+  childSessionIds?: string[];
+  skipParentWake?: boolean;
+}): SessionRecord | null {
+  if (!item?.id || !item.agentId) return null;
+  return {
+    id: item.id,
+    agentId: item.agentId,
+    workspace: item.workspace,
+    model: item.model || defaultModel(),
+    title: item.title || "Chat",
+    createdAt: item.createdAt || Date.now(),
+    updatedAt: item.updatedAt || Date.now(),
+    messageCount: item.messages?.length ?? 0,
+    messages: sanitizeMessages(Array.isArray(item.messages) ? item.messages : []),
+    mode: item.mode === "plan" ? "plan" : "agent",
+    agent: null,
+    parentSessionId: item.parentSessionId,
+    projectWorkspace: item.projectWorkspace || item.workspace,
+    agentBranch: item.agentBranch,
+    worktreePath: item.worktreePath,
+    agentBaseSha: item.agentBaseSha,
+    childStatus: item.childStatus,
+    childSessionIds: Array.isArray(item.childSessionIds)
+      ? item.childSessionIds
+      : undefined,
+    skipParentWake: item.skipParentWake,
+  };
 }
 
 export async function loadPersistedSessions(): Promise<number> {
-  const file = sessionsFile();
-  const candidates = [file, sessionsBackupFile()];
-  let lastErr: unknown;
-
-  for (const candidate of candidates) {
-    try {
-      const raw = await readFile(candidate, "utf8");
-      const items = parseSessionsPayload(raw);
-      const count = loadPersistedItems(items);
-      if (candidate !== file) {
-        console.warn(`Recovered ${count} session(s) from backup ${candidate}`);
-        void schedulePersist();
-      }
-      return count;
-    } catch (err) {
-      const code = (err as NodeJS.ErrnoException).code;
-      if (code === "ENOENT") continue;
-      lastErr = err;
-      console.error(`Failed to load sessions from ${candidate}:`, err);
+  try {
+    await openAndMigrateSessionStore();
+    const items = loadAllStoredSessions();
+    sessions.clear();
+    for (const item of items) {
+      const session = hydratePersistedSession({
+        ...item,
+        messages: item.messages as ChatMessage[],
+        childStatus: item.childStatus as ChildAgentStatus | undefined,
+      });
+      if (session) sessions.set(session.id, session);
     }
+    return sessions.size;
+  } catch (err) {
+    console.error("Failed to load sessions:", err);
+    return 0;
   }
-
-  if (lastErr) {
-    const corrupt = join(dataDir(), `sessions.corrupt-${Date.now()}.json`);
-    try {
-      if (existsSync(file)) {
-        await copyFile(file, corrupt);
-        console.error(`Saved unreadable sessions file to ${corrupt}`);
-      }
-    } catch (copyErr) {
-      console.error("Failed to quarantine corrupt sessions file:", copyErr);
-    }
-  }
-  return 0;
 }
 
 function sanitizeMessages(messages: ChatMessage[]): ChatMessage[] {
@@ -1120,9 +1099,10 @@ export async function createSession(input: {
     if (!kids.includes(session.id)) kids.push(session.id);
     parent.childSessionIds = kids;
     parent.updatedAt = Date.now();
+    persistMeta(parent);
   }
 
-  schedulePersist();
+  persistMeta(session);
   return toSummary(session);
 }
 
@@ -1160,7 +1140,7 @@ export async function resumeSession(input: {
     messages: [],
   };
   sessions.set(session.id, session);
-  schedulePersist();
+  persistMeta(session);
   return toSummary(session);
 }
 
@@ -1198,11 +1178,12 @@ export async function deleteSession(id: string): Promise<boolean> {
       }
       parent.childSessionIds = (parent.childSessionIds || []).filter((cid) => cid !== id);
       parent.updatedAt = Date.now();
+      persistMeta(parent);
     }
   }
 
   sessions.delete(id);
-  schedulePersist();
+  persistDelete(id);
   return true;
 }
 
@@ -1249,7 +1230,7 @@ function appendMessage(
   if (role === "user" && session.title === "New chat") {
     session.title = content.slice(0, 48) || session.title;
   }
-  schedulePersist();
+  persistAppendMessage(session, message);
   if (role === "user") {
     broadcast({
       type: "user_message",
@@ -1286,7 +1267,7 @@ async function recreateAgent(session: SessionRecord): Promise<void> {
   });
   session.agent = agent;
   session.agentId = agent.agentId;
-  schedulePersist();
+  persistMeta(session);
 }
 
 /**
@@ -1352,7 +1333,7 @@ export async function rollbackToMessage(
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(`Chat rolled back, but failed to reset agent: ${message}`);
   }
-  schedulePersist();
+  persistReplaceMessages(session);
 
   const rolledPage = sliceMessagesPage(session.messages, { limit: 30 });
   broadcast({
@@ -1428,7 +1409,11 @@ function persistActivity(
   }
   session.updatedAt = Date.now();
   session.messageCount = session.messages.length;
-  schedulePersist();
+  const activityMessage = session.messages.find(
+    (message) => message.role === "activity" && message.activityId === activity.id,
+  );
+  if (activityMessage) persistAppendMessage(session, activityMessage);
+  else persistMeta(session);
 }
 
 /** sessionId → activityId → wall-clock start (for duration when SDK omits it). */
@@ -1573,7 +1558,7 @@ function applySwitchModeRequest(
   if (session.mode !== next) {
     session.mode = next;
     session.updatedAt = Date.now();
-    schedulePersist();
+    persistMeta(session);
   }
   broadcast({
     type: "session_mode",
@@ -2110,7 +2095,7 @@ async function sendMessageNow(
   const mode = options?.mode === "plan" ? "plan" : session.mode || "agent";
   session.model = model;
   session.mode = mode;
-  schedulePersist();
+  persistMeta(session);
 
   const chatImages: ChatImage[] = images.map((img) => ({
     mimeType: img.mimeType,
@@ -2894,7 +2879,8 @@ export function submitAskQuestionAnswer(
   };
   session.messages.push(message);
   session.updatedAt = Date.now();
-  schedulePersist();
+  session.messageCount = session.messages.length;
+  persistAppendMessage(session, message);
   return message;
 }
 
@@ -3026,7 +3012,7 @@ export async function updateSession(
     if (next) session.title = next.slice(0, 120);
   }
   session.updatedAt = Date.now();
-  schedulePersist();
+  persistMeta(session);
   return toSummary(session);
 }
 
@@ -3249,7 +3235,7 @@ export async function mergeDelegatedChild(
   if (result.conflict) {
     child.childStatus = "conflict";
     child.updatedAt = Date.now();
-    schedulePersist();
+    persistMeta(child);
     broadcast({
       type: "child_agent",
       sessionId: parentSessionId,
@@ -3272,7 +3258,7 @@ export async function mergeDelegatedChild(
   if (!result.ok) {
     child.childStatus = "error";
     child.updatedAt = Date.now();
-    schedulePersist();
+    persistMeta(child);
     return {
       childSessionId,
       ok: false,
@@ -3286,7 +3272,7 @@ export async function mergeDelegatedChild(
   child.childStatus = "merged";
   child.worktreePath = undefined;
   child.updatedAt = Date.now();
-  schedulePersist();
+  persistMeta(child);
   broadcast({
     type: "child_agent",
     sessionId: parentSessionId,
@@ -3357,7 +3343,6 @@ export async function getDelegatedChildResult(
 
 /** Close live agent handles without deleting persisted sessions. */
 export async function disposeAllSessions(): Promise<void> {
-  await persistReady;
   for (const session of sessions.values()) {
     if (!session.agent) continue;
     try {
@@ -3371,4 +3356,5 @@ export async function disposeAllSessions(): Promise<void> {
     }
     session.agent = null;
   }
+  closeSessionStore();
 }

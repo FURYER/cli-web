@@ -77,7 +77,7 @@ Open the HTTPS URL CloudPub prints in your phone browser and enter the same `ACC
 Tips:
 
 - Leave the prod window open; prevent sleep on the PC while you work from the phone.
-- Release chats live in `%USERPROFILE%\.webcli\sessions.json` — restarting the server does not wipe history.
+- Release chats live in `%USERPROFILE%\.webcli\sessions.db` (SQLite; migrates from older `sessions.json` on first start) — restarting the server does not wipe history.
 - You **can** open workspace `...\cli-web` from the phone and edit this project. Prod will **not** auto-reload; after you change WebCLI itself, rebuild/restart when you want the new UI/server code — or verify first on the stand (`:5174`).
 - Prefer working on *other* projects from the phone while WebCLI runs in prod — most stable.
 
@@ -210,7 +210,7 @@ Do **not** point CloudPub at Vite `:5174` for phone use — prefer `start-stand-
 
 Auth: `Authorization: Bearer <ACCESS_TOKEN>` or query `token`.
 
-Sessions are saved in `~/.webcli/sessions.json` (or `WEBCLI_DATA_DIR`) and restored on server start.
+Sessions are saved in `~/.webcli/sessions.db` (or `WEBCLI_DATA_DIR`; legacy `sessions.json` is imported once) and restored on server start.
 
 ### Notifications
 
