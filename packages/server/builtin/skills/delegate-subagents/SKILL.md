@@ -3,20 +3,14 @@ name: delegate-subagents
 description: >-
   Delegate work to isolated sub-agents (git worktree + branch each), review
   results, and merge back. Use when parallel isolated work would help — judge
-  the tradeoff yourself; there is no rigid checklist of cases.
+  the tradeoff yourself. RU: делегирование, саб-агент, worktree, merge_child.
 ---
 
 # Sub-agents (delegate_task)
 
-You have tools to spawn isolated workers (git worktree + branch each). Prefer
-calling them over inventing markdown “todo lists” that pretend to be parallel.
-
-There is **no fixed list of when yes / when no**. Before you delegate, briefly
-reason: would splitting this save wall-clock or reduce risk of conflicting edits
-enough to justify spawn + merge overhead? If a single focused pass is clearer
-and faster, just do the work yourself. If two chunks are independent (or need
-safe overlap on the same files), delegation is often worth it. Stay curious —
-re-evaluate mid-task if the shape of the work changes.
+When to use (short nudge): built-in rule `delegate-subagents`. This skill is the
+**how-to**. Prefer calling these tools over inventing markdown “todo lists” that
+pretend to be parallel.
 
 ## Tools
 
@@ -58,7 +52,7 @@ On **conflict**: resolve files in the parent repo (or `git merge --abort`), then
 
 ## Recommended flow
 
-1. Decide the split is worth it (see the reasoning nudge above).
+1. Decide the split is worth it (see rule `delegate-subagents`).
 2. `delegate_task` × N with `wait: false` (each call auto-prepares if still dirty).
 3. **You can end your turn** — when all those children finish, the system
    automatically sends you a wake-up message with their results.
@@ -68,7 +62,7 @@ On **conflict**: resolve files in the parent repo (or `git merge --abort`), then
 (`wait: true` still works for a single sequential child; that path does **not**
 auto-wake because you already get the result in the tool response.)
 
-## Rules
+## Constraints
 
 - Only the **orchestrator** (top-level chat) may call these tools — children cannot nest further.
 - Parent must be a **git repository**.

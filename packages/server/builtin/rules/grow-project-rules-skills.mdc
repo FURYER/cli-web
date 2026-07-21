@@ -1,0 +1,19 @@
+---
+description: >-
+  Across every project: capture durable conventions into that project's
+  .cursor/rules and .cursor/skills. Built-in habit — see skill
+  create-project-rule-or-skill.
+alwaysApply: true
+---
+
+# Grow project rules & skills (built-in)
+
+Whatever repo you are in, when a **durable** convention or multi-step workflow
+emerges, write it into **that project's** `.cursor/rules/` or `.cursor/skills/`
+so the next chat does not re-learn it.
+
+- Prefer **update** over a new near-duplicate; **delete** obsolete project files.
+- This habit itself is a **WebCLI built-in** (`packages/server/builtin/`, synced
+  to `~/.cursor/`) — do **not** copy it into a repo or delete it during project
+  `.cursor/` cleanup.
+- Details and templates: skill `create-project-rule-or-skill`.

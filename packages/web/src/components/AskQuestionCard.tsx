@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { X } from "lucide-react";
 import type { AskQuestionAnswer, AskQuestionItem, AuthMode } from "../lib/api";
 import { VoiceCaptureButton } from "./VoiceCaptureButton";
 
@@ -45,6 +46,63 @@ function labelFor(
     .filter(Boolean);
   const parts = [...labels, freeform?.trim()].filter(Boolean);
   return parts.join(", ") || "—";
+}
+
+function FreeformAnswerInput({
+  value,
+  disabled,
+  onChange,
+  onClear,
+}: {
+  value: string;
+  disabled?: boolean;
+  onChange: (value: string) => void;
+  onClear: () => void;
+}) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = "0px";
+    // ~1 line base → grow up to ~4 lines.
+    const next = Math.min(Math.max(el.scrollHeight, 36), 96);
+    el.style.height = `${next}px`;
+  }, [value]);
+
+  return (
+    <div className="relative min-w-0 flex-1">
+      <label className="block">
+        <span className="sr-only">Your own answer</span>
+        <textarea
+          ref={ref}
+          rows={1}
+          value={value}
+          disabled={disabled}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Or write your own…"
+          className={`max-h-24 min-h-9 w-full resize-none overflow-y-auto rounded-lg bg-white/[0.03] py-2 text-sm leading-snug text-ink outline-none ring-1 placeholder:text-muted/70 disabled:opacity-50 ${
+            value.trim() ? "pl-3 pr-9" : "px-3"
+          } ${
+            value.trim()
+              ? "ring-accent/40"
+              : "ring-line focus:ring-accent/30"
+          }`}
+        />
+      </label>
+      {value.trim() && !disabled ? (
+        <button
+          type="button"
+          onClick={onClear}
+          className="absolute right-1.5 top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-md text-muted transition-colors hover:bg-white/[0.06] hover:text-ink"
+          title="Clear answer"
+          aria-label="Clear answer"
+        >
+          <X size={14} strokeWidth={1.75} aria-hidden />
+        </button>
+      ) : null}
+    </div>
+  );
 }
 
 export function AskQuestionCard({
@@ -194,23 +252,13 @@ export function AskQuestionCard({
                       </button>
                     );
                   })}
-                  <div className="mt-0.5 flex items-center gap-1.5">
-                    <label className="min-w-0 flex-1 block">
-                      <span className="sr-only">Your own answer</span>
-                      <input
-                        type="text"
-                        value={customValue}
-                        onChange={(e) =>
-                          updateFreeform(question, e.target.value)
-                        }
-                        placeholder="Or write your own…"
-                        className={`w-full rounded-lg bg-white/[0.03] px-3 py-2 text-sm text-ink outline-none ring-1 placeholder:text-muted/70 ${
-                          customValue.trim()
-                            ? "ring-accent/40"
-                            : "ring-line focus:ring-accent/30"
-                        }`}
-                      />
-                    </label>
+                  <div className="mt-0.5 flex items-start gap-1.5">
+                    <FreeformAnswerInput
+                      value={customValue}
+                      disabled={submitting}
+                      onChange={(value) => updateFreeform(question, value)}
+                      onClear={() => updateFreeform(question, "")}
+                    />
                     {auth ? (
                       <VoiceCaptureButton
                         auth={auth}

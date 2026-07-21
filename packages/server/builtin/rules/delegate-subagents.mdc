@@ -1,0 +1,20 @@
+---
+description: >-
+  When a task splits into independent chunks, prefer WebCLI sub-agents
+  (delegate_task). See skill delegate-subagents. RU: делегирование, саб-агент.
+alwaysApply: true
+---
+
+# Prefer sub-agents when splitting pays off (built-in)
+
+If the work has **two or more independent chunks** (or safe overlap on the same
+files) and parallel/isolation would save wall-clock or reduce edit conflicts,
+use WebCLI tools **`delegate_task` → wake-up → `merge_child`** instead of a fake
+markdown “parallel” plan.
+
+- Brief judgment only — no rigid checklist. If one focused pass is clearer,
+  do it yourself.
+- Only the **orchestrator** (top-level chat) may spawn; children cannot nest.
+- Parent must be a **git** repo (dirty tree → auto checkpoint before spawn).
+
+Details, prompts, conflict handling: skill `delegate-subagents`.
