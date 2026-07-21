@@ -87,6 +87,8 @@ export type ChatMessage = {
   images?: ChatImage[];
   usage?: TokenUsage;
   context?: ContextSnapshot;
+  /** Client optimistic bubble id (`local-…`) — dedupe on user_message. */
+  clientMessageId?: string;
   questionTitle?: string;
   questionItems?: AskQuestionItem[];
   questionStatus?: "answered" | "skipped";

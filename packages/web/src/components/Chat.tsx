@@ -2047,7 +2047,11 @@ export function Chat({
                         ))}
                       </div>
                     ) : null}
-                    {message.content ? (
+                    {message.content &&
+                    !(
+                      message.images?.length &&
+                      message.content.trim() === "(image)"
+                    ) ? (
                       <MarkdownBody text={message.content} sessionId={sessionId} auth={auth} />
                     ) : null}
                   </div>

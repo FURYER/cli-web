@@ -128,18 +128,40 @@ function mergeSessionLists(
 }
 
 /** Keep already-loaded older messages when refreshing the newest page. */
+function imageOnlyPlaceholder(content: string): boolean {
+  const t = content.trim();
+  return t === "" || t === "(image)";
+}
+
+/** Match optimistic local-* bubble to the server user message it became. */
+function matchesOptimisticUser(
+  local: ChatMessage,
+  server: ChatMessage,
+): boolean {
+  if (local.role !== "user" || server.role !== "user") return false;
+  if (server.clientMessageId && local.id === server.clientMessageId) return true;
+  if (local.content === server.content) return true;
+  // Image-only: client used to send "" while server stores "(image)".
+  const localImgs = local.images?.length ?? 0;
+  const serverImgs = server.images?.length ?? 0;
+  if (
+    localImgs > 0 &&
+    serverImgs > 0 &&
+    imageOnlyPlaceholder(local.content) &&
+    imageOnlyPlaceholder(server.content)
+  ) {
+    return true;
+  }
+  return false;
+}
+
 function mergeTailRefresh(
   serverTail: ChatMessage[],
   prev: ChatMessage[],
 ): ChatMessage[] {
   const pending = prev.filter((m) => {
     if (m.role !== "user" || !String(m.id).startsWith("local-")) return false;
-    return !serverTail.some(
-      (s) =>
-        s.role === "user" &&
-        s.content === m.content &&
-        Math.abs((s.createdAt || 0) - (m.createdAt || 0)) < 180_000,
-    );
+    return !serverTail.some((s) => matchesOptimisticUser(m, s));
   });
   if (!serverTail.length) {
     return pending.length ? [...serverTail, ...pending] : serverTail;
@@ -279,6 +301,8 @@ export default function App() {
   const foregroundResyncTimerRef = useRef<number | undefined>(undefined);
   const resyncInFlightRef = useRef<Promise<boolean> | null>(null);
   const resyncStartedAtRef = useRef<number | null>(null);
+  /** Dedupe restore prompt from HTTP + delayed WS (phone often gets WS seconds later). */
+  const rollbackDraftTokenRef = useRef<string | null>(null);
 
   const auth: AuthMode = { accessToken };
   const authenticated = Boolean(auth.accessToken);
@@ -455,6 +479,22 @@ export default function App() {
     }
   }
 
+  /**
+   * Authoritative busy from the server. Local `sendingRef` must not keep Stop /
+   * "Planning next moves" after a missed WS `done` (common on phone resume).
+   */
+  function syncBusyFromServer(sessionId: string, serverBusy: boolean) {
+    if (serverBusy) {
+      markBusy(sessionId, true);
+      return;
+    }
+    clearSending(sessionId);
+    markBusy(sessionId, false);
+    if (activeIdRef.current === sessionId) {
+      clearLiveRunUi({ keepPendingQuestions: true });
+    }
+  }
+
   /** Apply /api/.../ask-questions into local card state. */
   function applyPendingFromServer(
     sessionId: string,
@@ -559,7 +599,11 @@ export default function App() {
           const next = new Set(prev);
           for (const item of items) {
             if (item.busy) next.add(item.id);
-            else if (!sendingRef.current.has(item.id)) next.delete(item.id);
+            else {
+              // Trust list: idle on server → drop local send latch too.
+              sendingRef.current.delete(item.id);
+              next.delete(item.id);
+            }
           }
           for (const id of [...next]) {
             if (!items.some((item) => item.id === id) && !sendingRef.current.has(id)) {
@@ -574,14 +618,7 @@ export default function App() {
         if (!id) return true;
         const summary = items.find((item) => item.id === id);
         const serverBusy = Boolean(summary?.busy);
-
-        // Don't wipe ask cards before we re-fetch pending from the server.
-        if (!serverBusy && !sendingRef.current.has(id)) {
-          markBusy(id, false);
-          clearLiveRunUi({ keepPendingQuestions: true });
-        } else if (serverBusy) {
-          markBusy(id, true);
-        }
+        syncBusyFromServer(id, serverBusy);
 
         if (opts?.reloadActive === false) return true;
 
@@ -595,12 +632,7 @@ export default function App() {
           if (opts?.longAway) {
             const pending = prev.filter((m) => {
               if (m.role !== "user" || !String(m.id).startsWith("local-")) return false;
-              return !detail.messages.some(
-                (s) =>
-                  s.role === "user" &&
-                  s.content === m.content &&
-                  Math.abs((s.createdAt || 0) - (m.createdAt || 0)) < 180_000,
-              );
+              return !detail.messages.some((s) => matchesOptimisticUser(m, s));
             });
             return pending.length
               ? [...detail.messages, ...pending]
@@ -617,11 +649,7 @@ export default function App() {
         if (opts?.longAway) {
           setHasMoreOlder(Boolean(detail.hasMoreOlder));
         }
-        const keepLocalBusy = sendingRef.current.has(id);
-        markBusy(id, Boolean(detail.busy) || keepLocalBusy);
-        if (!detail.busy && !keepLocalBusy) {
-          clearLiveRunUi({ keepPendingQuestions: true });
-        }
+        syncBusyFromServer(id, Boolean(detail.busy));
         if (detail.context) {
           setLastContext(detail.context);
           setLastUsage(detail.usage ?? latestContextFromMessages(detail.messages)?.usage ?? null);
@@ -927,9 +955,12 @@ export default function App() {
 
           // Track busy for every session so the sidebar can show parallel work.
           if (event.type === "status" && event.sessionId && event.status === "RUNNING") {
+            // Send was accepted — drop the local "starting" latch.
+            clearSending(event.sessionId);
             markBusy(event.sessionId, true);
           }
           if (event.type === "activity" && event.sessionId && event.status === "running") {
+            clearSending(event.sessionId);
             markBusy(event.sessionId, true);
           }
           if (event.type === "done" && event.sessionId) {
@@ -1107,8 +1138,7 @@ export default function App() {
                 const localIdx = prev.findIndex(
                   (m) =>
                     String(m.id).startsWith("local-") &&
-                    m.role === "user" &&
-                    m.content === msg.content,
+                    matchesOptimisticUser(m, msg),
                 );
                 const withoutLocal =
                   localIdx >= 0
@@ -1268,10 +1298,7 @@ export default function App() {
               setAskSubmittingId(null);
               setMessages(event.messages);
               setHasMoreOlder(Boolean(event.hasMoreOlder));
-              if (event.restoredPrompt) {
-                setComposerDraft(event.restoredPrompt);
-                setComposerDraftKey((k) => k + 1);
-              }
+              ingestRestoredPrompt(event.restoredPrompt);
               void refreshSessions();
               break;
             case "usage":
@@ -1456,7 +1483,10 @@ export default function App() {
         const next = new Set(prev);
         for (const item of items) {
           if (item.busy) next.add(item.id);
-          else if (!sendingRef.current.has(item.id)) next.delete(item.id);
+          else {
+            sendingRef.current.delete(item.id);
+            next.delete(item.id);
+          }
         }
         for (const id of [...next]) {
           if (!items.some((item) => item.id === id) && !sendingRef.current.has(id)) {
@@ -1617,11 +1647,7 @@ export default function App() {
         setMode(detail.mode);
         storeMode(detail.mode);
       }
-      markBusy(id, Boolean(detail.busy) || sendingRef.current.has(id));
-      if (!detail.busy && !sendingRef.current.has(id)) {
-        // Keep any race-y WS cards until listPendingAskQuestions below.
-        clearLiveRunUi({ keepPendingQuestions: true });
-      }
+      syncBusyFromServer(id, Boolean(detail.busy));
       try {
         const pending = await listPendingAskQuestions(auth, id);
         applyPendingFromServer(id, pending.pending);
@@ -1808,12 +1834,13 @@ export default function App() {
     }
 
     const localId = `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const displayText = text.trim() || (images.length > 0 ? "(image)" : "");
     setMessages((prev) => [
       ...prev,
       {
         id: localId,
         role: "user",
-        content: text,
+        content: displayText,
         mode: sendMode,
         queued: alreadyBusy,
         images: images.map((img) => ({
@@ -1954,6 +1981,21 @@ export default function App() {
     }
   }
 
+  /**
+   * Put restore text into the composer once.
+   * Rollback is delivered via both HTTP and WS; on phone WS can lag by seconds
+   * and used to re-paste over the user's edits — dedupe by prompt token only.
+   * Do not clear composerDraft in a microtask: React may commit draft="" before
+   * Composer applies the inject, and the field stays empty.
+   */
+  function ingestRestoredPrompt(prompt: string | undefined) {
+    if (!prompt) return;
+    if (rollbackDraftTokenRef.current === prompt) return;
+    rollbackDraftTokenRef.current = prompt;
+    setComposerDraft(prompt);
+    setComposerDraftKey((k) => k + 1);
+  }
+
   async function handleRollback(messageId: string) {
     if (!activeId || busy) return;
     const target = messages.find((m) => m.id === messageId);
@@ -1965,6 +2007,8 @@ export default function App() {
     );
     if (!ok) return;
     setError(null);
+    // Allow re-applying the same prompt on a fresh Restore click.
+    rollbackDraftTokenRef.current = null;
     try {
       const result = await rollbackMessage(auth, activeId, messageId);
       setMessages(result.messages);
@@ -1972,8 +2016,7 @@ export default function App() {
       setActivities([]);
       setPendingQuestions([]);
       setAskSubmittingId(null);
-      setComposerDraft(result.restoredPrompt);
-      setComposerDraftKey((k) => k + 1);
+      ingestRestoredPrompt(result.restoredPrompt);
       await refreshSessions();
       if (hasCheckpoint && !result.filesRestored) {
         setError(

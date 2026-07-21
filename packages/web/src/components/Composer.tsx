@@ -208,6 +208,7 @@ export function Composer({
   const chunksRef = useRef<Blob[]>([]);
   const voiceSessionRef = useRef(0);
   const draftSessionRef = useRef<string | null>(null);
+  const textRef = useRef("");
 
   const modelOptions = dedupeModels(models, model);
   const selectedModel = modelOptions.find((m) => m.id === model) ?? modelOptions[0];
@@ -218,23 +219,27 @@ export function Composer({
     draftSessionRef.current = id;
     if (draftText) {
       setText(draftText);
+      textRef.current = draftText;
       saveDraft(id, draftText);
       return;
     }
-    setText(loadDraft(id));
-    // draftKey forces re-apply when parent injects the same text again
+    const stored = loadDraft(id);
+    setText(stored);
+    textRef.current = stored;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionId, draftKey]);
+  }, [sessionId]);
 
+  // Parent injects (restore, board insert, send-error). draftKey re-applies same text.
   useEffect(() => {
-    if (draftText) {
-      setText(draftText);
-      saveDraft(sessionId, draftText);
-    }
+    if (!draftText) return;
+    setText(draftText);
+    textRef.current = draftText;
+    saveDraft(sessionId, draftText);
   }, [draftText, draftKey, sessionId]);
 
   useEffect(() => {
     if (draftSessionRef.current !== (sessionId ?? null)) return;
+    textRef.current = text;
     saveDraft(sessionId, text);
   }, [text, sessionId]);
 

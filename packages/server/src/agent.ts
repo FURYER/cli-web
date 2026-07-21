@@ -88,6 +88,8 @@ export type ChatMessage = {
   images?: ChatImage[];
   usage?: TokenUsage;
   context?: ContextSnapshot;
+  /** Client optimistic bubble id (`local-…`) — dedupe on user_message. */
+  clientMessageId?: string;
   /** Interactive Ask Question card (pending cards are live WS-only). */
   questionTitle?: string;
   questionItems?: AskQuestionItem[];
@@ -1211,7 +1213,14 @@ function appendMessage(
   extra?: Partial<
     Pick<
       ChatMessage,
-      "toolName" | "checkpointSha" | "images" | "usage" | "context" | "mode" | "durationMs"
+      | "toolName"
+      | "checkpointSha"
+      | "images"
+      | "usage"
+      | "context"
+      | "mode"
+      | "durationMs"
+      | "clientMessageId"
     >
   >,
 ): ChatMessage {
@@ -1226,6 +1235,7 @@ function appendMessage(
     usage: extra?.usage,
     context: extra?.context,
     mode: extra?.mode,
+    clientMessageId: extra?.clientMessageId,
     createdAt,
   };
   if (typeof extra?.durationMs === "number" && extra.durationMs >= 0) {
@@ -2166,7 +2176,10 @@ async function pumpSessionSendQueue(sessionId: string): Promise<void> {
 
   sessionSendPumping.add(sessionId);
   try {
-    await sendMessageNow(sessionId, next.text, next.options);
+    await sendMessageNow(sessionId, next.text, {
+      ...next.options,
+      clientMessageId: next.clientMessageId,
+    });
     next.resolve?.();
   } catch (err) {
     const error = err instanceof Error ? err : new Error(String(err));
@@ -2185,6 +2198,7 @@ async function sendMessageNow(
     modelId?: string;
     mode?: AgentModeOption;
     images?: SendImageInput[];
+    clientMessageId?: string;
   },
 ): Promise<void> {
   const session = sessions.get(sessionId);
@@ -2229,6 +2243,7 @@ async function sendMessageNow(
       checkpointSha,
       images: chatImages.length ? chatImages : undefined,
       mode,
+      clientMessageId: options?.clientMessageId?.trim() || undefined,
     });
   } catch (err) {
     setSessionBusy(session, false);
