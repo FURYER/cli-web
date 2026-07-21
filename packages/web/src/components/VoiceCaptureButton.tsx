@@ -42,6 +42,8 @@ type Props = {
   disabled?: boolean;
   onTranscript: (text: string) => void;
   className?: string;
+  /** Waveform above the mic (default true). Hide when the control sits in a tight row. */
+  showWaveform?: boolean;
 };
 
 /** Compact mic control that appends Whisper transcription via `onTranscript`. */
@@ -50,6 +52,7 @@ export function VoiceCaptureButton({
   disabled,
   onTranscript,
   className = "",
+  showWaveform = true,
 }: Props) {
   const [listening, setListening] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
@@ -193,7 +196,7 @@ export function VoiceCaptureButton({
 
   return (
     <div className={className}>
-      {listening ? (
+      {showWaveform && listening ? (
         <div className="mb-1.5 rounded-md border border-accent/30 bg-surface/80 px-2 py-1.5">
           <VoiceWaveform stream={voiceStream} active={listening} className="h-5 w-full" />
         </div>
@@ -214,7 +217,7 @@ export function VoiceCaptureButton({
               ? "Transcribing…"
               : listening
                 ? "Stop & transcribe"
-                : "Voice to create card"
+                : "Voice input"
         }
         aria-label={listening ? "Stop recording" : "Voice input"}
         aria-pressed={listening}

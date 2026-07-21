@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import type { AskQuestionAnswer, AskQuestionItem } from "../lib/api";
+import type { AskQuestionAnswer, AskQuestionItem, AuthMode } from "../lib/api";
+import { VoiceCaptureButton } from "./VoiceCaptureButton";
 
 type Props = {
   callId: string;
@@ -8,6 +9,7 @@ type Props = {
   status: "pending" | "answered" | "skipped";
   answers?: AskQuestionAnswer[];
   submitting?: boolean;
+  auth?: AuthMode;
   onSubmit?: (answers: AskQuestionAnswer[]) => void;
   onSkip?: () => void;
 };
@@ -51,6 +53,7 @@ export function AskQuestionCard({
   status,
   answers,
   submitting,
+  auth,
   onSubmit,
   onSkip,
 }: Props) {
@@ -83,19 +86,42 @@ export function AskQuestionCard({
       return hasSelection || hasFreeform;
     });
 
+  function updateFreeform(question: AskQuestionItem, value: string) {
+    setFreeform((prev) => ({ ...prev, [question.id]: value }));
+    // Single-choice: typing/voice own answer clears preset selection.
+    if (!question.allowMultiple && value.trim()) {
+      setSelected((prev) =>
+        (prev[question.id]?.length ?? 0) > 0
+          ? { ...prev, [question.id]: [] }
+          : prev,
+      );
+    }
+  }
+
   function toggleOption(question: AskQuestionItem, optionId: string) {
-    setSelected((prev) => {
-      const current = prev[question.id] ?? [];
-      if (question.allowMultiple) {
+    if (question.allowMultiple) {
+      setSelected((prev) => {
+        const current = prev[question.id] ?? [];
         const next = current.includes(optionId)
           ? current.filter((id) => id !== optionId)
           : [...current, optionId];
         return { ...prev, [question.id]: next };
-      }
-      // Single-select: tap again to clear (e.g. switch to freeform only).
-      const next = current.includes(optionId) ? [] : [optionId];
-      return { ...prev, [question.id]: next };
-    });
+      });
+      return;
+    }
+
+    const current = selected[question.id] ?? [];
+    const selecting = !current.includes(optionId);
+    setSelected((prev) => ({
+      ...prev,
+      [question.id]: selecting ? [optionId] : [],
+    }));
+    // Selecting a preset drops freeform so it is not sent to the agent.
+    if (selecting) {
+      setFreeform((prev) =>
+        prev[question.id] ? { ...prev, [question.id]: "" } : prev,
+      );
+    }
   }
 
   function handleSubmit() {
@@ -103,9 +129,24 @@ export function AskQuestionCard({
     onSubmit(
       questions.map((question) => {
         const text = freeform[question.id]?.trim();
+        const ids = selected[question.id] ?? [];
+        // Single-choice: freeform and presets are mutually exclusive.
+        if (!question.allowMultiple) {
+          if (text) {
+            return {
+              questionId: question.id,
+              selectedOptionIds: [],
+              freeformText: text,
+            };
+          }
+          return {
+            questionId: question.id,
+            selectedOptionIds: ids,
+          };
+        }
         return {
           questionId: question.id,
-          selectedOptionIds: selected[question.id] ?? [],
+          selectedOptionIds: ids,
           ...(text ? { freeformText: text } : {}),
         };
       }),
@@ -153,25 +194,39 @@ export function AskQuestionCard({
                       </button>
                     );
                   })}
-                  <label className="mt-0.5 block">
-                    <span className="sr-only">Your own answer</span>
-                    <input
-                      type="text"
-                      value={customValue}
-                      onChange={(e) =>
-                        setFreeform((prev) => ({
-                          ...prev,
-                          [question.id]: e.target.value,
-                        }))
-                      }
-                      placeholder="Or write your own…"
-                      className={`w-full rounded-lg bg-white/[0.03] px-3 py-2 text-sm text-ink outline-none ring-1 placeholder:text-muted/70 ${
-                        customValue.trim()
-                          ? "ring-accent/40"
-                          : "ring-line focus:ring-accent/30"
-                      }`}
-                    />
-                  </label>
+                  <div className="mt-0.5 flex items-center gap-1.5">
+                    <label className="min-w-0 flex-1 block">
+                      <span className="sr-only">Your own answer</span>
+                      <input
+                        type="text"
+                        value={customValue}
+                        onChange={(e) =>
+                          updateFreeform(question, e.target.value)
+                        }
+                        placeholder="Or write your own…"
+                        className={`w-full rounded-lg bg-white/[0.03] px-3 py-2 text-sm text-ink outline-none ring-1 placeholder:text-muted/70 ${
+                          customValue.trim()
+                            ? "ring-accent/40"
+                            : "ring-line focus:ring-accent/30"
+                        }`}
+                      />
+                    </label>
+                    {auth ? (
+                      <VoiceCaptureButton
+                        auth={auth}
+                        disabled={submitting}
+                        showWaveform={false}
+                        className="shrink-0"
+                        onTranscript={(piece) => {
+                          const base = (freeform[question.id] ?? "").trimEnd();
+                          updateFreeform(
+                            question,
+                            base ? `${base} ${piece}` : piece,
+                          );
+                        }}
+                      />
+                    ) : null}
+                  </div>
                 </div>
               ) : (
                 <p className="text-sm text-muted">

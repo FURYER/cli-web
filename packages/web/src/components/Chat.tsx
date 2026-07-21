@@ -1443,6 +1443,7 @@ function WorkBlock({
   live,
   defaultOpen,
   clockPaused = false,
+  auth,
   askSubmittingId,
   onAnswerQuestion,
   onSkipQuestion,
@@ -1452,6 +1453,7 @@ function WorkBlock({
   live: boolean;
   defaultOpen: boolean;
   clockPaused?: boolean;
+  auth?: AuthMode;
   askSubmittingId?: string | null;
   onAnswerQuestion?: (callId: string, answers: AskQuestionAnswer[]) => void;
   onSkipQuestion?: (callId: string) => void;
@@ -1592,6 +1594,7 @@ function WorkBlock({
             title={piece.pending.title}
             questions={piece.pending.questions}
             status="pending"
+            auth={auth}
             submitting={askSubmittingId === piece.pending.callId}
             onSubmit={(answers) => onAnswerQuestion?.(piece.pending!.callId, answers)}
             onSkip={() => onSkipQuestion?.(piece.pending!.callId)}
@@ -2086,6 +2089,7 @@ export function Chat({
                   live={block.live}
                   defaultOpen={block.defaultOpen}
                   clockPaused={askWaiting && block.live}
+                  auth={auth}
                   askSubmittingId={askSubmittingId}
                   onAnswerQuestion={onAnswerQuestion}
                   onSkipQuestion={onSkipQuestion}
@@ -2102,6 +2106,7 @@ export function Chat({
                     title={question.title}
                     questions={question.questions}
                     status="pending"
+                    auth={auth}
                     submitting={askSubmittingId === question.callId}
                     onSubmit={(answers) => onAnswerQuestion?.(question.callId, answers)}
                     onSkip={() => onSkipQuestion?.(question.callId)}
