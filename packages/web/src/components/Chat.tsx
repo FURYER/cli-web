@@ -1650,6 +1650,7 @@ function WorkBlock({
           questions={piece.message.questionItems ?? []}
           status={piece.message.questionStatus ?? "answered"}
           answers={piece.message.questionAnswers}
+          messageImages={piece.message.images}
         />
       </div>
     );
@@ -2224,6 +2225,7 @@ export function Chat({
                   questions={message.questionItems ?? []}
                   status={message.questionStatus ?? "answered"}
                   answers={message.questionAnswers}
+                  messageImages={message.images}
                 />
               );
             }

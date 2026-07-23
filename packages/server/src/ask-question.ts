@@ -19,10 +19,32 @@ export type AskQuestionArgs = {
   questions: AskQuestionItem[];
 };
 
+/** Image attached to an ask_user answer (Composer-style base64). */
+export type AskAnswerImage = {
+  mimeType: string;
+  /** Raw base64 without data: prefix (client → server; kept for UI thumbs). */
+  data?: string;
+  /** Workspace-relative path after server save (for the agent). */
+  path?: string;
+};
+
+/** Non-image file attached to an ask_user answer. */
+export type AskAnswerFile = {
+  name: string;
+  mimeType: string;
+  /** Raw base64 (client → server only; stripped after save). */
+  data?: string;
+  /** Workspace-relative path after server save. */
+  path?: string;
+  size?: number;
+};
+
 export type AskQuestionAnswer = {
   questionId: string;
   selectedOptionIds: string[];
   freeformText?: string;
+  images?: AskAnswerImage[];
+  files?: AskAnswerFile[];
 };
 
 export type AskQuestionHandlerResult =

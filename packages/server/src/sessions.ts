@@ -27,6 +27,10 @@ import {
   startUserQuestions,
   waitForUserQuestions,
 } from "./ask-question.js";
+import {
+  persistAskAnswerAttachments,
+  validateAskQuestionAnswers,
+} from "./ask-uploads.js";
 import { listDirectory } from "./fs.js";
 import {
   deleteMemory,
@@ -731,21 +735,24 @@ export async function registerSessionRoutes(app: FastifyInstance): Promise<void>
     };
   }>("/api/sessions/:id/ask-questions/:callId/answer", async (request, reply) => {
     try {
+      const session = getSession(request.params.id);
+      if (!session) return reply.code(404).send({ error: "Session not found" });
+
       const outcome = request.body?.outcome === "skipped" ? "skipped" : "answered";
-      const result: AskQuestionHandlerResult =
-        outcome === "answered"
-          ? {
-              outcome: "answered",
-              answers: Array.isArray(request.body?.answers)
-                ? request.body.answers
-                : [],
-            }
-          : {
-              outcome: "skipped",
-              reason: request.body?.reason?.trim() || "Questions skipped by the user",
-            };
-      if (result.outcome === "answered" && result.answers.length === 0) {
-        return reply.code(400).send({ error: "answers are required" });
+      let result: AskQuestionHandlerResult;
+      if (outcome === "answered") {
+        const validated = validateAskQuestionAnswers(request.body?.answers);
+        const answers = await persistAskAnswerAttachments(
+          session.workspace,
+          request.params.callId,
+          validated,
+        );
+        result = { outcome: "answered", answers };
+      } else {
+        result = {
+          outcome: "skipped",
+          reason: request.body?.reason?.trim() || "Questions skipped by the user",
+        };
       }
       const message = submitAskQuestionAnswer(
         request.params.id,
