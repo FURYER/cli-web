@@ -55,6 +55,8 @@ import {
 export type { ContextCategory, ContextSnapshot } from "./context-usage.js";
 export { CONTEXT_WINDOW_TOKENS } from "./context-usage.js";
 export type {
+  AskAnswerFile,
+  AskAnswerImage,
   AskQuestionAnswer,
   AskQuestionHandlerResult,
   AskQuestionItem,
@@ -3238,6 +3240,18 @@ export function submitAskQuestionAnswer(
     result.outcome === "answered"
       ? formatAskQuestionSummary(prompt.title, prompt.questions, result.answers)
       : `Skipped questions${result.reason ? `: ${result.reason}` : ""}`;
+  const chatImages: ChatImage[] = [];
+  if (result.outcome === "answered") {
+    for (const answer of result.answers) {
+      for (const img of answer.images ?? []) {
+        if (!img.data || !img.mimeType) continue;
+        chatImages.push({
+          mimeType: img.mimeType,
+          dataUrl: `data:${img.mimeType};base64,${img.data}`,
+        });
+      }
+    }
+  }
   const message: ChatMessage = {
     id: randomUUID(),
     role: "question",
@@ -3248,6 +3262,7 @@ export function submitAskQuestionAnswer(
     questionStatus: result.outcome === "answered" ? "answered" : "skipped",
     questionAnswers: result.outcome === "answered" ? result.answers : undefined,
     questionCallId: callId,
+    ...(chatImages.length ? { images: chatImages } : {}),
   };
   const anchorId = prompt.toolCallId || callId;
   let activityIdx = session.messages.findIndex(
@@ -3300,6 +3315,8 @@ function formatAskQuestionSummary(
 ): string {
   const lines: string[] = [];
   if (title?.trim()) lines.push(title.trim());
+  let totalImages = 0;
+  let totalFiles = 0;
   for (const question of questions) {
     const answer = answers.find((item) => item.questionId === question.id);
     const labels =
@@ -3310,8 +3327,22 @@ function formatAskQuestionSummary(
         )
         .filter(Boolean) ?? [];
     const free = answer?.freeformText?.trim();
-    const value = [...labels, free].filter(Boolean).join(", ") || "(no answer)";
+    const imgCount = answer?.images?.length ?? 0;
+    const fileCount = answer?.files?.length ?? 0;
+    totalImages += imgCount;
+    totalFiles += fileCount;
+    const attachBits: string[] = [];
+    if (imgCount) attachBits.push(`${imgCount} image${imgCount === 1 ? "" : "s"}`);
+    if (fileCount) attachBits.push(`${fileCount} file${fileCount === 1 ? "" : "s"}`);
+    const value =
+      [...labels, free, ...attachBits].filter(Boolean).join(", ") || "(no answer)";
     lines.push(`${question.prompt} → ${value}`);
+  }
+  if (totalImages || totalFiles) {
+    const bits: string[] = [];
+    if (totalImages) bits.push(`${totalImages} image${totalImages === 1 ? "" : "s"}`);
+    if (totalFiles) bits.push(`${totalFiles} file${totalFiles === 1 ? "" : "s"}`);
+    lines.push(`Attachments: ${bits.join(", ")}`);
   }
   return lines.join("\n");
 }

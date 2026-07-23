@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { X } from "lucide-react";
-import type { AskQuestionAnswer, AskQuestionItem, AuthMode } from "../lib/api";
+import { Paperclip, X } from "lucide-react";
+import type {
+  AskAnswerFile,
+  AskAnswerImage,
+  AskQuestionAnswer,
+  AskQuestionItem,
+  AuthMode,
+} from "../lib/api";
+import { iconProps } from "./icons";
 import { VoiceCaptureButton } from "./VoiceCaptureButton";
 
 type Props = {
@@ -9,11 +16,32 @@ type Props = {
   questions: AskQuestionItem[];
   status: "pending" | "answered" | "skipped";
   answers?: AskQuestionAnswer[];
+  /** Aggregated images on the stored question message (answered state). */
+  messageImages?: { mimeType: string; dataUrl: string }[];
   submitting?: boolean;
   auth?: AuthMode;
   onSubmit?: (answers: AskQuestionAnswer[]) => void;
   onSkip?: () => void;
 };
+
+const MAX_ASK_IMAGES = 12;
+const MAX_ASK_FILES = 12;
+
+type PendingImage = {
+  kind: "image";
+  preview: string;
+  mimeType: string;
+  data: string;
+};
+
+type PendingFile = {
+  kind: "file";
+  name: string;
+  mimeType: string;
+  data: string;
+};
+
+type PendingAttachment = PendingImage | PendingFile;
 
 /** Options that only mean "I'll type my own" — redundant with the freeform field. */
 function isRedundantOwnAnswerOption(label: string, id: string): boolean {
@@ -46,6 +74,14 @@ function labelFor(
     .filter(Boolean);
   const parts = [...labels, freeform?.trim()].filter(Boolean);
   return parts.join(", ") || "—";
+}
+
+async function fileToBase64(file: File): Promise<string> {
+  const buffer = await file.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += 1) binary += String.fromCharCode(bytes[i]!);
+  return btoa(binary);
 }
 
 function FreeformAnswerInput({
@@ -105,11 +141,38 @@ function FreeformAnswerInput({
   );
 }
 
+function collectAnsweredMedia(answers: AskQuestionAnswer[] | undefined): {
+  images: { src: string; mimeType: string }[];
+  files: { name: string; mimeType: string; path?: string }[];
+} {
+  const images: { src: string; mimeType: string }[] = [];
+  const files: { name: string; mimeType: string; path?: string }[] = [];
+  for (const answer of answers ?? []) {
+    for (const img of answer.images ?? []) {
+      if (img.data) {
+        images.push({
+          src: `data:${img.mimeType};base64,${img.data}`,
+          mimeType: img.mimeType,
+        });
+      }
+    }
+    for (const file of answer.files ?? []) {
+      files.push({
+        name: file.name,
+        mimeType: file.mimeType,
+        path: file.path,
+      });
+    }
+  }
+  return { images, files };
+}
+
 export function AskQuestionCard({
   title,
   questions,
   status,
   answers,
+  messageImages,
   submitting,
   auth,
   onSubmit,
@@ -125,12 +188,32 @@ export function AskQuestionCard({
     for (const question of questions) initial[question.id] = "";
     return initial;
   });
+  const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const answeredMap = useMemo(() => {
     const map = new Map<string, AskQuestionAnswer>();
     for (const answer of answers ?? []) map.set(answer.questionId, answer);
     return map;
   }, [answers]);
+
+  const answeredMedia = useMemo(() => {
+    const fromAnswers = collectAnsweredMedia(answers);
+    if (fromAnswers.images.length > 0 || !messageImages?.length) {
+      return fromAnswers;
+    }
+    return {
+      images: messageImages.map((img) => ({
+        src: img.dataUrl,
+        mimeType: img.mimeType,
+      })),
+      files: fromAnswers.files,
+    };
+  }, [answers, messageImages]);
+
+  const imageCount = attachments.filter((a) => a.kind === "image").length;
+  const fileCount = attachments.filter((a) => a.kind === "file").length;
+  const hasAttachments = attachments.length > 0;
 
   const canSubmit =
     status === "pending" &&
@@ -139,9 +222,9 @@ export function AskQuestionCard({
       const opts = visibleOptions(question);
       const hasSelection = (selected[question.id]?.length ?? 0) > 0;
       const hasFreeform = Boolean(freeform[question.id]?.trim());
-      // No preset choices → freeform optional; Continue always ok.
+      // No preset choices → freeform/attachments optional; Continue always ok.
       if (opts.length === 0) return true;
-      return hasSelection || hasFreeform;
+      return hasSelection || hasFreeform || hasAttachments;
     });
 
   function updateFreeform(question: AskQuestionItem, value: string) {
@@ -182,12 +265,62 @@ export function AskQuestionCard({
     }
   }
 
+  async function addFiles(fileList: FileList | null) {
+    if (!fileList?.length) return;
+    const nextImages: PendingImage[] = [];
+    const nextFiles: PendingFile[] = [];
+    for (const file of [...fileList]) {
+      const data = await fileToBase64(file);
+      if (file.type.startsWith("image/")) {
+        const mimeType = file.type || "image/png";
+        nextImages.push({
+          kind: "image",
+          mimeType,
+          data,
+          preview: `data:${mimeType};base64,${data}`,
+        });
+      } else {
+        nextFiles.push({
+          kind: "file",
+          name: file.name || "file",
+          mimeType: file.type || "application/octet-stream",
+          data,
+        });
+      }
+    }
+    setAttachments((prev) => {
+      const images = [
+        ...prev.filter((a): a is PendingImage => a.kind === "image"),
+        ...nextImages,
+      ].slice(0, MAX_ASK_IMAGES);
+      const files = [
+        ...prev.filter((a): a is PendingFile => a.kind === "file"),
+        ...nextFiles,
+      ].slice(0, MAX_ASK_FILES);
+      return [...images, ...files];
+    });
+  }
+
   function handleSubmit() {
     if (!canSubmit || !onSubmit) return;
+    const images: AskAnswerImage[] = attachments
+      .filter((a): a is PendingImage => a.kind === "image")
+      .map((a) => ({ mimeType: a.mimeType, data: a.data }));
+    const files: AskAnswerFile[] = attachments
+      .filter((a): a is PendingFile => a.kind === "file")
+      .map((a) => ({ name: a.name, mimeType: a.mimeType, data: a.data }));
+
     onSubmit(
-      questions.map((question) => {
+      questions.map((question, index) => {
         const text = freeform[question.id]?.trim();
         const ids = selected[question.id] ?? [];
+        const attach =
+          index === 0
+            ? {
+                ...(images.length ? { images } : {}),
+                ...(files.length ? { files } : {}),
+              }
+            : {};
         // Single-choice: freeform and presets are mutually exclusive.
         if (!question.allowMultiple) {
           if (text) {
@@ -195,17 +328,20 @@ export function AskQuestionCard({
               questionId: question.id,
               selectedOptionIds: [],
               freeformText: text,
+              ...attach,
             };
           }
           return {
             questionId: question.id,
             selectedOptionIds: ids,
+            ...attach,
           };
         }
         return {
           questionId: question.id,
           selectedOptionIds: ids,
           ...(text ? { freeformText: text } : {}),
+          ...attach,
         };
       }),
     );
@@ -290,6 +426,76 @@ export function AskQuestionCard({
         })}
       </div>
 
+      {status === "pending" && attachments.length > 0 ? (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {attachments.map((item, index) =>
+            item.kind === "image" ? (
+              <div key={`img-${index}`} className="group relative">
+                <img
+                  src={item.preview}
+                  alt=""
+                  className="h-12 w-12 rounded-lg object-cover ring-1 ring-line"
+                />
+                <button
+                  type="button"
+                  disabled={submitting}
+                  className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-panel text-[9px] text-muted ring-1 ring-line hover:text-ink disabled:opacity-40"
+                  onClick={() =>
+                    setAttachments((prev) => prev.filter((_, i) => i !== index))
+                  }
+                  aria-label="Remove image"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <div
+                key={`file-${index}`}
+                className="group relative flex max-w-[10rem] items-center gap-1.5 rounded-lg bg-white/[0.03] px-2 py-1.5 text-[11px] text-ink ring-1 ring-line"
+              >
+                <span className="truncate" title={item.name}>
+                  {item.name}
+                </span>
+                <button
+                  type="button"
+                  disabled={submitting}
+                  className="shrink-0 text-muted hover:text-ink disabled:opacity-40"
+                  onClick={() =>
+                    setAttachments((prev) => prev.filter((_, i) => i !== index))
+                  }
+                  aria-label="Remove file"
+                >
+                  <X size={12} strokeWidth={1.75} aria-hidden />
+                </button>
+              </div>
+            ),
+          )}
+        </div>
+      ) : null}
+
+      {status !== "pending" &&
+      (answeredMedia.images.length > 0 || answeredMedia.files.length > 0) ? (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {answeredMedia.images.map((img, index) => (
+            <img
+              key={`answered-img-${index}`}
+              src={img.src}
+              alt=""
+              className="h-12 w-12 rounded-lg object-cover ring-1 ring-line"
+            />
+          ))}
+          {answeredMedia.files.map((file, index) => (
+            <span
+              key={`answered-file-${index}`}
+              className="max-w-[12rem] truncate rounded-lg bg-white/[0.03] px-2 py-1.5 text-[11px] text-muted ring-1 ring-line"
+              title={file.path || file.name}
+            >
+              {file.name}
+            </span>
+          ))}
+        </div>
+      ) : null}
+
       {status === "pending" ? (
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <button
@@ -300,6 +506,37 @@ export function AskQuestionCard({
           >
             {submitting ? "Sending…" : "Continue"}
           </button>
+          <button
+            type="button"
+            disabled={
+              submitting ||
+              (imageCount >= MAX_ASK_IMAGES && fileCount >= MAX_ASK_FILES)
+            }
+            onClick={() => fileInputRef.current?.click()}
+            className="relative inline-flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-white/[0.04] hover:text-ink disabled:opacity-40"
+            title="Attach photo or file"
+            aria-label={
+              hasAttachments
+                ? `Attach (${attachments.length})`
+                : "Attach photo or file"
+            }
+          >
+            <Paperclip {...iconProps} />
+            {hasAttachments ? (
+              <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-accent" />
+            ) : null}
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,*/*"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              void addFiles(e.target.files);
+              e.target.value = "";
+            }}
+          />
           {onSkip ? (
             <button
               type="button"

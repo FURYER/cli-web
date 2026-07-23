@@ -60,10 +60,32 @@ export type AskQuestionItem = {
   allowMultiple?: boolean;
 };
 
+/** Image attached to an ask_user answer (Composer-style base64). */
+export type AskAnswerImage = {
+  mimeType: string;
+  /** Raw base64 without data: prefix. */
+  data?: string;
+  /** Workspace-relative path after server save. */
+  path?: string;
+};
+
+/** Non-image file attached to an ask_user answer. */
+export type AskAnswerFile = {
+  name: string;
+  mimeType: string;
+  /** Raw base64 (client → server; stripped after save). */
+  data?: string;
+  /** Workspace-relative path after server save. */
+  path?: string;
+  size?: number;
+};
+
 export type AskQuestionAnswer = {
   questionId: string;
   selectedOptionIds: string[];
   freeformText?: string;
+  images?: AskAnswerImage[];
+  files?: AskAnswerFile[];
 };
 
 export type ChatMessage = {

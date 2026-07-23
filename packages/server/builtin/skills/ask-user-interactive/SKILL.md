@@ -48,6 +48,10 @@ ask_user({
 - Wait for the tool result (answered or skipped), then continue.
 - The card always has a freeform “Or write your own…” field — **do not** add
   an option like “свой ответ”, “другое”, “other”, or “custom”. Only real choices.
+- Users may **attach photos/files** on the question card. The tool result includes
+  saved workspace paths (under `.webcli/ask-uploads/…`) and may include image
+  content parts. **Open/Read those paths** — do not wait for a later chat send
+  with the same images.
 
 ## Do not
 
@@ -56,3 +60,4 @@ ask_user({
 - Invent answers if the user skipped — ask again or proceed with a stated default.
 - Split one clarification into sequential `ask_user` calls when a single card
   with multiple `questions` would do.
+- Ignore attachment `path` / image fields in the tool result when the user sent media.
