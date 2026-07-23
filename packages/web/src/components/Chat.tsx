@@ -858,15 +858,21 @@ function filterVisibleMessages(messages: ChatMessage[]): ChatMessage[] {
 }
 
 function isAskToolStep(step: StepItem): boolean {
-  const key = `${step.toolName || ""} ${step.label || ""} ${step.detail || ""}`
-    .toLowerCase()
-    .replace(/[_-]/g, "");
-  return (
-    key.includes("askuser") ||
-    key.includes("askquestion") ||
-    // Bare MCP row often wraps custom-user-tools ask_user.
-    (/\bmcp\b/.test(key) && key.includes("ask"))
-  );
+  const tool = (step.toolName || "").toLowerCase().replace(/[_-]/g, "");
+  const label = (step.label || "").toLowerCase().replace(/[_-]/g, "");
+  if (
+    tool.includes("askuser") ||
+    tool.includes("askquestion") ||
+    label.includes("askuser") ||
+    label.includes("askquestion")
+  ) {
+    return true;
+  }
+  // Bare MCP row often wraps custom-user-tools ask_user — only while running.
+  // Completed generic "MCP … ask" rows must not act as ask anchors (T-39).
+  if (step.status !== "running") return false;
+  const key = `${tool} ${label} ${(step.detail || "").toLowerCase().replace(/[_-]/g, "")}`;
+  return /\bmcp\b/.test(key) && key.includes("ask");
 }
 
 function isAskActivityMessage(message: ChatMessage): boolean {
@@ -937,8 +943,10 @@ function matchPendingForAsk(
     if (pq.toolCallId && pq.toolCallId === step.id) return pq;
     if (pq.callId === step.id) return pq;
   }
-  // Fallback: first unplaced pending when this is clearly an ask step.
-  if (!isAskToolStep(step)) return undefined;
+  // Fallback only for the live/running ask step — never attach onto a
+  // completed historical ask while walking oldest→newest (T-39).
+  // Orphan pendings still land in flushWork({ live: true }).
+  if (step.status !== "running" || !isAskToolStep(step)) return undefined;
   return pendingQuestions.find((pq) => !placed.has(pq.callId));
 }
 
@@ -1759,9 +1767,19 @@ export function Chat({
   const stickToBottomRef = useRef(true);
   const prevMessageCountRef = useRef(0);
   const lastScrollTopRef = useRef(0);
-  const pendingScrollRestoreRef = useRef<{ height: number; top: number } | null>(
-    null,
-  );
+  const messagesRef = useRef(messages);
+  messagesRef.current = messages;
+  /** Snapshot taken before load-older; only applied once prepend lands. */
+  const pendingScrollRestoreRef = useRef<{
+    height: number;
+    top: number;
+    anchorId: string | null;
+    prevCount: number;
+  } | null>(null);
+  /** After restore, briefly ignore scrollTop<80 so we don't chain-load. */
+  const suppressLoadOlderUntilRef = useRef(0);
+  /** While set, ResizeObserver keeps viewport pinned through late image/md growth. */
+  const scrollPinRef = useRef<{ lastHeight: number } | null>(null);
   const loadOlderLockRef = useRef(false);
   const [showJumpToBottom, setShowJumpToBottom] = useState(false);
 
@@ -1936,9 +1954,24 @@ export function Chat({
 
     const pending = pendingScrollRestoreRef.current;
     const el = scrollerRef.current;
-    if (pending && el) {
+    if (pending) {
+      if (!el) return;
+      const firstId = messages[0]?.id ?? null;
+      const prepended =
+        messages.length > pending.prevCount &&
+        (pending.anchorId == null || firstId !== pending.anchorId);
+      if (!prepended) {
+        // Keep pending across streaming/timeline ticks — do not restore or
+        // clear until older messages actually land (T-40).
+        return;
+      }
       el.scrollTop = el.scrollHeight - pending.height + pending.top;
       pendingScrollRestoreRef.current = null;
+      suppressLoadOlderUntilRef.current = Date.now() + 450;
+      scrollPinRef.current = { lastHeight: el.scrollHeight };
+      window.setTimeout(() => {
+        scrollPinRef.current = null;
+      }, 600);
       return;
     }
 
@@ -1946,7 +1979,15 @@ export function Chat({
     if (!el) return;
     // Avoid scrolling on every thinking tick — that reflows video and jitters the chat.
     el.scrollTop = el.scrollHeight;
-  }, [messages.length, streamingText, timelineLive.length, timeline.length, showPlanning, pendingQuestions.length]);
+  }, [
+    messages,
+    messages.length,
+    streamingText,
+    timelineLive.length,
+    timeline.length,
+    showPlanning,
+    pendingQuestions.length,
+  ]);
 
   useEffect(() => {
     if (!loadingOlder) loadOlderLockRef.current = false;
@@ -1956,15 +1997,32 @@ export function Chat({
     if (!hasMoreOlder || !onLoadOlder || loadingOlder || loadOlderLockRef.current) {
       return;
     }
+    if (Date.now() < suppressLoadOlderUntilRef.current) return;
     const el = scrollerRef.current;
     if (!el) return;
     loadOlderLockRef.current = true;
+    const list = messagesRef.current;
     pendingScrollRestoreRef.current = {
       height: el.scrollHeight,
       top: el.scrollTop,
+      anchorId: list[0]?.id ?? null,
+      prevCount: list.length,
     };
     try {
       await onLoadOlder();
+      // If nothing prepended (empty page / dupes), drop the pending pin.
+      requestAnimationFrame(() => {
+        const p = pendingScrollRestoreRef.current;
+        if (!p) return;
+        const cur = messagesRef.current;
+        const prepended =
+          cur.length > p.prevCount &&
+          (p.anchorId == null || cur[0]?.id !== p.anchorId);
+        if (!prepended) {
+          pendingScrollRestoreRef.current = null;
+          loadOlderLockRef.current = false;
+        }
+      });
     } catch {
       pendingScrollRestoreRef.current = null;
       loadOlderLockRef.current = false;
@@ -1972,11 +2030,21 @@ export function Chat({
   }
 
   // Keep pinned to bottom when auto-expanded steps grow the layout.
+  // Also re-adjust while a load-older pin-anchor is active (late image/md).
   useLayoutEffect(() => {
     const el = scrollerRef.current;
     const inner = el?.firstElementChild;
     if (!el || !inner) return;
     const ro = new ResizeObserver(() => {
+      const pin = scrollPinRef.current;
+      if (pin) {
+        const delta = el.scrollHeight - pin.lastHeight;
+        if (delta !== 0) {
+          el.scrollTop += delta;
+          pin.lastHeight = el.scrollHeight;
+        }
+        return;
+      }
       if (!stickToBottomRef.current) return;
       el.scrollTop = el.scrollHeight;
     });
@@ -1999,7 +2067,9 @@ export function Chat({
           setShowJumpToBottom(!nearBottom);
 
           if (el.scrollTop < 80) {
-            void tryLoadOlder();
+            if (Date.now() >= suppressLoadOlderUntilRef.current) {
+              void tryLoadOlder();
+            }
           }
 
           if (onScrollDirection) {

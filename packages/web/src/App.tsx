@@ -167,13 +167,57 @@ function mergeTailRefresh(
     return !serverTail.some((s) => matchesOptimisticUser(m, s));
   });
   if (!serverTail.length) {
-    return pending.length ? [...serverTail, ...pending] : serverTail;
+    return pending.length ? [...pending] : serverTail;
   }
+  const serverIds = new Set(serverTail.map((m) => m.id));
   const anchor = serverTail[0]!.id;
   const anchorIdx = prev.findIndex((m) => m.id === anchor);
-  const older = anchorIdx > 0 ? prev.slice(0, anchorIdx) : [];
-  const merged = [...older, ...serverTail];
+
+  let older: ChatMessage[];
+  if (anchorIdx > 0) {
+    older = prev.slice(0, anchorIdx);
+  } else if (anchorIdx === 0) {
+    older = [];
+  } else {
+    // Tail's first id missing from prev — keep already-loaded older messages
+    // via id overlap, or timestamp overlap when ids drifted (T-38).
+    const overlapIdx = prev.findIndex((m) => serverIds.has(m.id));
+    if (overlapIdx > 0) {
+      older = prev.slice(0, overlapIdx);
+    } else if (overlapIdx === 0) {
+      older = [];
+    } else {
+      const tailStart = serverTail[0]!.createdAt;
+      older = prev.filter(
+        (m) => !serverIds.has(m.id) && m.createdAt < tailStart,
+      );
+    }
+  }
+
+  const merged = [
+    ...older.filter((m) => !serverIds.has(m.id)),
+    ...serverTail,
+  ];
   return pending.length ? [...merged, ...pending] : merged;
+}
+
+/** Prefer messageCount when present so "load earlier" stays accurate after merge. */
+function hasMoreOlderAfterMerge(
+  detail: {
+    hasMoreOlder?: boolean;
+    messageCount?: number;
+    messages: ChatMessage[];
+  },
+  merged: ChatMessage[],
+): boolean {
+  if (typeof detail.messageCount === "number" && detail.messageCount >= 0) {
+    return detail.messageCount > merged.length;
+  }
+  return (
+    Boolean(detail.hasMoreOlder) ||
+    (merged.length > detail.messages.length &&
+      merged[0]?.id !== detail.messages[0]?.id)
+  );
 }
 
 type LiveActivity = ActivityItem & { startedAt?: number };
@@ -294,6 +338,7 @@ export default function App() {
   const [showNotifyBanner, setShowNotifyBanner] = useState(false);
   const [notifyBusy, setNotifyBusy] = useState(false);
   const activeIdRef = useRef<string | null>(null);
+  const messagesRef = useRef<ChatMessage[]>([]);
   const sessionsRef = useRef<SessionSummary[]>([]);
   const projectItemsRef = useRef<ProjectListItem[]>([]);
   const sendingRef = useRef<Set<string>>(new Set());
@@ -339,6 +384,10 @@ export default function App() {
   useEffect(() => {
     activeIdRef.current = activeId;
   }, [activeId]);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   useEffect(() => {
     deployScheduledRef.current = Boolean(deployStatus?.scheduled);
@@ -631,28 +680,12 @@ export default function App() {
           timeoutMs,
         });
         setMessages((prev) => {
-          // After a long suspend, prefer the server page outright — merge can
-          // keep a confusing half-stale timeline if ids drifted while frozen.
-          if (opts?.longAway) {
-            const pending = prev.filter((m) => {
-              if (m.role !== "user" || !String(m.id).startsWith("local-")) return false;
-              return !detail.messages.some((s) => matchesOptimisticUser(m, s));
-            });
-            return pending.length
-              ? [...detail.messages, ...pending]
-              : detail.messages;
-          }
+          // Prefer merge on longAway too — wiping to the newest page drops
+          // already-loaded older history and looks like the agent "forgot" (T-38).
           const merged = mergeTailRefresh(detail.messages, prev);
-          setHasMoreOlder(
-            Boolean(detail.hasMoreOlder) ||
-              (merged.length > detail.messages.length &&
-                merged[0]?.id !== detail.messages[0]?.id),
-          );
+          setHasMoreOlder(hasMoreOlderAfterMerge(detail, merged));
           return merged;
         });
-        if (opts?.longAway) {
-          setHasMoreOlder(Boolean(detail.hasMoreOlder));
-        }
         syncBusyFromServer(id, Boolean(detail.busy));
         if (detail.context) {
           setLastContext(detail.context);
@@ -1599,11 +1632,7 @@ export default function App() {
       });
       setMessages((prev) => {
         const merged = mergeTailRefresh(detail.messages, prev);
-        setHasMoreOlder(
-          Boolean(detail.hasMoreOlder) ||
-            (merged.length > detail.messages.length &&
-              merged[0]?.id !== detail.messages[0]?.id),
-        );
+        setHasMoreOlder(hasMoreOlderAfterMerge(detail, merged));
         return merged;
       });
     } catch {
@@ -1614,7 +1643,8 @@ export default function App() {
   async function loadOlderMessages() {
     const id = activeIdRef.current;
     if (!id || loadingOlder || !hasMoreOlder) return;
-    const oldest = messages[0];
+    // Prefer ref — Chat may call this while `messages` state is stale mid-stream.
+    const oldest = messagesRef.current[0] ?? messages[0];
     if (!oldest) return;
     setLoadingOlder(true);
     try {
