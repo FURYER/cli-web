@@ -1,0 +1,18 @@
+- generic [active] [ref=f2e1]:
+  - main [ref=f2e2]:
+    - generic [ref=f2e3]:
+      - heading "www.wallpaperflare.com" [level=1] [ref=f2e5]
+      - heading "Выполнение проверки безопасности" [level=2] [ref=f2e6]
+      - paragraph [ref=f2e7]: Этот веб-сайт использует сервис безопасности для защиты от вредоносных ботов. Эта страница отображается, пока веб-сайт проверяет, что вы не бот.
+  - contentinfo [ref=f2e14]:
+    - generic [ref=f2e16]:
+      - generic [ref=f2e18]:
+        - text: "Ray ID:"
+        - code [ref=f2e19]: a1fb133e7a9d76a9
+      - generic [ref=f2e20]:
+        - generic [ref=f2e21]:
+          - text: Производительность и безопасность с
+          - link "Cloudflare" [ref=f2e22] [cursor=pointer]:
+            - /url: https://www.cloudflare.com?utm_source=challenge&utm_campaign=m
+        - link "Конфиденциальность" [ref=f2e24] [cursor=pointer]:
+          - /url: https://www.cloudflare.com/privacypolicy/

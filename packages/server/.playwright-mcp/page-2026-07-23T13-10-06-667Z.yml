@@ -1,0 +1,110 @@
+- generic [active] [ref=e1]:
+  - link "Join the Kenney community on Discord! 💬" [ref=e2] [cursor=pointer]:
+    - /url: https://social.kenney.nl/discord
+  - generic [ref=e5]:
+    - generic:
+      - list:
+        - listitem [ref=e6]:
+          - link [ref=e7] [cursor=pointer]:
+            - /url: https://kenney.nl
+        - generic:
+          - listitem [ref=e9]:
+            - link "Games" [ref=e10] [cursor=pointer]:
+              - /url: https://kenney.nl/games
+          - listitem [ref=e11]:
+            - link "Tools" [ref=e12] [cursor=pointer]:
+              - /url: https://kenney.nl/tools
+          - listitem [ref=e13]:
+            - link "Assets" [ref=e14] [cursor=pointer]:
+              - /url: https://kenney.nl/assets
+          - listitem [ref=e15]:
+            - link "Starter Kits" [ref=e16] [cursor=pointer]:
+              - /url: https://kenney.nl/starter-kits
+    - generic:
+      - list:
+        - listitem [ref=e17]:
+          - link [ref=e18] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=e20]:
+          - link "Donate" [ref=e21] [cursor=pointer]:
+            - /url: https://kenney.nl/donate
+    - generic:
+      - link "×" [ref=e22] [cursor=pointer]:
+        - /url: javascript:void(0)
+      - generic:
+        - link "Games" [ref=e23] [cursor=pointer]:
+          - /url: https://kenney.nl/games
+        - link "Tools" [ref=e24] [cursor=pointer]:
+          - /url: https://kenney.nl/tools
+        - link "Assets" [ref=e25] [cursor=pointer]:
+          - /url: https://kenney.nl/assets
+        - link "Starter Kits" [ref=e26] [cursor=pointer]:
+          - /url: https://kenney.nl/starter-kits
+      - separator [ref=e27]
+      - generic:
+        - link "Support" [ref=e28] [cursor=pointer]:
+          - /url: https://kenney.nl/support
+        - link "Knowledge Base" [ref=e29] [cursor=pointer]:
+          - /url: https://kenney.nl/knowledge-base
+        - link "Donate" [ref=e30] [cursor=pointer]:
+          - /url: https://kenney.nl/donate
+      - separator [ref=e31]
+      - link [ref=e32] [cursor=pointer]:
+        - /url: "#"
+  - generic [ref=e37]:
+    - generic [ref=e38]:
+      - heading "Retro Textures Fantasy" [level=1] [ref=e39]
+      - paragraph
+      - table [ref=e40]:
+        - rowgroup [ref=e41]:
+          - row [ref=e42]:
+            - cell "Tags" [ref=e43]
+            - cell [ref=e44]:
+              - link "retro" [ref=e45] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/tag:retro
+              - link "texture" [ref=e46] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/tag:texture
+          - row [ref=e47]:
+            - cell "Category" [ref=e48]
+            - cell [ref=e49]:
+              - link "Textures" [ref=e50] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/category:Textures
+              - text: •
+              - link "Retro" [ref=e51] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/series:Retro
+          - row [ref=e52]:
+            - cell "Files" [ref=e53]
+            - cell "115×" [ref=e54]
+          - row [ref=e55]:
+            - cell "License" [ref=e56]
+            - cell [ref=e57]:
+              - link "Creative Commons CC0" [ref=e58] [cursor=pointer]:
+                - /url: https://creativecommons.org/publicdomain/zero/1.0/
+      - paragraph
+      - paragraph [ref=e59]:
+        - link "Download" [ref=e60] [cursor=pointer]:
+          - /url: "#inline-download"
+        - link "Get All-in-1 bundle" [ref=e61] [cursor=pointer]:
+          - /url: https://kenney.itch.io/kenney-game-assets
+      - paragraph
+      - table [ref=e62]:
+        - rowgroup [ref=e63]:
+          - row [ref=e64]:
+            - cell "1.0" [ref=e65]
+      - paragraph
+    - generic [ref=e67]:
+      - link [ref=e70] [cursor=pointer]:
+        - /url: https://kenney.nl/media/pages/assets/retro-textures-fantasy/56de38c46e-1768475450/preview.png
+      - link [ref=e74] [cursor=pointer]:
+        - /url: https://kenney.nl/media/pages/assets/retro-textures-fantasy/1ac0cad8d6-1768475452/sample.png
+  - contentinfo [ref=e75]:
+    - generic [ref=e76]: Copyright © 2010 - 2026 · All rights reserved
+    - generic [ref=e79]:
+      - link "Support" [ref=e80] [cursor=pointer]:
+        - /url: https://kenney.nl/support
+      - link "Knowledge Base" [ref=e81] [cursor=pointer]:
+        - /url: https://kenney.nl/knowledge-base
+      - link "Privacy Policy" [ref=e82] [cursor=pointer]:
+        - /url: https://kenney.nl/privacy-policy
+      - link "Terms of Service" [ref=e83] [cursor=pointer]:
+        - /url: https://kenney.nl/terms-of-service

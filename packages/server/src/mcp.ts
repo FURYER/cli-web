@@ -28,6 +28,20 @@ function boardMcpEntryPath(): string {
   ).replace(/\\/g, "/");
 }
 
+/** Persistent Chromium profile for Playwright MCP (cookies / Google login). */
+export function playwrightUserDataDir(): string {
+  return join(dataDir(), "browser-profiles", "default").replace(/\\/g, "/");
+}
+
+/** Default Playwright args: headed window on the host PC + sticky profile. */
+export function defaultPlaywrightArgs(): string[] {
+  return [
+    "-y",
+    "@playwright/mcp@latest",
+    `--user-data-dir=${playwrightUserDataDir()}`,
+  ];
+}
+
 /** Default MCP set for fresh installs (secrets via ${ENV} placeholders). */
 export function defaultMcpServers(): McpServersMap {
   return {
@@ -41,6 +55,11 @@ export function defaultMcpServers(): McpServersMap {
     "workspace-board": {
       command: "node",
       args: [boardMcpEntryPath()],
+    } as McpServerConfig,
+    // Headed Chromium on the host PC so the user can complete OAuth themselves.
+    playwright: {
+      command: "npx",
+      args: defaultPlaywrightArgs(),
     } as McpServerConfig,
   };
 }
@@ -129,17 +148,98 @@ export async function saveMcpServers(servers: McpServersMap): Promise<void> {
   );
 }
 
+type PlaywrightLike = {
+  command?: string;
+  args?: string[];
+};
+
+function isPlaywrightEntry(cfg: unknown): cfg is PlaywrightLike {
+  if (!cfg || typeof cfg !== "object") return false;
+  const c = cfg as PlaywrightLike;
+  if (!Array.isArray(c.args)) return false;
+  return c.args.some(
+    (a) => typeof a === "string" && a.includes("@playwright/mcp"),
+  );
+}
+
 /**
- * Create ~/.webcli/mcp.json with Context7 + workspace-board when missing/empty.
- * Returns true if a new file was written.
+ * Drop --headless and ensure --user-data-dir for an existing playwright MCP entry.
+ * Returns true when args were changed.
+ */
+export function migratePlaywrightArgs(args: string[]): {
+  args: string[];
+  changed: boolean;
+} {
+  const profileFlag = `--user-data-dir=${playwrightUserDataDir()}`;
+  let next = args.filter((a) => a !== "--headless" && a !== "--headed");
+  const hasProfile = next.some(
+    (a) => typeof a === "string" && a.startsWith("--user-data-dir="),
+  );
+  if (!hasProfile) {
+    next = [...next, profileFlag];
+  } else {
+    next = next.map((a) =>
+      typeof a === "string" && a.startsWith("--user-data-dir=")
+        ? profileFlag
+        : a,
+    );
+  }
+  return { args: next, changed: next.join("\0") !== args.join("\0") };
+}
+
+/**
+ * Create or update ~/.webcli/mcp.json with default servers.
+ * Existing entries are kept; missing built-ins (e.g. playwright) are merged in.
+ * Also migrates playwright off --headless onto a sticky user-data-dir.
+ * Returns true if the file was written/updated.
  */
 export async function ensureDefaultMcpServers(): Promise<boolean> {
   if (process.env.MCP_SERVERS_JSON?.trim()) return false;
-  if (existsSync(mcpFile())) {
-    const existing = await readMcpServers();
-    if (Object.keys(existing).length > 0) return false;
+
+  const defaults = defaultMcpServers();
+  let wrote = false;
+
+  if (!existsSync(mcpFile())) {
+    await saveMcpServers(defaults);
+    console.info(`seeded default MCP config at ${mcpFile()}`);
+    return true;
   }
-  await saveMcpServers(defaultMcpServers());
-  console.info(`seeded default MCP config at ${mcpFile()}`);
+
+  const existing = await readMcpServers();
+  if (Object.keys(existing).length === 0) {
+    await saveMcpServers(defaults);
+    console.info(`seeded default MCP config at ${mcpFile()}`);
+    return true;
+  }
+
+  const merged: McpServersMap = { ...existing };
+  const added: string[] = [];
+  for (const [name, cfg] of Object.entries(defaults)) {
+    if (!(name in merged)) {
+      merged[name] = cfg;
+      added.push(name);
+    }
+  }
+  if (added.length > 0) {
+    wrote = true;
+    console.info(
+      `merged default MCP servers (${added.join(", ")}) into ${mcpFile()}`,
+    );
+  }
+
+  const pw = merged.playwright;
+  if (isPlaywrightEntry(pw) && Array.isArray(pw.args)) {
+    const { args, changed } = migratePlaywrightArgs(pw.args);
+    if (changed) {
+      merged.playwright = { ...pw, args } as McpServerConfig;
+      wrote = true;
+      console.info(
+        `migrated playwright MCP to headed + user-data-dir (${mcpFile()})`,
+      );
+    }
+  }
+
+  if (!wrote) return false;
+  await saveMcpServers(merged);
   return true;
 }

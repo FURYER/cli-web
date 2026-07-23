@@ -1,0 +1,113 @@
+- generic [ref=f4e4]:
+  - generic [ref=f4e7]:
+    - img "Google" [ref=f4e9]
+    - generic [ref=f4e10]:
+      - heading "Не удалось войти в аккаунт" [level=1] [ref=f4e13]
+      - generic [ref=f4e16]:
+        - generic [ref=f4e20]:
+          - paragraph [ref=f4e21]:
+            - text: Возможно, этот браузер или приложение небезопасны.
+            - link "Открыть инструкции по решению этой проблемы на справочном сайте Google. (внешняя ссылка, откроется в новом окне)" [ref=f4e22] [cursor=pointer]:
+              - /url: https://support.google.com/accounts/answer/7675428?hl=ru
+              - text: Подробнее…
+          - paragraph [ref=f4e23]: Попробуйте сменить браузер. Если вы уже используете поддерживаемый браузер, повторите попытку входа ещё раз.
+        - link "Повторить попытку" [ref=f4e27] [cursor=pointer]:
+          - /url: /restart?access_type=offline&app_domain=https://auth.meshy.ai&client_id=702630899118-pcadrocbc46vpjv2jeunv3jmjrhjctrn.apps.googleusercontent.com&continue=https://accounts.google.com/signin/oauth/legacy/consent?authuser%3Dunknown%26part%3DAJi8hAO2woBPLCCMVWtTLAIKXfFjTCTEY5otmACkaB4S-O7At0zRw7R36BNgeFFCq6kpc1fUDGxvK5IB8pUpcaSegyexc4GdH6z1nd-jmcKA34WIP4TTNg8WBTT_n-J8qdD8cOqLUVnKQnNro2BWOn9CPXk8-bSXabQHvV_KzCgOJ6zmr2mG8z5G8ML_L4hTxGwjihIp2lJeF6pc58Ch0DzKEKVdyzoQOzySvZaanFnXTIwSoE2QrHGH78gsfLywVhgivpB2V89DISRsY_Y0OB94cfTixQAVCkkjYq51YrUOcJ88l5WDkoffJjWFXOYKy4Gqfih4ajyuoWBHPHTxMQWbAV6qT0m5aM4FndQC9MMg9GsSxYAtqrJoO1_BoKmWDaBPELcjOiTHOrlLZINi5-9xuG9-Pf58pOjXCV-ZPWCHuFHHTJkG_u67MXenV72H3OVQUPAG3adlR80bXsPABRpz8bhVroaOiH6zsBe9djaXmUqMpMBdxV6GtjibRLb1WJskmtqDbHA8Dx16YVy0mUT2zd_e0p1O2MT-YolWe07NEz21VpNVg-wj1fgbra41i1D1UNHtE5GD1k5Zo5_U1XNTiwkDY91PJnaxTSGmNNO-jOt1ELH4KUKPm8Xsm09Rde-BshlhIF47%26flowName%3DGeneralOAuthFlow%26as%3DS892578151%253A1784803439503733%26client_id%3D702630899118-pcadrocbc46vpjv2jeunv3jmjrhjctrn.apps.googleusercontent.com%23&dsh=S892578151:1784803439503733&flowName=GeneralOAuthLite&o2v=2&opparams=%253Fredirect_to%253Dhttps%25253A%25252F%25252Fwww.meshy.ai%25252Fsupa%25252Fpopup-callback&prompt=consent&rart=ANgoxcdyP79gKrhK14AcVxdR9dTp76fhz-RueT0RKxb9QDcZvER9_Yfr5FXNxJ3GOguEy_X0eUzbORa8x29y3AFrVxeX9XEhOk0VIU7AcmrCXbuvtyrSQ3g&redirect_uri=https://auth.meshy.ai/auth/v1/callback&response_type=code&scope=email+profile&service=lso&state=4ece1e3d-6182-4f17-a202-554f13bf933c
+  - contentinfo [ref=f4e29]:
+    - combobox [ref=f4e32] [cursor=pointer]:
+      - option "беларуская"
+      - option "български"
+      - option "кыргызча"
+      - option "қазақ тілі"
+      - option "македонски"
+      - option "монгол"
+      - option "Русский" [selected]
+      - option "српски (ћирилица)"
+      - option "Українська"
+      - option "Afrikaans"
+      - option "azərbaycan"
+      - option "bosanski"
+      - option "català"
+      - option "Čeština"
+      - option "Cymraeg"
+      - option "Dansk"
+      - option "Deutsch"
+      - option "eesti"
+      - option "English (United Kingdom)"
+      - option "English (United States)"
+      - option "Español (España)"
+      - option "Español (Latinoamérica)"
+      - option "euskara"
+      - option "Filipino"
+      - option "Français (Canada)"
+      - option "Français (France)"
+      - option "Gaeilge"
+      - option "galego"
+      - option "Hrvatski"
+      - option "Indonesia"
+      - option "isiZulu"
+      - option "íslenska"
+      - option "Italiano"
+      - option "Kiswahili"
+      - option "latviešu"
+      - option "lietuvių"
+      - option "magyar"
+      - option "Melayu"
+      - option "Nederlands"
+      - option "norsk"
+      - option "o‘zbek"
+      - option "polski"
+      - option "Português (Brasil)"
+      - option "Português (Portugal)"
+      - option "română"
+      - option "shqip"
+      - option "Slovenčina"
+      - option "slovenščina"
+      - option "srpski (latinica)"
+      - option "Suomi"
+      - option "Svenska"
+      - option "Tiếng Việt"
+      - option "Türkçe"
+      - option "Ελληνικά"
+      - option "ქართული"
+      - option "հայերեն"
+      - option "‫עברית‬‎"
+      - option "‫اردو‬‎"
+      - option "‫العربية‬‎"
+      - option "‫فارسی‬‎"
+      - option "አማርኛ"
+      - option "नेपाली"
+      - option "मराठी"
+      - option "हिन्दी"
+      - option "অসমীয়া"
+      - option "বাংলা"
+      - option "ਪੰਜਾਬੀ"
+      - option "ગુજરાતી"
+      - option "ଓଡ଼ିଆ"
+      - option "தமிழ்"
+      - option "తెలుగు"
+      - option "ಕನ್ನಡ"
+      - option "മലയാളം"
+      - option "සිංහල"
+      - option "ไทย"
+      - option "ລາວ"
+      - option "မြန်မာ"
+      - option "ខ្មែរ"
+      - option "한국어"
+      - option "中文（香港）"
+      - option "日本語"
+      - option "简体中文"
+      - option "繁體中文"
+    - list [ref=f4e33]:
+      - listitem [ref=f4e34]:
+        - link "Открыть Справочный центр Google Аккаунтов (внешняя ссылка, откроется в новом окне)" [ref=f4e35] [cursor=pointer]:
+          - /url: https://support.google.com/accounts?hl=ru&p=account_iph
+          - text: Справка
+      - listitem [ref=f4e36]:
+        - link "Политика конфиденциальности (внешняя ссылка, откроется в новом окне)" [ref=f4e37] [cursor=pointer]:
+          - /url: https://accounts.google.com/TOS?loc=RU&hl=ru&privacy=true
+          - text: Конфиденциальность
+      - listitem [ref=f4e38]:
+        - link "Условия использования Google (внешняя ссылка, откроется в новом окне)" [ref=f4e39] [cursor=pointer]:
+          - /url: https://accounts.google.com/TOS?loc=RU&hl=ru
+          - text: Условия

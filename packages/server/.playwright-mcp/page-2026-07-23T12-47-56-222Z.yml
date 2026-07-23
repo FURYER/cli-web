@@ -1,0 +1,22 @@
+- generic [active] [ref=f30e1]:
+  - generic [ref=f30e2]: Загружаем данные...
+  - generic [ref=f30e5]:
+    - banner [ref=f30e6]:
+      - generic [ref=f30e9]:
+        - link [ref=f30e10] [cursor=pointer]:
+          - /url: /
+          - img "логотип ФНС" [ref=f30e11]
+          - generic [ref=f30e12]: Кабинет налогоплательщика НПД МОЙ НАЛОГ
+        - generic [ref=f30e13]:
+          - button "Открыть сообщения" [ref=f30e14] [cursor=pointer]
+          - button "Выход" [ref=f30e20] [cursor=pointer]
+    - main [ref=f30e27]
+    - contentinfo [ref=f30e28]:
+      - generic [ref=f30e30]:
+        - generic [ref=f30e31]:
+          - text: "Контакт-центр:"
+          - link "8-800-222-2222" [ref=f30e32] [cursor=pointer]:
+            - /url: tel:88002222222
+        - link "Написать в техподдержку" [ref=f30e38] [cursor=pointer]:
+          - /url: https://www.nalog.ru/rn77/service/service_feedback/?service=62
+  - iframe

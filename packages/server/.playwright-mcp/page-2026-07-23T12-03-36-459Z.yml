@@ -1,0 +1,145 @@
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]:
+        - link "Фриланс маркетплейс" [ref=e8] [cursor=pointer]:
+          - /url: /
+        - textbox "Найти услуги" [ref=e14]
+        - generic [ref=e17]:
+          - generic [ref=e18]: "Пользователей онлайн: 2392"
+          - generic [ref=e21]: "Последний заказ: 32 сек. назад"
+        - list [ref=e25]:
+          - listitem [ref=e26]: Вход
+          - listitem [ref=e27]:
+            - link "Регистрация" [ref=e28] [cursor=pointer]:
+              - /url: /signup
+          - listitem [ref=e29]:
+            - link "Фрилансеру" [ref=e30] [cursor=pointer]:
+              - /url: /for-sellers
+      - list [ref=e33]:
+        - listitem [ref=e34]:
+          - link "Дизайн" [ref=e35] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/design
+        - listitem [ref=e37]:
+          - link "Разработка и IT" [ref=e38] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/programming
+        - listitem [ref=e40]:
+          - link "Тексты и переводы" [ref=e41] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/writing-translations
+        - listitem [ref=e43]:
+          - link "SEO и трафик" [ref=e44] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/seo
+        - listitem [ref=e46]:
+          - link "Соцсети и маркетинг" [ref=e47] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/promotion
+        - listitem [ref=e49]:
+          - link "Аудио, видео, съемка" [ref=e50] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/audio-video
+        - listitem [ref=e52]:
+          - link "Бизнес и жизнь" [ref=e53] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/business
+    - generic [ref=e57]:
+      - generic [ref=e58]: Установите мобильное приложение Kwork, чтобы не пропустить важные события в вашем аккаунте!
+      - link "Установить" [ref=e59] [cursor=pointer]:
+        - /url: /mobileapp
+  - generic [ref=e66]:
+    - heading "Регистрация" [level=1] [ref=e67]
+    - generic [ref=e70]:
+      - generic [ref=e71]:
+        - generic [ref=e72]: Покупатель
+        - generic [ref=e75]: Продавец
+      - generic [ref=e78]:
+        - textbox "Электронная почта" [active] [ref=e81]
+        - generic [ref=e82]:
+          - generic [ref=e84] [cursor=pointer]:
+            - text: Я ознакомлен(а), понимаю и принимаю
+            - link "Пользовательское соглашение" [ref=e85]:
+              - /url: /terms_of_service
+            - text: .
+          - generic [ref=e87] [cursor=pointer]:
+            - text: Я ознакомлен(а) с
+            - link "Политикой обработки персональных данных" [ref=e88]:
+              - /url: /jdocs/pd_policy
+            - text: .
+          - generic [ref=e90] [cursor=pointer]:
+            - text: Я
+            - link "согласен" [ref=e91]:
+              - /url: /marketing_consent
+            - text: получать маркетинговые email рассылки.
+        - button "Далее" [ref=e92] [cursor=pointer]
+    - generic [ref=e93]: или
+    - link "Войти с VK ID" [ref=e97] [cursor=pointer]:
+      - /url: https://kwork.ru/login_soc?type=vkid&tz=Asia/Yekaterinburg&usertype=1
+    - generic [ref=e98]:
+      - text: Уже зарегистрированы?
+      - link "Войти" [ref=e99] [cursor=pointer]:
+        - /url: /login
+  - generic [ref=e101]:
+    - generic [ref=e102]:
+      - text: Мы используем файлы
+      - link "cookie" [ref=e103] [cursor=pointer]:
+        - /url: /jdocs/pd_policy
+      - text: ", чтобы анализировать посещения и делать сайт удобнее."
+    - button "Окей!" [ref=e104] [cursor=pointer]
+  - generic [ref=e107]:
+    - generic [ref=e108]:
+      - link [ref=e110] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e112]:
+        - generic [ref=e113]:
+          - generic [ref=e114]: О Kwork
+          - generic [ref=e117]:
+            - link "О проекте" [ref=e118] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=e119] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=e120] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Способы оплаты" [ref=e121] [cursor=pointer]:
+              - /url: /pay
+            - link "Карьера в Kwork" [ref=e122] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=e123]:
+          - generic [ref=e124]: Сообщество
+          - generic [ref=e127]:
+            - link "Блог" [ref=e128] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=e129] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=e130] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=e131]:
+          - generic [ref=e132]: Полезное
+          - generic [ref=e135]:
+            - link "Покупателям" [ref=e136] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=e137] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=e138] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=e139] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Рубрики" [ref=e140] [cursor=pointer]:
+              - /url: /categories
+            - link "Мобильное приложение" [ref=e141] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=e142]:
+          - generic [ref=e143]: Помощь
+          - generic [ref=e146]:
+            - link "Вопрос — Ответ" [ref=e147] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=e148] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=e149]:
+      - generic [ref=e150]:
+        - link [ref=e151] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=e155] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=e159]:
+        - link [ref=e160] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=e161]
+        - link [ref=e162] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=e163]

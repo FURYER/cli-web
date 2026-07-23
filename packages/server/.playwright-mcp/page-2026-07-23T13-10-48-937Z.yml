@@ -1,0 +1,139 @@
+- generic [ref=f1e1]:
+  - link [ref=f1e85] [cursor=pointer]:
+    - /url: https://social.kenney.nl/discord
+    - text: Join the Kenney community on Discord! 💬
+  - generic [ref=f1e5]:
+    - listitem [ref=f1e6]:
+      - link [ref=f1e7] [cursor=pointer]:
+        - /url: https://kenney.nl
+    - listitem [ref=f1e9]:
+      - link [ref=f1e86] [cursor=pointer]:
+        - /url: https://kenney.nl/games
+        - text: Games
+    - listitem [ref=f1e11]:
+      - link [ref=f1e87] [cursor=pointer]:
+        - /url: https://kenney.nl/tools
+        - text: Tools
+    - listitem [ref=f1e13]:
+      - link [ref=f1e88] [cursor=pointer]:
+        - /url: https://kenney.nl/assets
+        - text: Assets
+    - listitem [ref=f1e15]:
+      - link [ref=f1e89] [cursor=pointer]:
+        - /url: https://kenney.nl/starter-kits
+        - text: Starter Kits
+    - listitem [ref=f1e17]:
+      - link [ref=f1e18] [cursor=pointer]:
+        - /url: "#"
+    - listitem [ref=f1e20]:
+      - link [ref=f1e90] [cursor=pointer]:
+        - /url: https://kenney.nl/donate
+        - text: Donate
+    - link [ref=f1e91] [cursor=pointer]:
+      - /url: javascript:void(0)
+      - text: ×
+    - link [ref=f1e92] [cursor=pointer]:
+      - /url: https://kenney.nl/games
+      - text: Games
+    - link [ref=f1e93] [cursor=pointer]:
+      - /url: https://kenney.nl/tools
+      - text: Tools
+    - link [ref=f1e94] [cursor=pointer]:
+      - /url: https://kenney.nl/assets
+      - text: Assets
+    - link [ref=f1e95] [cursor=pointer]:
+      - /url: https://kenney.nl/starter-kits
+      - text: Starter Kits
+    - separator [ref=f1e27]
+    - link [ref=f1e96] [cursor=pointer]:
+      - /url: https://kenney.nl/support
+      - text: Support
+    - link [ref=f1e97] [cursor=pointer]:
+      - /url: https://kenney.nl/knowledge-base
+      - text: Knowledge Base
+    - link [ref=f1e98] [cursor=pointer]:
+      - /url: https://kenney.nl/donate
+      - text: Donate
+    - separator [ref=f1e31]
+    - link [ref=f1e32] [cursor=pointer]:
+      - /url: "#"
+  - generic [ref=f1e37]:
+    - generic [ref=f1e38]:
+      - heading [level=1] [ref=f1e99]: Nature Kit
+      - table [ref=f1e40]:
+        - rowgroup [ref=f1e41]:
+          - row [ref=f1e100]:
+            - cell [ref=f1e101]: Tags
+            - cell [ref=f1e102]:
+              - link [ref=f1e103] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/tag:nature
+                - text: nature
+              - link [ref=f1e104] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/tag:tree
+                - text: tree
+              - link [ref=f1e105] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/tag:rock
+                - text: rock
+              - link [ref=f1e106] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/tag:foliage
+                - text: foliage
+          - row [ref=f1e107]:
+            - cell [ref=f1e108]: Category
+            - cell [ref=f1e109]:
+              - link [ref=f1e110] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/category:3D
+                - text: 3D
+          - row [ref=f1e111]:
+            - cell [ref=f1e112]: Files
+            - cell [ref=f1e113]: 330×
+          - row [ref=f1e114]:
+            - cell [ref=f1e115]: License
+            - cell [ref=f1e116]:
+              - link [ref=f1e117] [cursor=pointer]:
+                - /url: https://creativecommons.org/publicdomain/zero/1.0/
+                - text: Creative Commons CC0
+      - paragraph [ref=f1e60]:
+        - link [ref=f1e118] [cursor=pointer]:
+          - /url: "#inline-download"
+          - text: Download
+        - link [ref=f1e119] [cursor=pointer]:
+          - /url: https://kenney.itch.io/kenney-game-assets
+          - text: Get All-in-1 bundle
+      - table [ref=f1e63]:
+        - rowgroup [ref=f1e64]:
+          - row [ref=f1e120]:
+            - cell [ref=f1e121]:
+              - generic [ref=f1e67]: "1.0"
+    - generic [ref=f1e68]:
+      - link [ref=f1e71] [cursor=pointer]:
+        - /url: https://kenney.nl/media/pages/assets/nature-kit/2d81fc716e-1677698893/preview.png
+      - link [ref=f1e75] [cursor=pointer]:
+        - /url: https://kenney.nl/media/pages/assets/nature-kit/656a90532f-1677698896/sample.png
+  - contentinfo [ref=f1e76]:
+    - generic [ref=f1e77]: Copyright © 2010 - 2026 · All rights reserved
+    - generic [ref=f1e80]:
+      - link [ref=f1e122] [cursor=pointer]:
+        - /url: https://kenney.nl/support
+        - text: Support
+      - link [ref=f1e123] [cursor=pointer]:
+        - /url: https://kenney.nl/knowledge-base
+        - text: Knowledge Base
+      - link [ref=f1e124] [cursor=pointer]:
+        - /url: https://kenney.nl/privacy-policy
+        - text: Privacy Policy
+      - link [ref=f1e125] [cursor=pointer]:
+        - /url: https://kenney.nl/terms-of-service
+        - text: Terms of Service
+  - dialog "Dialog Window (Press escape to close)" [active] [ref=f1e126]:
+    - document [ref=f1e127]:
+      - generic [ref=f1e128]:
+        - generic [ref=f1e133]:
+          - heading "Consider a donation" [level=1] [ref=f1e134]
+          - paragraph [ref=f1e135]: The game assets you're about to download are available for free, thanks to the generosity of our amazing community. If you'd like to support and help keep them free for everyone, consider making a small donation!
+          - paragraph [ref=f1e136]:
+            - link "Donate" [ref=f1e137] [cursor=pointer]:
+              - /url: https://kenney.nl/donate
+          - paragraph [ref=f1e138]:
+            - link "Continue without donating..." [ref=f1e139] [cursor=pointer]:
+              - /url: https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip
+        - button "Close (Press escape to close)" [ref=f1e140] [cursor=pointer]: ×

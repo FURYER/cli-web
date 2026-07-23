@@ -1,0 +1,134 @@
+- generic [active] [ref=f13e1]:
+  - generic [ref=f13e4]:
+    - generic [ref=f13e6]:
+      - link "Фриланс маркетплейс" [ref=f13e8] [cursor=pointer]:
+        - /url: /
+      - textbox "Найти услуги" [ref=f13e14]
+      - generic [ref=f13e17]:
+        - generic [ref=f13e19]:
+          - link "Кворки" [ref=f13e20] [cursor=pointer]:
+            - /url: /manage_kworks
+          - link "Биржа" [ref=f13e21] [cursor=pointer]:
+            - /url: /projects
+        - generic [ref=f13e22]: "1"
+        - generic [ref=f13e29]:
+          - link "0" [ref=f13e32] [cursor=pointer]:
+            - /url: /balance
+          - link "f" [ref=f13e38] [cursor=pointer]:
+            - /url: /user/furich
+    - list [ref=f13e45]:
+      - listitem [ref=f13e46]:
+        - link "Дизайн" [ref=f13e47] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/design
+      - listitem [ref=f13e49]:
+        - link "Разработка и IT" [ref=f13e50] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/programming
+      - listitem [ref=f13e52]:
+        - link "Тексты и переводы" [ref=f13e53] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/writing-translations
+      - listitem [ref=f13e55]:
+        - link "SEO и трафик" [ref=f13e56] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/seo
+      - listitem [ref=f13e58]:
+        - link "Соцсети и маркетинг" [ref=f13e59] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/promotion
+      - listitem [ref=f13e61]:
+        - link "Аудио, видео, съемка" [ref=f13e62] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/audio-video
+      - listitem [ref=f13e64]:
+        - link "Бизнес и жизнь" [ref=f13e65] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/business
+  - generic [ref=f13e70]:
+    - generic [ref=f13e72]:
+      - heading "Как стать продавцом на Kwork" [level=1] [ref=f13e73]
+      - paragraph [ref=f13e74]: "Для продавцов на Kwork действуют требования российского правового и платежного законодательства, поэтому нужно иметь:"
+      - list [ref=f13e75]:
+        - listitem [ref=f13e76]:
+          - generic [ref=f13e77]:
+            - generic [ref=f13e78]: Российское гражданство
+            - generic [ref=f13e79]: Обязательное условие
+        - listitem [ref=f13e80]:
+          - generic [ref=f13e81]:
+            - generic [ref=f13e82]: Статус ИП или самозанятого
+            - generic [ref=f13e83]: Если статуса нет, мы расскажем, как его оформить онлайн за 10 минут.
+        - listitem [ref=f13e84]:
+          - generic [ref=f13e85]:
+            - generic [ref=f13e86]: Карту российского банка (самозанятым) или расчетный счет (ИП)
+            - generic [ref=f13e87]: Обязательное условие
+    - generic [ref=f13e89]:
+      - generic [ref=f13e90]: Короткая самопроверка, можете ли вы стать продавцом на Kwork
+      - generic [ref=f13e91]:
+        - generic [ref=f13e92]: Есть ли у вас российский паспорт?
+        - generic [ref=f13e93]:
+          - generic [ref=f13e94]: Да
+          - generic [ref=f13e96]: Нет
+      - generic [ref=f13e98]:
+        - generic [ref=f13e99]: Есть ли у вас официальный статус ИП или самозанятого?
+        - generic [ref=f13e100]:
+          - generic [ref=f13e101]: Да, я ИП
+          - generic [ref=f13e103]: Да, я самозанятый
+          - generic [ref=f13e105]: Нет, но готов стать самозанятым
+          - generic [ref=f13e108]: Нет и не буду становиться самозанятым
+    - button "Далее" [ref=f13e111] [cursor=pointer]
+  - generic [ref=f13e114]:
+    - generic [ref=f13e115]:
+      - generic [ref=f13e116]:
+        - link [ref=f13e117] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f13e119]:
+          - generic [ref=f13e120]: "Онлайн: 2390"
+          - generic [ref=f13e123]: "Заказ: 45 сек. назад"
+      - generic [ref=f13e127]:
+        - generic [ref=f13e128]:
+          - generic [ref=f13e129]: О Kwork
+          - generic [ref=f13e132]:
+            - link "О проекте" [ref=f13e133] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=f13e134] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=f13e135] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Карьера в Kwork" [ref=f13e136] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=f13e137]:
+          - generic [ref=f13e138]: Сообщество
+          - generic [ref=f13e141]:
+            - link "Блог" [ref=f13e142] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=f13e143] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=f13e144] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=f13e145]:
+          - generic [ref=f13e146]: Полезное
+          - generic [ref=f13e149]:
+            - link "Покупателям" [ref=f13e150] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=f13e151] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=f13e152] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=f13e153] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Мобильное приложение" [ref=f13e154] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=f13e155]:
+          - generic [ref=f13e156]: Помощь
+          - generic [ref=f13e159]:
+            - link "Вопрос — Ответ" [ref=f13e160] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=f13e161] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=f13e162]:
+      - generic [ref=f13e163]:
+        - link [ref=f13e164] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=f13e168] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=f13e172]:
+        - link [ref=f13e173] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=f13e174]
+        - link [ref=f13e175] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=f13e176]

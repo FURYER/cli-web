@@ -857,36 +857,6 @@ function filterVisibleMessages(messages: ChatMessage[]): ChatMessage[] {
   });
 }
 
-function mergeSteps(persisted: StepItem[], live: StepItem[]): StepItem[] {
-  const byId = new Map<string, StepItem>();
-  const order: string[] = [];
-  for (const step of persisted) {
-    byId.set(step.id, step);
-    order.push(step.id);
-  }
-  for (const step of live) {
-    const prev = byId.get(step.id);
-    if (prev) {
-      byId.set(step.id, {
-        ...prev,
-        ...step,
-        detail: step.detail ?? prev.detail,
-        startedAt: step.startedAt ?? prev.startedAt,
-        durationMs: step.durationMs ?? prev.durationMs,
-        filePath: step.filePath ?? prev.filePath,
-        toolName: step.toolName ?? prev.toolName,
-        linesAdded: step.linesAdded ?? prev.linesAdded,
-        linesRemoved: step.linesRemoved ?? prev.linesRemoved,
-        linesCreated: step.linesCreated ?? prev.linesCreated,
-      });
-    } else {
-      byId.set(step.id, step);
-      order.push(step.id);
-    }
-  }
-  return order.map((id) => byId.get(id)!);
-}
-
 function isAskToolStep(step: StepItem): boolean {
   const key = `${step.toolName || ""} ${step.label || ""} ${step.detail || ""}`
     .toLowerCase()
@@ -957,6 +927,21 @@ function flattenWorkPieces(pieces: WorkPiece[]): StepItem[] {
   return pieces.flatMap((piece) => (piece.type === "steps" ? piece.steps : []));
 }
 
+function matchPendingForAsk(
+  step: StepItem,
+  pendingQuestions: PendingAskQuestion[],
+  placed: Set<string>,
+): PendingAskQuestion | undefined {
+  for (const pq of pendingQuestions) {
+    if (placed.has(pq.callId)) continue;
+    if (pq.toolCallId && pq.toolCallId === step.id) return pq;
+    if (pq.callId === step.id) return pq;
+  }
+  // Fallback: first unplaced pending when this is clearly an ask step.
+  if (!isAskToolStep(step)) return undefined;
+  return pendingQuestions.find((pq) => !placed.has(pq.callId));
+}
+
 function buildTimeline(
   messages: ChatMessage[],
   liveSteps: StepItem[],
@@ -972,6 +957,7 @@ function buildTimeline(
   let stepPieceIndex = 0;
   let workIndex = 0;
   const placedPending = new Set<string>();
+  const consumedLiveIds = new Set<string>();
 
   const pushStepsPiece = () => {
     if (currentSteps.length === 0) return;
@@ -983,32 +969,40 @@ function buildTimeline(
     currentSteps = [];
   };
 
-  const flushWork = (opts: { live: boolean }) => {
-    if (opts.live) {
-      const liveIds = new Set<string>();
-      for (const pq of pendingQuestions) {
-        liveIds.add(pq.callId);
-        if (pq.toolCallId) liveIds.add(pq.toolCallId);
-      }
-      // While busy, keep running ask steps even if the pending card WS lagged.
-      const healedLive = busy
-        ? liveSteps
-        : liveSteps.map((step) => {
-            if (step.status !== "running" || !isAskToolStep(step)) return step;
-            if (liveIds.has(step.id)) return step;
-            return {
-              ...step,
-              status: "completed" as const,
-              durationMs:
-                step.durationMs ??
-                (typeof step.startedAt === "number"
-                  ? Math.max(0, Date.now() - step.startedAt)
-                  : undefined),
-            };
-          });
-      currentSteps = mergeSteps(currentSteps, healedLive);
-    }
+  const attachPendingForStep = (step: StepItem) => {
+    const pq = matchPendingForAsk(step, pendingQuestions, placedPending);
+    if (!pq) return;
     pushStepsPiece();
+    pieces.push({
+      type: "question",
+      key: `pending-${pq.callId}`,
+      pending: pq,
+    });
+    placedPending.add(pq.callId);
+  };
+
+  const takeStep = (step: StepItem) => {
+    currentSteps.push(step);
+    consumedLiveIds.add(step.id);
+    if (isAskToolStep(step)) attachPendingForStep(step);
+  };
+
+  const flushWork = (opts: { live: boolean }) => {
+    pushStepsPiece();
+
+    if (opts.live) {
+      // Orphan pending cards (no matching ask step yet) stay inside this live
+      // Working block — never after it, or answering would jump them upward.
+      for (const pq of pendingQuestions) {
+        if (placedPending.has(pq.callId)) continue;
+        pieces.push({
+          type: "question",
+          key: `pending-${pq.callId}`,
+          pending: pq,
+        });
+        placedPending.add(pq.callId);
+      }
+    }
 
     const outPieces = pieces;
     pieces = [];
@@ -1027,15 +1021,52 @@ function buildTimeline(
     });
   };
 
+  /** Live rows not yet mirrored into `messages`, due before this cutoff. */
+  const absorbLiveBefore = (cutoffMs: number | null) => {
+    const liveIds = new Set<string>();
+    for (const pq of pendingQuestions) {
+      liveIds.add(pq.callId);
+      if (pq.toolCallId) liveIds.add(pq.toolCallId);
+    }
+    const healedLive = busy
+      ? liveSteps
+      : liveSteps.map((step) => {
+          if (step.status !== "running" || !isAskToolStep(step)) return step;
+          if (liveIds.has(step.id)) return step;
+          return {
+            ...step,
+            status: "completed" as const,
+            durationMs:
+              step.durationMs ??
+              (typeof step.startedAt === "number"
+                ? Math.max(0, Date.now() - step.startedAt)
+                : undefined),
+          };
+        });
+
+    for (const step of healedLive) {
+      if (consumedLiveIds.has(step.id)) continue;
+      if (
+        cutoffMs != null &&
+        typeof step.startedAt === "number" &&
+        step.startedAt > cutoffMs
+      ) {
+        continue;
+      }
+      takeStep(step);
+    }
+  };
+
   for (const message of visible) {
     if (message.role === "user") {
+      absorbLiveBefore(message.createdAt);
       flushWork({ live: false });
       blocks.push({ type: "user", key: message.id, message });
       continue;
     }
     if (message.role === "question") {
       const callId = message.questionCallId ?? message.id;
-      // Still waiting — render as a top-level pending card (never bury in Working).
+      // Still waiting — shown as pending piece next to the ask step.
       if (pendingQuestions.some((p) => p.callId === callId)) {
         continue;
       }
@@ -1049,24 +1080,24 @@ function buildTimeline(
       continue;
     }
     if (isActivityMessage(message)) {
-      currentSteps.push(messageToStep(message));
+      const step = messageToStep(message);
+      takeStep(step);
       continue;
     }
+    // Assistant (or other) bubble: close Working with all live work so far,
+    // so the reply sits BETWEEN work blocks — not above a single continuing one.
+    absorbLiveBefore(message.createdAt);
     flushWork({ live: false });
     blocks.push({ type: "assistant", key: message.id, message });
   }
 
-  flushWork({ live: liveSteps.length > 0 || busy });
-
-  // Pending asks are always top-level so compact/collapsed Working cannot hide them.
-  for (const pq of pendingQuestions) {
-    if (placedPending.has(pq.callId)) continue;
-    blocks.push({
-      type: "question",
-      key: `pending-${pq.callId}`,
-      pending: pq,
-    });
-  }
+  absorbLiveBefore(null);
+  const hasOrphanPending = pendingQuestions.some(
+    (pq) => !placedPending.has(pq.callId),
+  );
+  flushWork({
+    live: liveSteps.length > 0 || busy || hasOrphanPending,
+  });
 
   return blocks;
 }

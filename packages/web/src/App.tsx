@@ -17,6 +17,8 @@ import {
   createSession,
   deleteSession,
   fetchHealth,
+  fetchAgentLimit,
+  ackAgentLimit,
   getDeployStatus,
   getSession,
   listModels,
@@ -42,6 +44,7 @@ import {
   type StreamEvent,
   type TokenUsage,
   type ContextSnapshot,
+  type AgentLimitInfo,
 } from "./lib/api";
 import { latestContextFromMessages } from "./lib/contextUsage";
 import {
@@ -278,6 +281,7 @@ export default function App() {
   const [busyIds, setBusyIds] = useState<Set<string>>(() => new Set());
   const [askPendingIds, setAskPendingIds] = useState<Set<string>>(() => new Set());
   const [error, setError] = useState<string | null>(null);
+  const [agentLimit, setAgentLimit] = useState<AgentLimitInfo | null>(null);
   const [streamingText, setStreamingText] = useState("");
   const [activities, setActivities] = useState<LiveActivity[]>([]);
   const [pendingQuestions, setPendingQuestions] = useState<PendingAskQuestion[]>([]);
@@ -816,6 +820,13 @@ export default function App() {
         setShowNotifyBanner(false);
       }
     })();
+    void fetchAgentLimit(auth)
+      .then((state) => {
+        if (state.active) setAgentLimit(state);
+      })
+      .catch(() => {
+        /* ignore */
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authenticated, accessToken]);
 
@@ -999,6 +1010,20 @@ export default function App() {
           if (event.type === "error" && event.sessionId) {
             markBusy(event.sessionId, false);
             clearSending(event.sessionId);
+            // Session-scoped errors must surface even if the active-chat switch
+            // misses them (e.g. idle auth recovery failed with empty reply).
+            if (event.sessionId === activeIdRef.current) {
+              setError(event.message);
+            }
+          }
+          if (event.type === "agent_limit") {
+            setAgentLimit({
+              active: true,
+              message: event.message,
+              detail: event.detail,
+              sessionId: event.sessionId,
+              at: event.at ?? Date.now(),
+            });
           }
 
           if (event.type === "ask_question" && event.sessionId) {
@@ -2189,6 +2214,30 @@ export default function App() {
           status={deployStatus}
           onChange={setDeployStatus}
         />
+
+        {agentLimit?.active ? (
+          <div className="flex items-start gap-3 bg-amber-950/50 px-4 py-2.5 text-sm text-amber-100">
+            <div className="min-w-0 flex-1">
+              <p className="font-medium">{agentLimit.message}</p>
+              {agentLimit.detail ? (
+                <p className="mt-0.5 text-xs text-amber-200/80 break-words">
+                  {agentLimit.detail}
+                </p>
+              ) : null}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                void ackAgentLimit(auth)
+                  .then(() => setAgentLimit(null))
+                  .catch(() => setAgentLimit(null));
+              }}
+              className="shrink-0 rounded-md bg-amber-200/20 px-2.5 py-1 text-xs font-medium text-amber-50 hover:bg-amber-200/30"
+            >
+              Понял
+            </button>
+          </div>
+        ) : null}
 
         {error ? (
           <div className="bg-red-950/40 px-4 py-2 text-sm text-red-200">{error}</div>

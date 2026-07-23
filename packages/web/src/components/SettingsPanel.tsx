@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, X } from "lucide-react";
-import type { AuthMode, ConfigDocDetail, ConfigDocSource, ConfigDocSummary } from "../lib/api";
+import type { AuthMode, ConfigDocDetail, ConfigDocSource, ConfigDocSummary, MemoryEntry, SecretMeta } from "../lib/api";
 import {
   getConfigDoc,
   getConversation,
@@ -8,8 +8,14 @@ import {
   listAgents,
   listConfigRules,
   listConfigSkills,
+  listMemory,
+  listSecrets,
+  removeMemory,
+  removeSecret,
   resumeSession,
   saveMcp,
+  saveMemory,
+  saveSecret,
 } from "../lib/api";
 import { iconProps } from "./icons";
 
@@ -23,10 +29,11 @@ type Props = {
   onError: (message: string) => void;
 };
 
-type Tab = "mcp" | "rules" | "skills" | "agents" | "conversation";
+type Tab = "mcp" | "memory" | "rules" | "skills" | "agents" | "conversation";
 
 const TAB_LABEL: Record<Tab, string> = {
   mcp: "MCP",
+  memory: "Memory",
   rules: "Rules",
   skills: "Skills",
   agents: "Agents",
@@ -71,6 +78,12 @@ export function SettingsPanel({
   const [conversation, setConversation] = useState("");
   const [rules, setRules] = useState<ConfigDocSummary[]>([]);
   const [skills, setSkills] = useState<ConfigDocSummary[]>([]);
+  const [memoryEntries, setMemoryEntries] = useState<MemoryEntry[]>([]);
+  const [secretEntries, setSecretEntries] = useState<SecretMeta[]>([]);
+  const [memKey, setMemKey] = useState("");
+  const [memValue, setMemValue] = useState("");
+  const [secKey, setSecKey] = useState("");
+  const [secValue, setSecValue] = useState("");
   const [doc, setDoc] = useState<ConfigDocDetail | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -91,6 +104,13 @@ export function SettingsPanel({
       } else if (next === "mcp") {
         const res = await getMcp(auth);
         setMcpText(JSON.stringify(res.servers, null, 2));
+      } else if (next === "memory") {
+        const [mem, sec] = await Promise.all([
+          listMemory(auth),
+          listSecrets(auth),
+        ]);
+        setMemoryEntries(mem.entries);
+        setSecretEntries(sec.entries);
       } else if (next === "conversation" && sessionId) {
         const res = await getConversation(auth, sessionId);
         setConversation(JSON.stringify(res.conversation, null, 2));
@@ -159,7 +179,7 @@ export function SettingsPanel({
             role="tablist"
             aria-label="Settings sections"
           >
-            {(["mcp", "rules", "skills", "agents", "conversation"] as const).map((id) => {
+            {(["mcp", "memory", "rules", "skills", "agents", "conversation"] as const).map((id) => {
               const active = tab === id;
               return (
                 <button
@@ -262,6 +282,172 @@ export function SettingsPanel({
                 {mcpSaved ? (
                   <span className="text-[12px] text-muted">Saved</span>
                 ) : null}
+              </div>
+            </div>
+          ) : null}
+
+          {!doc && tab === "memory" ? (
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <p className="text-[12px] leading-relaxed text-muted">
+                  Long-term memory —{" "}
+                  <strong className="font-medium text-ink">any</strong> durable
+                  facts (prefs, decisions, URLs, notes), not just logins. File:{" "}
+                  <code className="rounded bg-elevated/60 px-1 py-0.5 font-mono text-[11px]">
+                    ~/.webcli/memory.json
+                  </code>
+                  . Agent tool:{" "}
+                  <code className="font-mono text-[11px]">memory</code>.
+                </p>
+                <div className="grid gap-2 sm:grid-cols-[1fr_2fr_auto]">
+                  <input
+                    value={memKey}
+                    onChange={(e) => setMemKey(e.target.value)}
+                    placeholder="key"
+                    className="rounded-lg border border-line/50 bg-elevated/50 px-2.5 py-1.5 text-[12px] text-ink outline-none focus:border-line"
+                  />
+                  <input
+                    value={memValue}
+                    onChange={(e) => setMemValue(e.target.value)}
+                    placeholder="value"
+                    className="rounded-lg border border-line/50 bg-elevated/50 px-2.5 py-1.5 text-[12px] text-ink outline-none focus:border-line"
+                  />
+                  <button
+                    type="button"
+                    className="rounded-lg bg-accent px-3 py-1.5 text-[12px] font-medium text-[var(--color-accent-ink)]"
+                    onClick={() => {
+                      void (async () => {
+                        try {
+                          await saveMemory(auth, {
+                            key: memKey,
+                            value: memValue,
+                          });
+                          setMemKey("");
+                          setMemValue("");
+                          await refreshTab("memory");
+                        } catch (err) {
+                          onError(err instanceof Error ? err.message : String(err));
+                        }
+                      })();
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
+                {memoryEntries.length === 0 ? (
+                  <p className="py-3 text-center text-[12px] text-muted">No notes yet.</p>
+                ) : (
+                  <ul className="space-y-1.5">
+                    {memoryEntries.map((e) => (
+                      <li
+                        key={e.id}
+                        className="flex items-start justify-between gap-2 rounded-xl border border-line/40 bg-elevated/30 px-3 py-2"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate font-mono text-[12px] text-ink">{e.key}</p>
+                          <p className="mt-0.5 break-words text-[12px] text-muted">{e.value}</p>
+                        </div>
+                        <button
+                          type="button"
+                          className="shrink-0 text-[11px] text-muted hover:text-ink"
+                          onClick={() => {
+                            void (async () => {
+                              try {
+                                await removeMemory(auth, e.key);
+                                await refreshTab("memory");
+                              } catch (err) {
+                                onError(
+                                  err instanceof Error ? err.message : String(err),
+                                );
+                              }
+                            })();
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div className="space-y-2 border-t border-line/40 pt-4">
+                <p className="text-[12px] leading-relaxed text-muted">
+                  Encrypted secrets (
+                  <code className="rounded bg-elevated/60 px-1 py-0.5 font-mono text-[11px]">
+                    secrets.json
+                  </code>
+                  ). Values are never listed here after save. Agent tool:{" "}
+                  <code className="font-mono text-[11px]">secret</code>.
+                </p>
+                <div className="grid gap-2 sm:grid-cols-[1fr_2fr_auto]">
+                  <input
+                    value={secKey}
+                    onChange={(e) => setSecKey(e.target.value)}
+                    placeholder="key"
+                    className="rounded-lg border border-line/50 bg-elevated/50 px-2.5 py-1.5 text-[12px] text-ink outline-none focus:border-line"
+                  />
+                  <input
+                    type="password"
+                    value={secValue}
+                    onChange={(e) => setSecValue(e.target.value)}
+                    placeholder="secret value"
+                    className="rounded-lg border border-line/50 bg-elevated/50 px-2.5 py-1.5 text-[12px] text-ink outline-none focus:border-line"
+                  />
+                  <button
+                    type="button"
+                    className="rounded-lg bg-accent px-3 py-1.5 text-[12px] font-medium text-[var(--color-accent-ink)]"
+                    onClick={() => {
+                      void (async () => {
+                        try {
+                          await saveSecret(auth, {
+                            key: secKey,
+                            value: secValue,
+                          });
+                          setSecKey("");
+                          setSecValue("");
+                          await refreshTab("memory");
+                        } catch (err) {
+                          onError(err instanceof Error ? err.message : String(err));
+                        }
+                      })();
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
+                {secretEntries.length === 0 ? (
+                  <p className="py-3 text-center text-[12px] text-muted">No secrets yet.</p>
+                ) : (
+                  <ul className="space-y-1.5">
+                    {secretEntries.map((e) => (
+                      <li
+                        key={e.id}
+                        className="flex items-center justify-between gap-2 rounded-xl border border-line/40 bg-elevated/30 px-3 py-2"
+                      >
+                        <p className="truncate font-mono text-[12px] text-ink">{e.key}</p>
+                        <button
+                          type="button"
+                          className="shrink-0 text-[11px] text-muted hover:text-ink"
+                          onClick={() => {
+                            void (async () => {
+                              try {
+                                await removeSecret(auth, e.key);
+                                await refreshTab("memory");
+                              } catch (err) {
+                                onError(
+                                  err instanceof Error ? err.message : String(err),
+                                );
+                              }
+                            })();
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
           ) : null}

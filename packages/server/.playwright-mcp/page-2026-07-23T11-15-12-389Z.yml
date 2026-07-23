@@ -1,0 +1,104 @@
+- generic [ref=f3e7]:
+  - banner [ref=f3e8]:
+    - generic [ref=f3e9]:
+      - link [ref=f3e10] [cursor=pointer]:
+        - /url: /
+      - link [ref=f3e14] [cursor=pointer]:
+        - /url: /
+        - heading "poly.pizza" [level=6] [ref=f3e15]
+      - textbox "search" [ref=f3e18]:
+        - /placeholder: Search
+      - generic [ref=f3e20]:
+        - button "support" [ref=f3e21] [cursor=pointer]
+        - button "upload" [ref=f3e26] [cursor=pointer]
+        - button "Login" [ref=f3e30] [cursor=pointer]
+        - button "Sign up" [ref=f3e32] [cursor=pointer]
+  - generic [ref=f3e35]:
+    - generic [ref=f3e38]:
+      - generic [ref=f3e39]:
+        - button "Auto rotate" [ref=f3e40] [cursor=pointer]
+        - button "FullScreen" [ref=f3e44] [cursor=pointer]
+      - generic [ref=f3e48]:
+        - generic [ref=f3e49]:
+          - img "Use mouse, touch or arrow keys to control the camera!" [ref=f3e50]
+          - generic:
+            - generic:
+              - button
+        - status: All 3D models in the page have loaded
+      - generic [ref=f3e54]:
+        - button "Play/Pause" [ref=f3e55] [cursor=pointer]
+        - slider [ref=f3e62] [cursor=pointer]
+        - generic [ref=f3e63]:
+          - button "Man_Clapping" [ref=f3e64] [cursor=pointer]
+          - textbox: "0"
+    - generic [ref=f3e66]:
+      - generic [ref=f3e67]:
+        - generic [ref=f3e68]:
+          - heading "Man" [level=1] [ref=f3e69]
+          - paragraph [ref=f3e70]: 1.2k
+          - paragraph [ref=f3e73]: 24.61k
+          - paragraph [ref=f3e76]: "37"
+          - paragraph [ref=f3e79]: 10.79k
+        - generic [ref=f3e82]:
+          - button [ref=f3e84] [cursor=pointer]
+          - button [ref=f3e90] [cursor=pointer]
+          - button [ref=f3e96] [cursor=pointer]
+          - button "more" [ref=f3e102] [cursor=pointer]
+      - separator [ref=f3e106]
+      - generic [ref=f3e108]:
+        - generic [ref=f3e109]:
+          - img "Avatar for Quaternius" [ref=f3e111]
+          - heading [level=3] [ref=f3e112]:
+            - link "Quaternius" [ref=f3e113] [cursor=pointer]:
+              - /url: /u/Quaternius
+          - generic [ref=f3e114]:
+            - link "Twitter" [ref=f3e115] [cursor=pointer]:
+              - /url: https://twitter.com/quaternius
+            - link "Pateron" [ref=f3e119] [cursor=pointer]:
+              - /url: https://patreon.com/quaternius
+            - link "Website" [ref=f3e125] [cursor=pointer]:
+              - /url: https://quaternius.com/
+        - generic [ref=f3e129]:
+          - generic [ref=f3e130]:
+            - paragraph
+          - generic [ref=f3e132]:
+            - button "Low Poly" [ref=f3e135] [cursor=pointer]
+            - button "People & Characters" [ref=f3e137] [cursor=pointer]
+            - button "Animated" [ref=f3e139] [cursor=pointer]
+            - button "#Person" [ref=f3e141] [cursor=pointer]
+            - button "#Man" [ref=f3e143] [cursor=pointer]
+            - button "#Human" [ref=f3e145] [cursor=pointer]
+            - button "#character" [ref=f3e147] [cursor=pointer]
+          - paragraph [ref=f3e150]:
+            - text: Aug 24, 2021 • FBX/GLTF format • Public Domain (CC0)
+            - link [ref=f3e151] [cursor=pointer]:
+              - /url: https://creativecommons.org/publicdomain/zero/1.0/
+      - separator [ref=f3e154]
+      - heading "2 Comments" [level=3] [ref=f3e157]
+      - generic [ref=f3e158]:
+        - progressbar [ref=f3e160]
+        - generic [ref=f3e170]:
+          - textbox "Like this model? Let the creator know!" [ref=f3e171]
+          - group
+  - contentinfo [ref=f3e222]:
+    - heading "Made with 🍕 by dook" [level=6] [ref=f3e223]
+    - generic [ref=f3e224]:
+      - link "Twitter" [ref=f3e225] [cursor=pointer]:
+        - /url: https://twitter.com/duckpizza_
+      - link "Youtube" [ref=f3e229] [cursor=pointer]:
+        - /url: https://www.youtube.com/c/dookdook
+      - link "Discord" [ref=f3e233] [cursor=pointer]:
+        - /url: https://discord.gg/mEwMwSU
+      - link "Email" [ref=f3e238] [cursor=pointer]:
+        - /url: mailto:hi@duck.pizza
+    - generic [ref=f3e242]:
+      - link "Terms" [ref=f3e243] [cursor=pointer]:
+        - /url: /docs/tos
+      - link "Privacy" [ref=f3e244] [cursor=pointer]:
+        - /url: /docs/privacy
+      - link "Security" [ref=f3e245] [cursor=pointer]:
+        - /url: /docs/security
+      - link "Press" [ref=f3e246] [cursor=pointer]:
+        - /url: /docs/press
+      - link "API" [ref=f3e247] [cursor=pointer]:
+        - /url: /docs/api/v1.1

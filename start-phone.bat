@@ -15,6 +15,7 @@ echo   Window 1: start-prod.bat   ^(http://127.0.0.1:8787^)
 echo   Window 2: publish-release.bat  ^(HTTPS URL for phone^)
 echo.
 echo Keep both windows open. PC must stay awake.
+echo Autostart at logon: install-autostart.bat
 echo.
 
 start "WebCLI release" cmd /k "%~dp0start-prod.bat"

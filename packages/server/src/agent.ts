@@ -18,10 +18,15 @@ import {
 import { ingestSessionMedia, isMediaPath, mergeThinkingText } from "./media.js";
 import { loadMcpServers } from "./mcp.js";
 import { createAskUserCustomTool } from "./ask-user-tool.js";
+import { createMemorySecretTools } from "./memory-tools.js";
 import { createSubagentTools } from "./delegate-tools.js";
 import { notifyDeployIdleCheck } from "./deploy.js";
 import { requireAgentApiKey } from "./paths.js";
 import { notifyAgentFinished } from "./push.js";
+import {
+  isQuotaOrRateLimitFailure,
+  raiseAgentLimitAlert,
+} from "./agent-limit.js";
 import {
   closeSessionStore,
   deleteStoredSession,
@@ -140,12 +145,30 @@ export type SessionRecord = SessionSummary & {
   busy?: boolean;
   /** Wall clock when busy flipped true — prepare phase has no activeRun yet. */
   busyStartedAt?: number;
+  /** Last successful Agent.resume / send touch — used to refresh stale SDK handles. */
+  lastAgentTouchAt?: number;
+  /** Last stream/tool activity — hung-run watchdog after overnight ask answers. */
+  lastAgentActivityAt?: number;
+  /** Wall clock when a long-waiting ask was answered (resume may die silently). */
+  longAskResumeAt?: number;
   activeRun?: Run | null;
   mode?: AgentModeOption;
 };
 
 /** How long we may wait for checkpoint / ensureAgent / send before treating as stuck. */
 const BUSY_PREPARE_GRACE_MS = 5 * 60 * 1000;
+/**
+ * Cursor SDK caches a short-lived JWT / gRPC session in-process. After this idle
+ * window, dispose + resume before send instead of waiting for AuthenticationError.
+ */
+const AGENT_IDLE_REFRESH_MS = 20 * 60 * 1000;
+/** Ask cards waiting longer than this usually leave a dead SDK run after answer. */
+const LONG_ASK_WAIT_MS = 20 * 60 * 1000;
+/** After a long ask answer, if the run makes no progress, unlock the chat. */
+const LONG_ASK_RESUME_WATCHDOG_MS = 45_000;
+
+const LONG_ASK_RESUME_FAILED_MESSAGE =
+  "Агент не смог продолжить после долгого ожидания ответа. Напиши сообщение ещё раз — твои ответы уже в чате.";
 
 function setSessionBusy(session: SessionRecord, busy: boolean): void {
   session.busy = busy;
@@ -414,6 +437,13 @@ export type StreamEvent =
       message?: string;
     }
   | { type: "error"; sessionId: string; message: string }
+  | {
+      type: "agent_limit";
+      sessionId?: string;
+      message: string;
+      detail?: string;
+      at?: number;
+    }
   | {
       type: "rolled_back";
       sessionId: string;
@@ -1002,6 +1032,28 @@ function isActiveRunConflict(err: unknown): boolean {
   );
 }
 
+async function maybeBroadcastAgentLimit(
+  sessionId: string,
+  chatTitle: string,
+  err: unknown,
+): Promise<void> {
+  if (!isQuotaOrRateLimitFailure(err)) return;
+  const detail =
+    err instanceof Error ? err.message : typeof err === "string" ? err : String(err);
+  const limit = await raiseAgentLimitAlert({
+    sessionId,
+    chatTitle,
+    detail,
+  });
+  broadcast({
+    type: "agent_limit",
+    sessionId,
+    message: limit.message,
+    detail: limit.detail,
+    at: limit.at,
+  });
+}
+
 function isAgentMissingFailure(err: unknown): boolean {
   const hay = (
     err instanceof Error ? `${err.name} ${err.message}` : String(err ?? "")
@@ -1030,8 +1082,93 @@ async function disposeAgentHandle(session: SessionRecord): Promise<void> {
   session.agent = null;
 }
 
+function touchAgent(session: SessionRecord): void {
+  session.lastAgentTouchAt = Date.now();
+}
+
+function touchAgentActivity(session: SessionRecord): void {
+  session.lastAgentActivityAt = Date.now();
+  touchAgent(session);
+}
+
+function agentIdleMs(session: SessionRecord, at = Date.now()): number | null {
+  const touched = session.lastAgentTouchAt;
+  if (touched == null || !Number.isFinite(touched)) return null;
+  return Math.max(0, at - touched);
+}
+
+const longAskWatchdogs = new Map<string, ReturnType<typeof setTimeout>>();
+
+function clearLongAskWatchdog(sessionId: string): void {
+  const timer = longAskWatchdogs.get(sessionId);
+  if (timer) {
+    clearTimeout(timer);
+    longAskWatchdogs.delete(sessionId);
+  }
+}
+
+/**
+ * After overnight ask answers, the SDK often stays "running" with no further
+ * output. Unlock the composer and tell the user to send again.
+ */
+function scheduleLongAskResumeWatchdog(sessionId: string): void {
+  clearLongAskWatchdog(sessionId);
+  const timer = setTimeout(() => {
+    longAskWatchdogs.delete(sessionId);
+    void (async () => {
+      const session = sessions.get(sessionId);
+      if (!session?.busy) return;
+      if (hasPendingAskQuestions(sessionId)) return;
+      const last = session.lastAgentActivityAt ?? session.longAskResumeAt ?? 0;
+      if (Date.now() - last < LONG_ASK_RESUME_WATCHDOG_MS - 5_000) return;
+      console.warn(
+        `[agent] long-ask resume watchdog: no progress for ${sessionId}; cancelling stuck run`,
+      );
+      try {
+        await cancelSessionRun(sessionId);
+      } catch (err) {
+        console.warn(
+          "[agent] long-ask watchdog cancel failed:",
+          err instanceof Error ? err.message : err,
+        );
+        setSessionBusy(session, false);
+        session.activeRun = null;
+        endAskSession(sessionId);
+        broadcast({
+          type: "done",
+          sessionId,
+          runId: "",
+          status: "error",
+          title: session.title,
+        });
+      }
+      broadcast({
+        type: "error",
+        sessionId,
+        message: LONG_ASK_RESUME_FAILED_MESSAGE,
+      });
+      try {
+        await disposeAgentHandle(session);
+      } catch {
+        /* ignore */
+      }
+    })();
+  }, LONG_ASK_RESUME_WATCHDOG_MS);
+  longAskWatchdogs.set(sessionId, timer);
+}
+
 async function ensureAgent(session: SessionRecord): Promise<SDKAgent> {
-  if (session.agent) return session.agent;
+  if (session.agent) {
+    const idle = agentIdleMs(session);
+    if (idle == null || idle < AGENT_IDLE_REFRESH_MS) {
+      touchAgent(session);
+      return session.agent;
+    }
+    console.warn(
+      `[agent] cached handle idle ${Math.round(idle / 60_000)}m; disposing and resuming`,
+    );
+    await disposeAgentHandle(session);
+  }
   const apiKey = requireApiKey();
   const mcpServers = await loadMcpServers();
   try {
@@ -1044,6 +1181,7 @@ async function ensureAgent(session: SessionRecord): Promise<SDKAgent> {
     });
     session.agent = agent;
     session.agentId = agent.agentId;
+    touchAgent(session);
     return agent;
   } catch (err) {
     if (!isAgentMissingFailure(err)) throw err;
@@ -1105,6 +1243,7 @@ export async function createSession(input: {
     childStatus: input.childStatus,
   };
   sessions.set(session.id, session);
+  touchAgent(session);
 
   if (input.parentSessionId && parent) {
     const kids = parent.childSessionIds ? [...parent.childSessionIds] : [];
@@ -1152,6 +1291,7 @@ export async function resumeSession(input: {
     messages: [],
   };
   sessions.set(session.id, session);
+  touchAgent(session);
   persistMeta(session);
   return toSummary(session);
 }
@@ -1287,6 +1427,7 @@ async function recreateAgent(session: SessionRecord): Promise<void> {
   });
   session.agent = agent;
   session.agentId = agent.agentId;
+  touchAgent(session);
   persistMeta(session);
 }
 
@@ -2072,6 +2213,7 @@ export function enqueueSessionSend(
 ): { queued: boolean } {
   const session = sessions.get(sessionId);
   if (!session) throw new Error("Session not found");
+  healStuckBusy(session);
 
   const prompt = text.trim();
   const images = options?.images?.filter((img) => img.data && img.mimeType) ?? [];
@@ -2162,6 +2304,7 @@ async function pumpSessionSendQueue(sessionId: string): Promise<void> {
     sessionSendQueues.delete(sessionId);
     return;
   }
+  healStuckBusy(session);
   if (session.busy) return;
 
   const q = sessionSendQueues.get(sessionId);
@@ -2274,12 +2417,14 @@ async function sendMessageNow(
       endAskSession(sessionId);
       const message = err instanceof Error ? err.message : String(err);
       broadcast({ type: "error", sessionId, message });
+      await maybeBroadcastAgentLimit(sessionId, session.title, err);
       broadcast({ type: "done", sessionId, runId: "", status: "error", title: session.title });
       throw err;
     }
   }
   const mcpServers = await loadMcpServers();
   const askUserTool = createAskUserCustomTool(sessionId);
+  const memorySecretTools = createMemorySecretTools();
   // Sub-agents cannot nest further — only top-level orchestrators get these tools.
   const subagentTools = session.parentSessionId
     ? {}
@@ -2463,7 +2608,8 @@ async function sendMessageNow(
       : prompt;
 
   await runWithAskSession(sessionId, async () => {
-  let authRetried = false;
+  let authRecovered = false;
+  let activeRunRecovered = false;
 
   const resetTurnBuffers = () => {
     clearThinkingFlush();
@@ -2494,6 +2640,7 @@ async function sendMessageNow(
       local: {
         customTools: {
           ask_user: askUserTool,
+          ...memorySecretTools,
           ...subagentTools,
         },
       },
@@ -2687,8 +2834,8 @@ async function sendMessageNow(
       },
     });
   } catch (err) {
-    if (!authRetried && isStaleAuthFailure(err)) {
-      authRetried = true;
+    if (!authRecovered && isStaleAuthFailure(err)) {
+      authRecovered = true;
       console.warn(
         "[agent] stale Cursor auth on send; disposing agent and retrying once",
       );
@@ -2702,8 +2849,8 @@ async function sendMessageNow(
       });
       continue;
     }
-    if (!authRetried && isActiveRunConflict(err)) {
-      authRetried = true;
+    if (!activeRunRecovered && isActiveRunConflict(err)) {
+      activeRunRecovered = true;
       console.warn(
         "[agent] SDK active-run conflict; recreating agent and retrying once",
       );
@@ -2718,6 +2865,7 @@ async function sendMessageNow(
       } catch {
         /* ignore */
       }
+      // Ghost lock: SDK holds a run even when we have no activeRun id — recreate always.
       await recreateAgent(session);
       resetTurnBuffers();
       broadcast({
@@ -2733,8 +2881,8 @@ async function sendMessageNow(
       : err instanceof Error
         ? err.message
         : String(err);
-    // Stale SDK run lock — clear and surface cleanly.
     broadcast({ type: "error", sessionId, message });
+    await maybeBroadcastAgentLimit(sessionId, session.title, err);
     broadcast({
       type: "done",
       sessionId,
@@ -2746,9 +2894,15 @@ async function sendMessageNow(
   }
 
   session.activeRun = run;
+  touchAgent(session);
 
   try {
     for await (const event of run.stream()) {
+      touchAgentActivity(session);
+      if (session.longAskResumeAt) {
+        clearLongAskWatchdog(sessionId);
+        delete session.longAskResumeAt;
+      }
       switch (event.type) {
         case "assistant": {
           const chunk = textFromAssistantEvent(event);
@@ -2887,11 +3041,11 @@ async function sendMessageNow(
 
     if (
       result.status === "error" &&
-      !authRetried &&
+      !authRecovered &&
       !hadTurnProgress() &&
       isStaleAuthFailure(result.error ?? "Run failed")
     ) {
-      authRetried = true;
+      authRecovered = true;
       console.warn(
         "[agent] stale Cursor auth on run.wait; disposing agent and retrying once",
       );
@@ -2922,10 +3076,19 @@ async function sendMessageNow(
     }
     if (result.status === "error") {
       const raw = result.error?.message ?? "Run failed";
-      const message = isStaleAuthFailure(result.error ?? raw)
-        ? AUTH_RECOVERY_FAILED_MESSAGE
-        : raw;
+      const afterLongAsk = session.longAskResumeAt != null;
+      const message =
+        afterLongAsk && isStaleAuthFailure(result.error ?? raw)
+          ? LONG_ASK_RESUME_FAILED_MESSAGE
+          : isStaleAuthFailure(result.error ?? raw)
+            ? AUTH_RECOVERY_FAILED_MESSAGE
+            : raw;
+      if (afterLongAsk) {
+        clearLongAskWatchdog(sessionId);
+        delete session.longAskResumeAt;
+      }
       broadcast({ type: "error", sessionId, message });
+      await maybeBroadcastAgentLimit(sessionId, session.title, result.error ?? raw);
     }
     broadcast({
       type: "done",
@@ -2946,8 +3109,39 @@ async function sendMessageNow(
     });
     break;
   } catch (err) {
-    if (!authRetried && !hadTurnProgress() && isStaleAuthFailure(err)) {
-      authRetried = true;
+    const afterLongAsk =
+      session.longAskResumeAt != null &&
+      Date.now() - session.longAskResumeAt < 15 * 60 * 1000;
+
+    // Overnight ask resume: stale auth with prior turn text — do not re-send the
+    // whole user message (would re-ask). Unlock and ask the user to continue.
+    if (afterLongAsk && isStaleAuthFailure(err)) {
+      clearLongAskWatchdog(sessionId);
+      delete session.longAskResumeAt;
+      console.warn(
+        "[agent] stale Cursor auth after long ask resume; unlocking without retry send",
+      );
+      broadcast({ type: "error", sessionId, message: LONG_ASK_RESUME_FAILED_MESSAGE });
+      broadcast({
+        type: "done",
+        sessionId,
+        runId: run.id,
+        status: "error",
+        title: session.title,
+        usage: lastUsage,
+        context: lastContext,
+      });
+      markChildRunFinished(session, "error");
+      void notifyAgentFinished({
+        title: session.title,
+        status: "error",
+        sessionId,
+      });
+      throw err;
+    }
+
+    if (!authRecovered && !hadTurnProgress() && isStaleAuthFailure(err)) {
+      authRecovered = true;
       console.warn(
         "[agent] stale Cursor auth during run; disposing agent and retrying once",
       );
@@ -2961,12 +3155,39 @@ async function sendMessageNow(
       });
       continue;
     }
+    if (!activeRunRecovered && !hadTurnProgress() && isActiveRunConflict(err)) {
+      activeRunRecovered = true;
+      console.warn(
+        "[agent] SDK active-run conflict during run; recreating agent and retrying once",
+      );
+      try {
+        const stale = session.activeRun;
+        if (stale?.id) {
+          await Agent.cancelRun(stale.id, {
+            runtime: "local",
+            cwd: session.workspace,
+          }).catch(() => undefined);
+        }
+      } catch {
+        /* ignore */
+      }
+      await recreateAgent(session);
+      resetTurnBuffers();
+      broadcast({
+        type: "status",
+        sessionId,
+        status: "RUNNING",
+        message: "Clearing stuck agent run…",
+      });
+      continue;
+    }
     const message = isStaleAuthFailure(err)
       ? AUTH_RECOVERY_FAILED_MESSAGE
       : err instanceof Error
         ? err.message
         : String(err);
     broadcast({ type: "error", sessionId, message });
+    await maybeBroadcastAgentLimit(sessionId, session.title, err);
     broadcast({
       type: "done",
       sessionId,
@@ -2988,6 +3209,8 @@ async function sendMessageNow(
   } finally {
     // Do not cancel open ask cards here — ask_user / MCP wait can outlive a
     // premature done, and the UI keeps pending questions until answered.
+    clearLongAskWatchdog(sessionId);
+    delete session.longAskResumeAt;
     if (!hasPendingAskQuestions(sessionId)) {
       cancelAskQuestionsForSession(sessionId, "Run finished");
       completeAskToolActivity(session);
@@ -3010,7 +3233,7 @@ export function submitAskQuestionAnswer(
 ): ChatMessage {
   const session = sessions.get(sessionId);
   if (!session) throw new Error("Session not found");
-  const prompt = resolveAskQuestion(sessionId, callId, result);
+  const { prompt, waitedMs } = resolveAskQuestion(sessionId, callId, result);
   const summary =
     result.outcome === "answered"
       ? formatAskQuestionSummary(prompt.title, prompt.questions, result.answers)
@@ -3054,6 +3277,19 @@ export function submitAskQuestionAnswer(
   }
   // Running ask rows are persisted early; freeze their clock on answer/skip.
   completeAskToolActivity(session, prompt.toolCallId || callId);
+
+  // Overnight answers often resume into a dead SDK stream — watch and unlock.
+  if (waitedMs >= LONG_ASK_WAIT_MS) {
+    session.longAskResumeAt = Date.now();
+    touchAgentActivity(session);
+    console.warn(
+      `[agent] long ask answered after ${Math.round(waitedMs / 60_000)}m; arming resume watchdog`,
+    );
+    scheduleLongAskResumeWatchdog(sessionId);
+  } else {
+    touchAgentActivity(session);
+  }
+
   return message;
 }
 
@@ -3127,6 +3363,8 @@ export async function cancelSessionRun(sessionId: string): Promise<void> {
   // with no activeRun handle on our side ("already has active run" on next send).
   setSessionBusy(session, false);
   session.activeRun = null;
+  clearLongAskWatchdog(sessionId);
+  delete session.longAskResumeAt;
   endAskSession(sessionId);
   sessionSendQueues.delete(sessionId);
   sessionSendPumping.delete(sessionId);

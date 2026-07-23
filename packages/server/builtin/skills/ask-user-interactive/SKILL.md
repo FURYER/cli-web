@@ -4,6 +4,7 @@ description: >-
   Ask the user interactive multiple-choice questions in WebCLI chat via the
   ask_user tool (custom-user-tools). Use when you need clarifying choices,
   preferences, or yes/no decisions — not plain markdown lists.
+  RU: спроси пользователя, вопрос, уточни.
 ---
 
 # Interactive questions (ask_user)
@@ -27,12 +28,22 @@ ask_user({
         { id: "a", label: "Option A" },
         { id: "b", label: "Option B" }
       ]
+    },
+    {
+      id: "q2",
+      prompt: "Second related question?",
+      options: [
+        { id: "x", label: "X" },
+        { id: "y", label: "Y" }
+      ]
     }
   ]
 })
 ```
 
-- One or more questions per call.
+- **One call, many questions** — put related prompts in the same `questions[]`
+  so the user sees **one** card. Do **not** fire two `ask_user` calls in a row
+  for the same decision (separate titles = separate overnight waits = fragile).
 - `allowMultiple: true` when several options may be selected.
 - Wait for the tool result (answered or skipped), then continue.
 - The card always has a freeform “Or write your own…” field — **do not** add
@@ -43,3 +54,5 @@ ask_user({
 - Paste “1. … 2. …” choice lists in chat instead of `ask_user`.
 - Add a redundant “own answer / other” option — freeform already covers that.
 - Invent answers if the user skipped — ask again or proceed with a stated default.
+- Split one clarification into sequential `ask_user` calls when a single card
+  with multiple `questions` would do.

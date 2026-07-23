@@ -40,6 +40,8 @@ type PendingAsk = {
   sessionId: string;
   prompt: AskQuestionPrompt;
   resolve: (result: AskQuestionHandlerResult) => void;
+  /** When this card became pending (for overnight resume recovery). */
+  startedAt: number;
 };
 
 type SdkAskPayload = {
@@ -304,6 +306,7 @@ export function promptUserQuestions(
     pendingByCallId.set(callId, {
       sessionId,
       prompt,
+      startedAt: Date.now(),
       resolve: (result) => {
         noteAskWaitEnd(sessionId);
         rememberSettled(sessionId, callId, result);
@@ -453,13 +456,14 @@ export function answerAskQuestion(
   sessionId: string,
   callId: string,
   result: AskQuestionHandlerResult,
-): AskQuestionPrompt {
+): { prompt: AskQuestionPrompt; waitedMs: number } {
   const pending = pendingByCallId.get(callId);
   if (!pending) throw new Error("AskQuestion not found or already answered");
   if (pending.sessionId !== sessionId) {
     throw new Error("AskQuestion does not belong to this session");
   }
 
+  const waitedMs = Math.max(0, Date.now() - pending.startedAt);
   pendingByCallId.delete(callId);
   pending.resolve(result);
 
@@ -474,7 +478,7 @@ export function answerAskQuestion(
     answers: result.outcome === "answered" ? result.answers : undefined,
   });
 
-  return pending.prompt;
+  return { prompt: pending.prompt, waitedMs };
 }
 
 export function cancelAskQuestionsForSession(sessionId: string, reason = "Cancelled"): void {

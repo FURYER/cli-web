@@ -1,0 +1,244 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e4]:
+      - generic [ref=e7]:
+        - button "Menu" [ref=e8] [cursor=pointer]
+        - link "Meshy" [ref=e11] [cursor=pointer]:
+          - /url: /ru/?noRedirect=true
+      - generic [ref=e31]:
+        - link "Свяжитесь с отделом продаж" [ref=e32] [cursor=pointer]:
+          - /url: /ru/contact
+        - button "Войти" [ref=e33] [cursor=pointer]
+        - button "Зарегистрироваться бесплатно" [ref=e34] [cursor=pointer]
+        - button [ref=e35] [cursor=pointer]
+    - generic [ref=e41]:
+      - generic [ref=e42]:
+        - radiogroup [ref=e43]:
+          - radio "Активы" [ref=e45] [cursor=pointer]
+          - generic [ref=e52]:
+            - radio "NEW Агент" [ref=e53] [cursor=pointer]:
+              - generic [ref=e54]: NEW
+              - generic [ref=e57]: Агент
+            - radio "Изображение" [ref=e58] [cursor=pointer]
+            - radio "Модель" [checked] [ref=e62] [cursor=pointer]
+            - radio "НОВЫЙ Печать" [ref=e64] [cursor=pointer]:
+              - generic [ref=e65]: НОВЫЙ
+              - generic [ref=e70]: Печать
+            - radio "Оживить" [ref=e71] [cursor=pointer]
+        - generic [ref=e76]:
+          - generic [ref=e77]:
+            - tablist [ref=e78]:
+              - tab [selected] [ref=e80] [cursor=pointer]:
+                - img "Изображение в 3D" [ref=e81]
+              - tab [ref=e83] [cursor=pointer]:
+                - img "Пакетное преобразование изображений в 3D" [ref=e84]
+              - tab [ref=e86] [cursor=pointer]:
+                - img "Текст в 3D" [ref=e87]
+            - tabpanel "Изображение в 3D" [ref=e88]:
+              - generic [ref=e92]:
+                - generic [ref=e93]:
+                  - generic [ref=e94]:
+                    - generic [ref=e95]: Изображение
+                    - generic [ref=e96]:
+                      - button [ref=e97] [cursor=pointer]
+                      - generic [ref=e105]:
+                        - button [ref=e107] [cursor=pointer]
+                        - button [ref=e112] [cursor=pointer]
+                  - generic [ref=e118] [cursor=pointer]:
+                    - generic: Щелкните / Перетащите / Вставьте изображение
+                    - generic: "Поддерживаемые форматы: .png, .jpg, .jpeg, .webp"
+                    - generic: "Максимальный размер: 20 МБ"
+                - generic [ref=e119]:
+                  - generic [ref=e120]: Тип модели
+                  - radiogroup [ref=e123]:
+                    - radio "Стандарт" [checked] [ref=e124]
+                    - radio [checked]
+                    - radio "Smart Topology" [ref=e128]
+                    - radio
+                - generic [ref=e131]:
+                  - generic [ref=e132]: Модель ИИ
+                  - combobox "Модель ИИ" [ref=e135] [cursor=pointer]:
+                    - generic: Meshy 6
+                  - combobox [ref=e136]
+                - generic [ref=e137]:
+                  - generic [ref=e138]:
+                    - generic [ref=e139]: Авторазделение
+                    - generic [ref=e142]: НОВЫЙ
+                  - generic [ref=e145]:
+                    - switch "Авторазделение" [ref=e146] [cursor=pointer]
+                    - checkbox
+                - generic [ref=e148]:
+                  - generic [ref=e149]:
+                    - text: Многовидение
+                    - generic [ref=e150]: (Beta)
+                  - generic [ref=e154]:
+                    - switch "Многовидение (Beta)" [ref=e155] [cursor=pointer]
+                    - checkbox
+                - generic [ref=e157]:
+                  - generic [ref=e158]:
+                    - generic [ref=e159]: Поза
+                    - generic [ref=e163]:
+                      - switch "Поза" [ref=e164] [cursor=pointer]
+                      - checkbox
+                  - radiogroup [ref=e165]:
+                    - radio "A-поза" [checked] [disabled] [ref=e166]
+                    - radio [checked] [disabled]
+                    - radio "Т-поза" [disabled] [ref=e170]
+                    - radio [disabled]
+                    - radio "Обычай" [disabled] [ref=e174]
+                    - radio [disabled]
+                - generic [ref=e177]:
+                  - generic [ref=e178]: Улучшение изображения
+                  - switch "Улучшение изображения" [checked] [ref=e181] [cursor=pointer]
+                  - checkbox [checked]
+                - generic [ref=e182]:
+                  - generic [ref=e183]: Лицензия
+                  - radiogroup [ref=e186]:
+                    - radio "CC BY 4.0" [checked] [ref=e187]
+                    - radio [checked]
+                    - radio "Частный" [ref=e191]
+                    - radio
+              - generic [ref=e194]:
+                - generic [ref=e196]:
+                  - text: 1 мин
+                  - generic [ref=e198]:
+                    - img "credit" [ref=e199]
+                    - generic [ref=e200]: "20"
+                - button [ref=e202] [cursor=pointer]
+          - generic [ref=e206]:
+            - generic [ref=e207]:
+              - generic [ref=e208]: Модель помощника
+              - button [ref=e209] [cursor=pointer]
+            - generic [ref=e214]:
+              - combobox [ref=e216]:
+                - textbox [ref=e217]: Новый чат
+              - generic [ref=e218]: Что вы хотите создать сегодня?
+              - generic [ref=e220]:
+                - generic [ref=e221]:
+                  - button [ref=e222] [cursor=pointer]
+                  - button [ref=e226] [cursor=pointer]
+                  - button [ref=e232] [cursor=pointer]
+                  - button [ref=e238] [cursor=pointer]
+                - generic [ref=e244]:
+                  - textbox "Напишите что-нибудь..." [ref=e246]
+                  - generic [ref=e248]:
+                    - generic [ref=e250]:
+                      - button [ref=e251] [cursor=pointer]
+                      - group [ref=e259] [cursor=pointer]: Создать изображение
+                    - button [disabled] [ref=e267]
+      - generic [ref=e272]:
+        - generic [ref=e276]:
+          - generic [ref=e279]:
+            - generic [ref=e280]:
+              - generic [ref=e281]:
+                - button [ref=e282] [cursor=pointer]
+                - button [ref=e287] [cursor=pointer]
+                - separator [ref=e294]
+                - generic [ref=e295]:
+                  - button [ref=e296] [cursor=pointer]
+                  - button [ref=e301] [cursor=pointer]
+                  - button [ref=e307] [cursor=pointer]
+                - separator [ref=e314]
+                - generic [ref=e315]:
+                  - button "Настройка материала" [ref=e317] [cursor=pointer]
+                  - button [ref=e331] [cursor=pointer]
+                  - button [ref=e344] [cursor=pointer]
+              - generic [ref=e352]:
+                - generic [ref=e354]:
+                  - button [ref=e356]:
+                    - img "Основной цвет"
+                  - button [ref=e362]:
+                    - img "Шероховатость"
+                  - button [ref=e368]:
+                    - img "Металлик"
+                  - button [ref=e374]:
+                    - img "Нормальный"
+                - separator [ref=e379]
+                - generic [ref=e380]:
+                  - button [ref=e381] [cursor=pointer]
+                  - status [ref=e390]
+            - generic [ref=e398]:
+              - generic [ref=e399]:
+                - generic [ref=e400]: Топология
+                - generic [ref=e401]: Треугольник
+              - generic [ref=e402]:
+                - generic [ref=e403]: Лица
+                - generic [ref=e404]: 1 750 492
+              - generic [ref=e405]:
+                - generic [ref=e406]: Вершины
+                - generic [ref=e407]: 928 629
+          - generic [ref=e412]:
+            - button [ref=e413] [cursor=pointer]
+            - button [ref=e429] [cursor=pointer]
+        - separator [ref=e434]
+        - generic [ref=e437]:
+          - generic [ref=e438]:
+            - generic [ref=e439]:
+              - textbox [ref=e440]
+              - generic: Ищи мое поколение
+            - button [ref=e441] [cursor=pointer]
+          - generic [ref=e449]:
+            - generic [ref=e450]:
+              - radiogroup [ref=e451]:
+                - radio [checked] [ref=e453] [cursor=pointer]
+                - radio [ref=e466] [cursor=pointer]
+                - radio [ref=e473] [cursor=pointer]
+                - radio [ref=e478] [cursor=pointer]
+              - button [ref=e484] [cursor=pointer]
+            - button [ref=e488] [cursor=pointer]
+          - generic:
+            - generic [ref=e493]: Не выбраны активы.
+            - generic [ref=e495]:
+              - button "Скачать" [disabled] [ref=e497]
+              - button [disabled] [ref=e503]
+              - button "Удалить" [disabled] [ref=e507]
+          - generic [ref=e516]:
+            - generic [ref=e518]:
+              - generic [ref=e519]: ПРИМЕР
+              - generic:
+                - generic:
+                  - button
+                  - button
+            - generic [ref=e524]:
+              - generic [ref=e525]: ПРИМЕР
+              - generic:
+                - generic:
+                  - button
+                  - button
+            - generic [ref=e530]:
+              - generic [ref=e531]: ПРИМЕР
+              - generic:
+                - generic:
+                  - button
+                  - button
+            - generic [ref=e536]:
+              - generic [ref=e537]: ПРИМЕР
+              - generic:
+                - generic:
+                  - button
+                  - button
+            - generic [ref=e542]:
+              - generic [ref=e543]: ПРИМЕР
+              - generic:
+                - generic:
+                  - button
+                  - button
+            - generic [ref=e548]:
+              - generic [ref=e549]: ПРИМЕР
+              - generic:
+                - generic:
+                  - button
+                  - button
+          - generic [ref=e553]:
+            - group [ref=e555]:
+              - radio [ref=e556] [cursor=pointer]
+              - radio [checked] [ref=e559] [cursor=pointer]
+            - generic [ref=e567]:
+              - button [disabled] [ref=e568]
+              - button [disabled] [ref=e573]
+              - generic [ref=e577]: 1/1
+              - button [disabled] [ref=e578]
+              - button [disabled] [ref=e582]
+            - combobox [ref=e589] [cursor=pointer]:
+              - generic: "20"
+  - alert [ref=e590]

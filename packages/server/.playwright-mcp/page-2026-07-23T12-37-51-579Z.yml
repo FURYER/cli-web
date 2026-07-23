@@ -1,0 +1,123 @@
+- generic [active] [ref=f20e1]:
+  - generic [ref=f20e4]:
+    - generic [ref=f20e6]:
+      - link "Фриланс маркетплейс" [ref=f20e8] [cursor=pointer]:
+        - /url: /
+      - textbox "Найти услуги" [ref=f20e14]
+      - generic [ref=f20e17]:
+        - generic [ref=f20e19]:
+          - link "Кворки" [ref=f20e20] [cursor=pointer]:
+            - /url: /manage_kworks
+          - link "Биржа" [ref=f20e21] [cursor=pointer]:
+            - /url: /projects
+        - generic [ref=f20e22]: "1"
+        - generic [ref=f20e29]:
+          - link "0" [ref=f20e32] [cursor=pointer]:
+            - /url: /balance
+          - link "f" [ref=f20e38] [cursor=pointer]:
+            - /url: /user/furich
+    - list [ref=f20e45]:
+      - listitem [ref=f20e46]:
+        - link "Дизайн" [ref=f20e47] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/design
+      - listitem [ref=f20e49]:
+        - link "Разработка и IT" [ref=f20e50] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/programming
+      - listitem [ref=f20e52]:
+        - link "Тексты и переводы" [ref=f20e53] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/writing-translations
+      - listitem [ref=f20e55]:
+        - link "SEO и трафик" [ref=f20e56] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/seo
+      - listitem [ref=f20e58]:
+        - link "Соцсети и маркетинг" [ref=f20e59] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/promotion
+      - listitem [ref=f20e61]:
+        - link "Аудио, видео, съемка" [ref=f20e62] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/audio-video
+      - listitem [ref=f20e64]:
+        - link "Бизнес и жизнь" [ref=f20e65] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/business
+  - generic [ref=f20e70]:
+    - generic [ref=f20e71]:
+      - generic [ref=f20e72]: Подтвердить номер телефона
+      - generic [ref=f20e75]: Предоставить данные для договора
+      - generic [ref=f20e78]: Добавить карту для выплат
+      - generic [ref=f20e81]:
+        - generic [ref=f20e82]: "4"
+        - generic [ref=f20e84]: Подтвердить самозанятость
+    - generic [ref=f20e86]:
+      - heading "Шаг 3 из 4. Добавить карту для выплат" [level=1] [ref=f20e87]
+      - paragraph [ref=f20e88]: Добавьте карту, на которую будете получать выплаты по выполненным заказам. При необходимости вы всегда сможете изменить ее в разделе меню «Настройки».
+      - paragraph [ref=f20e89]: "Выплаты самозанятым обеспечивают наши партнеры: сервис безопасных сделок Yescrow (ООО \"Эскроу сервис\") и банк Точка."
+      - generic [ref=f20e90]:
+        - generic [ref=f20e91]: "Статус добавления карты:"
+        - generic [ref=f20e92]: Добавлена
+    - generic [ref=f20e94]:
+      - generic [ref=f20e95]: Карта для выплат успешно добавлена
+      - generic [ref=f20e96]: Остался последний шаг для подключения продавца на Kwork! Перейдите к нему, нажав "Далее".
+    - generic [ref=f20e98]:
+      - button "Назад" [ref=f20e99] [cursor=pointer]
+      - button "Далее" [ref=f20e100] [cursor=pointer]
+  - generic [ref=f20e103]:
+    - generic [ref=f20e104]:
+      - generic [ref=f20e105]:
+        - link [ref=f20e106] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f20e108]:
+          - generic [ref=f20e109]: "Онлайн: 2454"
+          - generic [ref=f20e112]: "Заказ: 48 сек. назад"
+      - generic [ref=f20e116]:
+        - generic [ref=f20e117]:
+          - generic [ref=f20e118]: О Kwork
+          - generic [ref=f20e121]:
+            - link "О проекте" [ref=f20e122] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=f20e123] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=f20e124] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Карьера в Kwork" [ref=f20e125] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=f20e126]:
+          - generic [ref=f20e127]: Сообщество
+          - generic [ref=f20e130]:
+            - link "Блог" [ref=f20e131] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=f20e132] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=f20e133] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=f20e134]:
+          - generic [ref=f20e135]: Полезное
+          - generic [ref=f20e138]:
+            - link "Покупателям" [ref=f20e139] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=f20e140] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=f20e141] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=f20e142] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Мобильное приложение" [ref=f20e143] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=f20e144]:
+          - generic [ref=f20e145]: Помощь
+          - generic [ref=f20e148]:
+            - link "Вопрос — Ответ" [ref=f20e149] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=f20e150] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=f20e151]:
+      - generic [ref=f20e152]:
+        - link [ref=f20e153] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=f20e157] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=f20e161]:
+        - link [ref=f20e162] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=f20e163]
+        - link [ref=f20e164] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=f20e165]

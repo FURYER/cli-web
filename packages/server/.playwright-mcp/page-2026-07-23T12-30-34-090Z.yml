@@ -1,0 +1,127 @@
+- generic [active] [ref=f16e1]:
+  - generic [ref=f16e4]:
+    - generic [ref=f16e6]:
+      - link "Фриланс маркетплейс" [ref=f16e8] [cursor=pointer]:
+        - /url: /
+      - textbox "Найти услуги" [ref=f16e14]
+      - generic [ref=f16e17]:
+        - generic [ref=f16e19]:
+          - link "Кворки" [ref=f16e20] [cursor=pointer]:
+            - /url: /manage_kworks
+          - link "Биржа" [ref=f16e21] [cursor=pointer]:
+            - /url: /projects
+        - generic [ref=f16e22]: "1"
+        - generic [ref=f16e29]:
+          - link "0" [ref=f16e32] [cursor=pointer]:
+            - /url: /balance
+          - link "f" [ref=f16e38] [cursor=pointer]:
+            - /url: /user/furich
+    - list [ref=f16e45]:
+      - listitem [ref=f16e46]:
+        - link "Дизайн" [ref=f16e47] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/design
+      - listitem [ref=f16e49]:
+        - link "Разработка и IT" [ref=f16e50] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/programming
+      - listitem [ref=f16e52]:
+        - link "Тексты и переводы" [ref=f16e53] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/writing-translations
+      - listitem [ref=f16e55]:
+        - link "SEO и трафик" [ref=f16e56] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/seo
+      - listitem [ref=f16e58]:
+        - link "Соцсети и маркетинг" [ref=f16e59] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/promotion
+      - listitem [ref=f16e61]:
+        - link "Аудио, видео, съемка" [ref=f16e62] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/audio-video
+      - listitem [ref=f16e64]:
+        - link "Бизнес и жизнь" [ref=f16e65] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/business
+  - generic [ref=f16e70]:
+    - generic [ref=f16e71]:
+      - generic [ref=f16e72]: Подтвердить номер телефона
+      - generic [ref=f16e75]: Предоставить данные для договора
+      - generic [ref=f16e78]:
+        - generic [ref=f16e79]: "3"
+        - generic [ref=f16e81]: Добавить карту для выплат
+      - generic [ref=f16e82]:
+        - generic [ref=f16e83]: "4"
+        - generic [ref=f16e85]: Подтвердить самозанятость
+    - generic [ref=f16e87]:
+      - heading "Шаг 2 из 4. Предоставить данные для договора" [level=1] [ref=f16e88]
+      - paragraph [ref=f16e89]: В соответствии с требованиями закона и банка-партнера, осуществляющего выплаты, продавцы должны предоставить данные для договора. Эти данные нужны для оформления выплат и работы с банком-партнером.
+      - paragraph [ref=f16e90]:
+        - strong [ref=f16e91]: Важно!
+        - text: Ваши данные хранятся в зашифрованном виде и передаются только платежному партнеру и банку, осуществляющему выплаты. Эти данные не передаются и не показываются вашим заказчикам, а отображаются только вам в личном кабинете до момента подтверждения статуса самозанятого на Шаге 4. После подтверждения статуса они не отображаются даже в вашем личном кабинете, кроме ФИО и ИНН в ваших чеках самозанятого.
+      - generic [ref=f16e92]:
+        - generic [ref=f16e93]: "Статус предоставления данных:"
+        - generic [ref=f16e94]: Предоставлены
+    - generic [ref=f16e96]:
+      - generic [ref=f16e97]: Данные предоставлены
+      - generic [ref=f16e98]: Перейдите к следующему шагу подключения продавца, нажав "Далее".
+    - generic [ref=f16e100]:
+      - button "Назад" [ref=f16e101] [cursor=pointer]
+      - button "Далее" [ref=f16e102] [cursor=pointer]
+  - generic [ref=f16e105]:
+    - generic [ref=f16e106]:
+      - generic [ref=f16e107]:
+        - link [ref=f16e108] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f16e110]:
+          - generic [ref=f16e111]: "Онлайн: 2526"
+          - generic [ref=f16e114]: "Заказ: 11 сек. назад"
+      - generic [ref=f16e118]:
+        - generic [ref=f16e119]:
+          - generic [ref=f16e120]: О Kwork
+          - generic [ref=f16e123]:
+            - link "О проекте" [ref=f16e124] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=f16e125] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=f16e126] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Карьера в Kwork" [ref=f16e127] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=f16e128]:
+          - generic [ref=f16e129]: Сообщество
+          - generic [ref=f16e132]:
+            - link "Блог" [ref=f16e133] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=f16e134] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=f16e135] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=f16e136]:
+          - generic [ref=f16e137]: Полезное
+          - generic [ref=f16e140]:
+            - link "Покупателям" [ref=f16e141] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=f16e142] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=f16e143] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=f16e144] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Мобильное приложение" [ref=f16e145] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=f16e146]:
+          - generic [ref=f16e147]: Помощь
+          - generic [ref=f16e150]:
+            - link "Вопрос — Ответ" [ref=f16e151] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=f16e152] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=f16e153]:
+      - generic [ref=f16e154]:
+        - link [ref=f16e155] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=f16e159] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=f16e163]:
+        - link [ref=f16e164] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=f16e165]
+        - link [ref=f16e166] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=f16e167]

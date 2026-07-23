@@ -1,0 +1,326 @@
+- generic:
+  - main:
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - button
+              - link:
+                - /url: /ru/?noRedirect=true
+        - generic:
+          - link:
+            - /url: /ru/contact
+            - text: Свяжитесь с отделом продаж
+          - button: Войти
+          - button: Зарегистрироваться бесплатно
+          - button
+    - generic:
+      - generic:
+        - radiogroup:
+          - generic:
+            - radio:
+              - generic: Активы
+          - generic:
+            - radio:
+              - generic: NEW
+              - generic: Агент
+            - radio:
+              - generic: Изображение
+            - radio [checked]:
+              - generic: Модель
+            - radio:
+              - generic: НОВЫЙ
+              - generic: Печать
+            - radio:
+              - generic: Оживить
+        - generic:
+          - generic:
+            - tablist:
+              - generic:
+                - tab [selected]
+              - generic:
+                - tab
+              - generic:
+                - tab
+            - tabpanel:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - generic: Изображение
+                          - generic:
+                            - button
+                            - generic:
+                              - generic:
+                                - button
+                              - button
+                        - generic:
+                          - generic:
+                            - generic: Щелкните / Перетащите / Вставьте изображение
+                            - generic: "Поддерживаемые форматы: .png, .jpg, .jpeg, .webp"
+                            - generic: "Максимальный размер: 20 МБ"
+                      - generic:
+                        - generic: Тип модели
+                        - radiogroup:
+                          - radio [checked]:
+                            - generic: Стандарт
+                          - radio [checked]
+                          - radio:
+                            - generic: Smart Topology
+                          - radio
+                      - generic:
+                        - generic: Модель ИИ
+                        - combobox:
+                          - generic: Meshy 6
+                        - combobox
+                      - generic:
+                        - generic:
+                          - generic: Авторазделение
+                          - generic: НОВЫЙ
+                        - generic:
+                          - generic:
+                            - switch
+                            - checkbox
+                      - generic:
+                        - generic:
+                          - generic:
+                            - text: Многовидение
+                            - generic: (Beta)
+                          - generic:
+                            - generic:
+                              - switch
+                              - checkbox
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic: Поза
+                            - generic:
+                              - generic:
+                                - switch
+                                - checkbox
+                          - radiogroup:
+                            - radio [checked] [disabled]:
+                              - generic: A-поза
+                            - radio [checked] [disabled]
+                            - radio [disabled]:
+                              - generic: Т-поза
+                            - radio [disabled]
+                            - radio [disabled]:
+                              - generic: Обычай
+                            - radio [disabled]
+                      - generic:
+                        - generic: Улучшение изображения
+                        - switch [checked]
+                        - checkbox [checked]
+                      - generic:
+                        - generic: Лицензия
+                        - radiogroup:
+                          - radio [checked]:
+                            - generic: CC BY 4.0
+                          - radio [checked]
+                          - radio:
+                            - generic: Частный
+                          - radio
+              - generic:
+                - generic:
+                  - generic:
+                    - text: 1 мин
+                    - generic: "20"
+                - generic:
+                  - button: Генерировать
+          - generic:
+            - generic:
+              - generic: Модель помощника
+              - button
+            - generic:
+              - generic:
+                - combobox:
+                  - textbox: Новый чат
+              - generic: Что вы хотите создать сегодня?
+              - generic:
+                - generic:
+                  - button
+                  - button
+                  - button
+                  - button
+                - generic:
+                  - generic:
+                    - textbox:
+                      - /placeholder: Напишите что-нибудь...
+                  - generic:
+                    - generic:
+                      - generic:
+                        - button
+                        - group: Создать изображение
+                    - button [disabled]
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic [ref=f2e280]:
+                        - generic [ref=f2e281]:
+                          - button [ref=f2e282] [cursor=pointer]
+                          - button [ref=f2e287] [cursor=pointer]
+                          - separator [ref=f2e491]
+                          - generic [ref=f2e492]:
+                            - button [ref=f2e493] [cursor=pointer]
+                            - button [ref=f2e498] [cursor=pointer]
+                            - button [ref=f2e504] [cursor=pointer]
+                          - separator [ref=f2e511]
+                          - generic [ref=f2e512]:
+                            - button [ref=f2e591] [cursor=pointer]
+                            - button [ref=f2e528] [cursor=pointer]
+                            - button [ref=f2e541] [cursor=pointer]
+                        - generic [ref=f2e549]:
+                          - generic [ref=f2e551]:
+                            - button [ref=f2e592]
+                            - button [ref=f2e593]
+                            - button [ref=f2e594]
+                            - button [ref=f2e595]
+                          - separator [ref=f2e576]
+                          - generic [ref=f2e577]:
+                            - button [ref=f2e578] [cursor=pointer]
+                            - status [ref=f2e587]
+                      - generic [ref=f2e298]:
+                        - generic [ref=f2e299]:
+                          - generic [ref=f2e300]: Топология
+                          - generic [ref=f2e301]: Треугольник
+                        - generic [ref=f2e302]:
+                          - generic [ref=f2e303]: Лица
+                          - generic [ref=f2e304]: 1 750 492
+                        - generic [ref=f2e305]:
+                          - generic [ref=f2e306]: Вершины
+                          - generic [ref=f2e307]: 928 629
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button: Повторное использование запроса
+                          - button
+        - separator
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - textbox
+                  - generic: Ищи мое поколение
+                - button: Загрузить
+              - generic:
+                - generic:
+                  - radiogroup:
+                    - generic:
+                      - radio [checked]
+                    - generic:
+                      - radio
+                    - generic:
+                      - radio
+                    - generic:
+                      - radio
+                  - button
+                - button
+              - generic: Не выбраны активы.
+              - generic:
+                - generic:
+                  - button [disabled]:
+                    - generic: Скачать
+                - button [disabled]
+                - button [disabled]
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic: ПРИМЕР
+                            - generic:
+                              - generic:
+                                - button
+                                - button
+                        - generic:
+                          - generic:
+                            - generic: ПРИМЕР
+                            - generic:
+                              - generic:
+                                - button
+                                - button
+                        - generic:
+                          - generic:
+                            - generic: ПРИМЕР
+                            - generic:
+                              - generic:
+                                - button
+                                - button
+                        - generic:
+                          - generic:
+                            - generic: ПРИМЕР
+                            - generic:
+                              - generic:
+                                - button
+                                - button
+                        - generic:
+                          - generic:
+                            - generic: ПРИМЕР
+                            - generic:
+                              - generic:
+                                - button
+                                - button
+                        - generic:
+                          - generic:
+                            - generic: ПРИМЕР
+                            - generic:
+                              - generic:
+                                - button
+                                - button
+              - generic:
+                - generic:
+                  - group:
+                    - radio
+                    - radio [checked]
+                - generic:
+                  - generic:
+                    - button [disabled]
+                    - button [disabled]
+                    - generic: 1/1
+                    - button [disabled]
+                    - button [disabled]
+                - generic:
+                  - generic:
+                    - combobox:
+                      - generic: "20"
+  - alert
+  - dialog [ref=f2e597]:
+    - heading "Добро пожаловать в Меши" [level=2] [ref=f2e599]
+    - generic [ref=f2e600]:
+      - heading "Добро пожаловать в Меши" [level=1] [ref=f2e620]
+      - button [active] [ref=f2e621] [cursor=pointer]
+      - separator [ref=f2e628]:
+        - generic [ref=f2e630]: ИЛИ
+      - generic [ref=f2e633]:
+        - group "Электронная почта" [ref=f2e635]:
+          - textbox "yours@example.com" [ref=f2e637]
+        - button "Получить код" [ref=f2e639] [cursor=pointer]
+        - button "Использовать пароль" [ref=f2e641] [cursor=pointer]
+      - generic [ref=f2e643]:
+        - button "Продолжить с Apple" [ref=f2e644] [cursor=pointer]
+        - button "Продолжить с Facebook" [ref=f2e648] [cursor=pointer]
+        - button "Продолжить с Дискордом" [ref=f2e655] [cursor=pointer]
+        - button "Продолжить с Github" [ref=f2e659] [cursor=pointer]
+      - generic [ref=f2e663]:
+        - text: Продолжая, вы соглашаетесь с нашими
+        - link "Условиями использования" [ref=f2e664] [cursor=pointer]:
+          - /url: /ru/terms-of-use
+        - text: и
+        - link "Политикой конфиденциальности" [ref=f2e665] [cursor=pointer]:
+          - /url: /ru/privacy-policy
+        - text: .
+      - button "Закрыть" [ref=f2e666] [cursor=pointer]

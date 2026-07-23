@@ -150,14 +150,15 @@ Manual install: https://developer.nvidia.com/cuda-downloads → **CUDA 12.x** (n
 
 Optional `.env`: `WHISPER_DEVICE=cuda` (default `auto` tries CUDA then CPU). Temporary CPU: `WHISPER_DEVICE=cpu`.
 
-## MCP (Context7 + board)
+## MCP (Context7 + board + Playwright)
 
 On first run / `setup.bat`, WebCLI seeds `~/.webcli/mcp.json` with:
 
 - **context7** — docs MCP; set `CONTEXT7_API_KEY` in `.env` (from https://context7.com)
 - **workspace-board** — bundled package `packages/workspace-board-mcp` (kanban tools)
+- **playwright** — browser automation via `npx @playwright/mcp` (headless by default)
 
-Placeholders like `${CONTEXT7_API_KEY}` are expanded when starting an agent. Edit the file in Settings → MCP, or re-seed:
+Missing built-ins are **merged** into an existing `mcp.json` on server start (your custom servers are kept).
 
 ```bat
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\write-default-mcp.ps1 -RepoDir "%CD%"

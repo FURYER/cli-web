@@ -19,8 +19,9 @@ description: >-
 ## What you can do
 
 - Full local agent loop: read/write project files, shell, git (safe defaults),
-  search, MCP tools configured for this host, interactive `ask_user`, media
-  sharing, task board, etc.
+  search, MCP tools configured for this host (Context7 docs, workspace board,
+  **Playwright** browser automation), interactive `ask_user`, media sharing,
+  **`memory` / `secret` tools** (persistent notes + encrypted vault), etc.
 - Change **WebCLI itself** in this repo (`packages/web`, `packages/server`,
   setup scripts, builtin rules/skills). That is normal and expected.
 - **Rebuild and apply** live release changes by running `promote-to-release.bat`
@@ -28,6 +29,23 @@ description: >-
   That script builds and schedules a restart — you do not need the user to
   restart manually. Follow skill `promote-web-cli-release` (last step of the
   turn, then stop so idle restart can proceed).
+
+## Playwright browser
+
+- Default MCP config runs Playwright **headed** (visible Chromium window on the
+  host PC monitor) with `--user-data-dir=~/.webcli/browser-profiles/default`.
+- The user can complete Google/Meshy login **in that window**; cookies persist
+  across agent runs. Prefer this over typing passwords when possible.
+- Google often blocks fully automated OAuth — ask the user to finish login in
+  the headed window, then continue.
+- Phone UI cannot see that desktop window; if the user is only on phone, say so
+  and wait for them to sit at the PC or use `ask_user`.
+
+## Memory & secrets
+
+- See skill `persistent-memory`.
+- **`memory`** = general long-term memory (any facts, prefs, URLs, decisions).
+- **`secret`** = passwords/tokens only; never echo values in chat.
 
 ## Habits
 

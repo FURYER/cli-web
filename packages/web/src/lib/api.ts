@@ -195,6 +195,13 @@ export type StreamEvent =
     }
   | { type: "error"; sessionId: string; message: string }
   | {
+      type: "agent_limit";
+      sessionId?: string;
+      message: string;
+      detail?: string;
+      at?: number;
+    }
+  | {
       type: "rolled_back";
       sessionId: string;
       messageId: string;
@@ -289,6 +296,26 @@ export type DeployStatus = {
   waitingForIdle: boolean;
   message: string | null;
 };
+
+export type AgentLimitInfo = {
+  active: boolean;
+  message: string;
+  detail?: string;
+  sessionId?: string;
+  chatTitle?: string;
+  at: number;
+};
+
+export function fetchAgentLimit(auth: AuthMode): Promise<AgentLimitInfo> {
+  return request("/api/agent-limit", auth);
+}
+
+export function ackAgentLimit(auth: AuthMode): Promise<{ ok: boolean }> {
+  return request("/api/agent-limit/ack", auth, {
+    method: "POST",
+    body: "{}",
+  });
+}
 
 export type HealthInfo = {
   ok: boolean;
@@ -595,6 +622,70 @@ export function listAgents(
 
 export function getMcp(auth: AuthMode): Promise<{ servers: Record<string, unknown> }> {
   return request("/api/mcp", auth);
+}
+
+export type MemoryEntry = {
+  id: string;
+  key: string;
+  value: string;
+  tags: string[];
+  updatedAt: string;
+};
+
+export type SecretMeta = {
+  id: string;
+  key: string;
+  updatedAt: string;
+};
+
+export function listMemory(
+  auth: AuthMode,
+  tag?: string,
+): Promise<{ entries: MemoryEntry[] }> {
+  const qs = tag ? `?tag=${encodeURIComponent(tag)}` : "";
+  return request(`/api/memory${qs}`, auth);
+}
+
+export function saveMemory(
+  auth: AuthMode,
+  body: { key: string; value: string; tags?: string[] },
+): Promise<{ entry: MemoryEntry }> {
+  return request("/api/memory", auth, {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
+}
+
+export function removeMemory(
+  auth: AuthMode,
+  key: string,
+): Promise<{ ok: boolean }> {
+  return request(`/api/memory/${encodeURIComponent(key)}`, auth, {
+    method: "DELETE",
+  });
+}
+
+export function listSecrets(auth: AuthMode): Promise<{ entries: SecretMeta[] }> {
+  return request("/api/secrets", auth);
+}
+
+export function saveSecret(
+  auth: AuthMode,
+  body: { key: string; value: string },
+): Promise<{ entry: SecretMeta }> {
+  return request("/api/secrets", auth, {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
+}
+
+export function removeSecret(
+  auth: AuthMode,
+  key: string,
+): Promise<{ ok: boolean }> {
+  return request(`/api/secrets/${encodeURIComponent(key)}`, auth, {
+    method: "DELETE",
+  });
 }
 
 function boardQs(workspace: string): string {

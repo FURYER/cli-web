@@ -29,6 +29,18 @@ import {
 } from "./ask-question.js";
 import { listDirectory } from "./fs.js";
 import {
+  deleteMemory,
+  getMemory,
+  listMemory,
+  setMemory,
+} from "./memory.js";
+import {
+  deleteSecret,
+  getSecret,
+  listSecrets,
+  setSecret,
+} from "./secrets.js";
+import {
   contentDispositionAttachment,
   isPathInsideRoot,
   mediaMimeType,
@@ -99,6 +111,18 @@ export async function registerSessionRoutes(app: FastifyInstance): Promise<void>
     whisper: getWhisperStatus(),
     deploy: getDeployStatus(),
   }));
+
+  app.get("/api/agent-limit", async () => {
+    const { loadAgentLimitState } = await import("./agent-limit.js");
+    const state = await loadAgentLimitState();
+    return state ?? { active: false, message: "", at: 0 };
+  });
+
+  app.post("/api/agent-limit/ack", async () => {
+    const { clearAgentLimitState } = await import("./agent-limit.js");
+    await clearAgentLimitState();
+    return { ok: true };
+  });
 
   app.get("/api/admin/deploy", async () => getDeployStatus());
 
@@ -177,6 +201,107 @@ export async function registerSessionRoutes(app: FastifyInstance): Promise<void>
     }
   });
 
+  app.get("/api/memory", async (request, reply) => {
+    try {
+      const tag = (request.query as { tag?: string }).tag;
+      return { entries: await listMemory(tag) };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return reply.code(500).send({ error: message });
+    }
+  });
+
+  app.get("/api/memory/:key", async (request, reply) => {
+    try {
+      const key = (request.params as { key: string }).key;
+      const entry = await getMemory(decodeURIComponent(key));
+      if (!entry) return reply.code(404).send({ error: "not found" });
+      return { entry };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return reply.code(500).send({ error: message });
+    }
+  });
+
+  app.put<{ Body: { key?: string; value?: string; tags?: string[] } }>(
+    "/api/memory",
+    async (request, reply) => {
+      try {
+        const entry = await setMemory({
+          key: String(request.body?.key || ""),
+          value: String(request.body?.value ?? ""),
+          tags: request.body?.tags,
+        });
+        return { entry };
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        return reply.code(400).send({ error: message });
+      }
+    },
+  );
+
+  app.delete("/api/memory/:key", async (request, reply) => {
+    try {
+      const key = (request.params as { key: string }).key;
+      const ok = await deleteMemory(decodeURIComponent(key));
+      if (!ok) return reply.code(404).send({ error: "not found" });
+      return { ok: true };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return reply.code(500).send({ error: message });
+    }
+  });
+
+  /** Keys only — never returns secret values over HTTP. */
+  app.get("/api/secrets", async (_request, reply) => {
+    try {
+      return { entries: await listSecrets() };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return reply.code(500).send({ error: message });
+    }
+  });
+
+  app.put<{ Body: { key?: string; value?: string } }>(
+    "/api/secrets",
+    async (request, reply) => {
+      try {
+        const entry = await setSecret({
+          key: String(request.body?.key || ""),
+          value: String(request.body?.value ?? ""),
+        });
+        return { entry };
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        return reply.code(400).send({ error: message });
+      }
+    },
+  );
+
+  app.delete("/api/secrets/:key", async (request, reply) => {
+    try {
+      const key = (request.params as { key: string }).key;
+      const ok = await deleteSecret(decodeURIComponent(key));
+      if (!ok) return reply.code(404).send({ error: "not found" });
+      return { ok: true };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return reply.code(500).send({ error: message });
+    }
+  });
+
+  // Agent-only: fetch one secret value (same auth as other APIs; not for casual UI).
+  app.get("/api/secrets/:key", async (request, reply) => {
+    try {
+      const key = (request.params as { key: string }).key;
+      const entry = await getSecret(decodeURIComponent(key));
+      if (!entry) return reply.code(404).send({ error: "not found" });
+      return { entry };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return reply.code(500).send({ error: message });
+    }
+  });
   app.get("/api/agents", async (request, reply) => {
     try {
       const workspace = (request.query as { workspace?: string }).workspace;

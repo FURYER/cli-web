@@ -1,0 +1,597 @@
+- main [ref=e2]:
+  - generic [ref=e4]:
+    - generic [ref=e7]:
+      - link "Meshy" [ref=e8] [cursor=pointer]:
+        - /url: /?noRedirect=true
+      - navigation "Main" [ref=e29]:
+        - list [ref=e31]:
+          - listitem [ref=e32]:
+            - link "Функции" [ref=e33] [cursor=pointer]:
+              - /url: /features
+          - listitem [ref=e36]:
+            - link "API" [ref=e37] [cursor=pointer]:
+              - /url: /api
+          - listitem [ref=e38]:
+            - link "Цены" [ref=e39] [cursor=pointer]:
+              - /url: /pricing
+          - listitem [ref=e40]:
+            - button "Решения" [ref=e41] [cursor=pointer]
+          - listitem [ref=e44]:
+            - button "Сообщество" [ref=e45] [cursor=pointer]
+          - listitem [ref=e48]:
+            - button "Ресурсы" [ref=e49] [cursor=pointer]
+    - generic [ref=e52]:
+      - link "Свяжитесь с отделом продаж" [ref=e53] [cursor=pointer]:
+        - /url: /contact
+      - button "Войти" [ref=e54] [cursor=pointer]
+      - button "Зарегистрироваться бесплатно" [ref=e55] [cursor=pointer]
+  - generic [ref=e56]:
+    - generic [ref=e59]:
+      - generic [ref=e60]:
+        - link "Новое ИИ-агенты. Теперь для 3D. Начните чат" [ref=e61] [cursor=pointer]:
+          - /url: /workspace?sidebar=agent
+          - generic [ref=e62]: Новое
+          - generic [ref=e64]: ИИ-агенты. Теперь для 3D. Начните чат
+        - heading "Создавайте 3D-модели мгновенно с помощью нашего AI генератора 3D моделей" [level=1] [ref=e68]
+        - paragraph [ref=e69]: Meshy — это бесплатный генератор 3D-моделей на базе ИИ, который превращает текст или изображения в готовые 3D-модели для игр и 3D-печати, менее чем за минуту.
+        - link "Начать создавать" [ref=e71] [cursor=pointer]:
+          - /url: /discover
+      - generic [ref=e76]:
+        - button "Show this model in the centre" [ref=e77] [cursor=pointer]
+        - button "Show this model in the centre" [ref=e78] [cursor=pointer]
+        - button "Show this model in the centre" [ref=e79] [cursor=pointer]
+    - generic [ref=e81]:
+      - tablist [ref=e83]:
+        - tab "Изображение в 3D" [selected] [ref=e84] [cursor=pointer]
+        - tab "Текст в 3D" [ref=e86] [cursor=pointer]
+      - generic [ref=e88]:
+        - generic [ref=e89]: Загрузить изображение
+        - generic [ref=e100]:
+          - heading [level=2] [ref=e101]:
+            - link "Изображение в 3D с высокой точностью" [ref=e102] [cursor=pointer]:
+              - /url: /features/image-to-3d
+          - paragraph [ref=e103]: Загрузите фотографию, эскиз или концепт-арт — и Meshy превратит его в подходящую 3D-модель, которую можно распечатать, использовать в игре или доработать дальше.
+          - link "Узнать больше" [ref=e104] [cursor=pointer]:
+            - /url: /features/image-to-3d
+        - link "Начать создавать" [ref=e108] [cursor=pointer]:
+          - /url: /workspace
+    - generic [ref=e114]:
+      - generic [ref=e117]:
+        - generic [ref=e118]: ИИ-агенты
+        - generic [ref=e121]:
+          - heading [level=2] [ref=e122]
+          - paragraph [ref=e125]: Не знаете, с чего начать? Просто общайтесь. 3D-агент вместе с вами придумывает идеи, превращает 2D-концепции в 3D-модели и по ходу отвечает на ваши вопросы о 3D и печати.
+      - generic [ref=e128]:
+        - generic [ref=e129]:
+          - generic [ref=e131]:
+            - paragraph [ref=e135]: "Преобразуйте ассеты, присутствующие на изображении, в отдельные изображения модельных ассетов с однотонным фоном; должны быть: летательный аппарат, растительность и архитектура в мексиканском стиле."
+            - paragraph [ref=e138]: Сделаем! Изолируем каждый ассет в отдельную модель на чистом однотонном фоне! 🎨
+            - paragraph [ref=e141]: Все ассеты извлечены и готовы к использованию! Каждый — на собственном однотонном фоне. 🎨✨
+          - generic [ref=e142]:
+            - textbox "Опишите свою идею и начните создавать вместе с агентом" [ref=e143]
+            - link "ИИ-агент для моделирования" [ref=e150] [cursor=pointer]:
+              - /url: /workspace?sidebar=agent
+              - generic [ref=e151]: Начать создавать
+        - generic [ref=e156]:
+          - generic:
+            - generic:
+              - generic: 3D‑модель
+              - generic: 3D‑модель
+              - generic: 3D‑модель
+              - generic: 3D‑модель
+              - generic: 3D‑модель
+              - generic: 3D‑модель
+    - generic [ref=e160]:
+      - tablist [ref=e162]:
+        - tab "3D-печать" [selected] [ref=e163] [cursor=pointer]
+        - tab "Разработка игр" [ref=e165] [cursor=pointer]
+      - generic [ref=e168]:
+        - generic [ref=e169]:
+          - generic [ref=e170]:
+            - heading "Единственный 3D-ИИ, обученный печати" [level=2] [ref=e171]
+            - paragraph [ref=e172]: 3D-модели Meshy печатаются с наибольшей вероятностью — герметичные, манифолдные и готовы к слайсингу с первой попытки. Протестировано на всех основных ИИ-3D инструментах.
+          - link [ref=e174] [cursor=pointer]:
+            - /url: /discover
+          - generic [ref=e184]:
+            - generic [ref=e185]:
+              - generic [ref=e187]:
+                - generic [ref=e189]:
+                  - generic [ref=e190]: Печатаемость
+                  - generic [ref=e195]:
+                    - generic [ref=e197]:
+                      - generic [ref=e198]: Герметичное
+                      - generic [ref=e199]: Да
+                    - generic [ref=e200]:
+                      - generic [ref=e201]: Объем
+                      - generic [ref=e202]: 702.19 cm³
+                    - generic [ref=e203]:
+                      - generic [ref=e204]: Отверстия
+                      - generic [ref=e205]: "0"
+                    - generic [ref=e206]:
+                      - generic [ref=e207]: Некорректные (non-manifold) ребра
+                      - generic [ref=e208]: "0"
+                - generic [ref=e210]: Автоисправление ИИ
+              - generic [ref=e212]:
+                - paragraph [ref=e213]: Рождён для печати, а не для заплат
+                - paragraph [ref=e214]: Большинству ИИ‑моделей требуется ручная очистка перед слайсингом. Модели Meshy изначально герметичны и manifold. Встроенная проверка печатаемости всё равно сканирует каждый экспорт и автоматически исправляет крайние случаи перед слайсингом.
+            - generic [ref=e215]:
+              - generic [ref=e216]: Auto split
+              - generic [ref=e221]:
+                - paragraph [ref=e222]: Печатайте в нескольких цветах или разделяйте, чтобы поместилось
+                - paragraph [ref=e223]: Многоцветная печать сопоставляет каждую текстуру с нужным филаментом, обеспечивая чёткие границы цветов. Когда модель слишком сложна, Auto Split разбивает её на герметичные детали и заранее раскладывает на столе печати.
+          - generic [ref=e224]:
+            - generic [ref=e225]:
+              - paragraph [ref=e226]: Сразу в ваш слайсер
+              - paragraph [ref=e227]: Экспортируйте в STL, OBJ или 3MF и отправляйте модели напрямую в OrcaSlicer, Bambu Studio и др. — готовы к одно- или многоцветной печати.
+            - generic [ref=e229]:
+              - generic [ref=e230]:
+                - generic [ref=e231]: Bambu Studio
+                - generic [ref=e235]: Creality Print
+                - generic [ref=e241]: OrcaSlicer
+                - generic [ref=e256]:
+                  - img "Ultimaker Cura" [ref=e257]
+                  - generic [ref=e258]: Ultimaker Cura
+                - generic [ref=e259]: Snapmaker
+                - generic [ref=e265]: Flash Studio
+                - generic [ref=e269]: Elegoo Slicer
+                - generic [ref=e273]: LycheeSlicer
+              - generic [ref=e277]:
+                - generic [ref=e278]: Форматы 3MF · STL · OBJ
+                - generic [ref=e279]: •
+                - generic [ref=e280]: FDM + смола
+                - generic [ref=e281]: •
+                - generic [ref=e282]:
+                  - text: Опубликовать в
+                  - generic [ref=e283]:
+                    - generic [ref=e284]: ✓
+                    - text: MakerWorld
+                  - generic [ref=e285]:
+                    - generic [ref=e286]: ✓
+                    - text: Printables
+                  - generic [ref=e287]:
+                    - generic [ref=e288]: ✓
+                    - text: Thingiverse
+          - generic [ref=e290]:
+            - generic [ref=e291]:
+              - paragraph [ref=e292]: Нет принтера?
+              - paragraph [ref=e293]: Мы напечатаем реальный объект на 3D-принтере и доставим к вашей двери
+            - link "Meshy Creative Labs" [ref=e294] [cursor=pointer]:
+              - /url: /creative-lab
+        - generic [ref=e305]:
+          - generic [ref=e306]:
+            - heading "AI asset’ы, чтобы ваша игра стала играбельной" [level=2] [ref=e307]
+            - paragraph [ref=e308]: "Больше, чем просто генератор одного asset: Meshy помогает вам собрать достаточно вашего игрового мира, чтобы начать playtesting."
+          - link [ref=e310] [cursor=pointer]:
+            - /url: /discover
+          - generic [ref=e320]:
+            - generic [ref=e321]:
+              - generic [ref=e322]: FullQuality
+              - generic [ref=e325]:
+                - heading "PBR‑текстурирование в один клик" [level=3] [ref=e326]
+                - paragraph [ref=e327]: Сгенерируйте полный набор PBR (albedo, normal, metallic и roughness) без настройки шейдеров. Включите HD‑текстуру, чтобы за секунды получить четкие 4K‑детали.
+            - generic [ref=e328]:
+              - generic [ref=e329]: Назад левый бег
+              - generic [ref=e332]:
+                - heading "Настройте риг и анимируйте своих персонажей" [level=3] [ref=e333]
+                - paragraph [ref=e334]: Авто‑риггинг работает как с гуманоидными, так и с четвероногими персонажами и дополняется библиотекой из 600+ пресетов движений, охватывающих циклы ходьбы, простои (idle), прыжки, атаки и жесты.
+            - generic [ref=e335]:
+              - slider [ref=e339]
+              - generic [ref=e344]:
+                - heading "Low Poly для производительности в реальном времени" [level=3] [ref=e345]
+                - paragraph [ref=e346]: Режим Low Poly обеспечивает чистую топологию и управляемое количество полигонов — достаточно легкий, чтобы сразу поместить в проект без потери производительности.
+          - generic [ref=e347]:
+            - generic [ref=e348]:
+              - generic [ref=e349]: Совместимо с
+              - generic [ref=e350]:
+                - generic [ref=e351]: Unity
+                - generic [ref=e353]: Unreal Engine
+                - generic [ref=e355]: Godot
+                - generic [ref=e357]: Blender
+                - generic [ref=e359]: Maya
+            - generic [ref=e366]:
+              - generic [ref=e367]: Форматы экспорта
+              - generic [ref=e368]:
+                - generic [ref=e369]: FBX
+                - generic [ref=e371]: GLB
+                - generic [ref=e373]: OBJ
+                - generic [ref=e375]: USDZ
+          - generic [ref=e377]:
+            - heading [level=3] [ref=e379]
+            - generic [ref=e383]:
+              - link "Дизайн интерьера" [ref=e384] [cursor=pointer]:
+                - /url: /use-cases/interior-design
+              - link "Промышленный дизайн" [ref=e388] [cursor=pointer]:
+                - /url: /use-cases/product-design
+              - link "VR/AR" [ref=e393] [cursor=pointer]:
+                - /url: /use-cases/vr-ar
+              - link "Образование" [ref=e402] [cursor=pointer]:
+                - /url: /use-cases/education
+              - link "Фильм и VFX" [ref=e406] [cursor=pointer]:
+                - /url: /use-cases/film-production
+    - generic [ref=e409]:
+      - generic [ref=e411]:
+        - heading "Нам доверяют миллионы создателей" [level=2] [ref=e415]
+        - generic [ref=e418]:
+          - generic [ref=e419]:
+            - paragraph [ref=e420]: 100М+
+            - paragraph [ref=e421]: Сгенерированные модели
+          - generic [ref=e422]:
+            - paragraph [ref=e423]: 12М+
+            - paragraph [ref=e424]: Пользователи
+          - generic [ref=e425]:
+            - paragraph [ref=e426]: 8М+
+            - paragraph [ref=e427]: Ежемесячные посещения
+      - generic [ref=e431]:
+        - generic [ref=e433]:
+          - generic "Nexon" [ref=e435]
+          - generic "DNEG" [ref=e440]
+          - generic "Meta" [ref=e445]
+          - generic "Supercell" [ref=e452]
+          - generic "Flashforge" [ref=e456]
+          - generic "ELEGOO" [ref=e463]
+          - generic "FunPlus" [ref=e467]
+          - generic "Square Enix" [ref=e475]
+          - generic "PICO XR" [ref=e480]
+          - generic "Stanford" [ref=e486]
+          - generic "Niantic" [ref=e494]
+          - generic "MIT" [ref=e499]
+          - generic "Harvard" [ref=e504]
+          - generic "Google" [ref=e513]
+          - generic "UC Berkeley" [ref=e518]
+          - generic "Microsoft" [ref=e522]
+          - generic "Duke" [ref=e527]
+          - generic "Georgia Tech" [ref=e531]
+          - generic "Toronto Film School" [ref=e536]
+          - generic "D5 RENDER" [ref=e540]
+          - generic "Nexon" [ref=e545]
+          - generic "DNEG" [ref=e550]
+          - generic "Meta" [ref=e555]
+          - generic "Supercell" [ref=e562]
+          - generic "Flashforge" [ref=e566]
+          - generic "ELEGOO" [ref=e573]
+          - generic "FunPlus" [ref=e577]
+          - generic "Square Enix" [ref=e585]
+          - generic "PICO XR" [ref=e590]
+          - generic "Stanford" [ref=e596]
+          - generic "Niantic" [ref=e604]
+          - generic "MIT" [ref=e609]
+          - generic "Harvard" [ref=e614]
+          - generic "Google" [ref=e623]
+          - generic "UC Berkeley" [ref=e628]
+          - generic "Microsoft" [ref=e632]
+          - generic "Duke" [ref=e637]
+          - generic "Georgia Tech" [ref=e641]
+          - generic "Toronto Film School" [ref=e646]
+          - generic "D5 RENDER" [ref=e650]
+        - generic [ref=e655]:
+          - link [ref=e656] [cursor=pointer]:
+            - /url: https://www.g2.com/products/meshy/reviews
+            - img "G2" [ref=e658]
+            - text: "Рейтинг G2: 4.8"
+          - link [ref=e659] [cursor=pointer]:
+            - /url: https://www.trustpilot.com/review/meshy.ai
+      - generic [ref=e664]:
+        - generic [ref=e666]:
+          - article [ref=e668]:
+            - generic [ref=e669]:
+              - img "Liga Superbohaterów" [ref=e670]
+              - generic [ref=e671]:
+                - paragraph [ref=e672]: Liga Superbohaterów
+                - paragraph [ref=e673]: Некоммерческий фонд · Польша
+            - paragraph [ref=e674]: „Ребенок рисует своего героя на больничной койке, и Meshy оживляет его в виде настоящей 3D-фигурки, которую они могут держать. Смотреть, как их глаза светятся, — это магия.”
+            - link "Читать всю историю" [ref=e675] [cursor=pointer]:
+              - /url: /blog/transforming-children-drawings-into-3d-printed-superheroes
+          - article [ref=e680]:
+            - generic [ref=e683]:
+              - paragraph [ref=e684]: cyber_fox
+              - paragraph [ref=e685]: 3D‑художница и инди‑разработчица
+            - paragraph [ref=e686]: „Текстурирование от Meshy кажется магией. Я использую это уже около восьми месяцев, и качество текстуры значительно улучшилось.”
+            - link [ref=e687] [cursor=pointer]:
+              - /url: /blog/fast-3d-generation-tool-for-education-app-3d-assets
+              - text: Читать всю историю
+          - article [ref=e692]:
+            - generic [ref=e695]:
+              - paragraph [ref=e696]: Jlemarchand
+              - paragraph [ref=e697]: Инди‑разработчик игр
+            - paragraph [ref=e698]: "« Благодаря Meshy я также усовершенствовал свой процесс: перед генерацией уделяю больше внимания деталям персонажа, позам и палитрам цветов, благодаря чему получаются более качественные meshes. »"
+            - link [ref=e699] [cursor=pointer]:
+              - /url: /blog/point-and-click-game
+              - text: Читать всю историю
+          - article [ref=e704]:
+            - generic [ref=e707]:
+              - paragraph [ref=e708]: Chad Hunter
+              - paragraph [ref=e709]: Создатель настольных RPG
+            - paragraph [ref=e710]: “С Meshy мои собственные дизайны персонажей превращаются из идеи в миниатюру 28 мм или 32 мм в руке менее чем за день. Это удивительно.”
+            - link [ref=e711] [cursor=pointer]:
+              - /url: /blog/ai-3d-printing-dioramas-tabletop
+              - text: Читать всю историю
+          - article [ref=e716]:
+            - generic [ref=e719]:
+              - paragraph [ref=e720]: Pau Comes
+              - paragraph [ref=e721]: Преподаватель анимации · Florida Universitària
+            - paragraph [ref=e722]: « Meshy помог студентам прояснять идеи и показывать их в изображении. »
+            - link [ref=e723] [cursor=pointer]:
+              - /url: /blog/ai-3d-previs-in-animation-classrooms
+              - text: Читать всю историю
+          - article [ref=e728]:
+            - generic [ref=e731]:
+              - paragraph [ref=e732]: Liga Superbohaterów
+              - paragraph [ref=e733]: Некоммерческий фонд · Польша
+            - paragraph [ref=e734]: „Ребенок рисует своего героя на больничной койке, и Meshy оживляет его в виде настоящей 3D-фигурки, которую они могут держать. Смотреть, как их глаза светятся, — это магия.”
+            - link [ref=e735] [cursor=pointer]:
+              - /url: /blog/transforming-children-drawings-into-3d-printed-superheroes
+              - text: Читать всю историю
+        - group "Testimonials pages" [ref=e739]:
+          - generic [ref=e740]:
+            - button "Previous testimonials" [ref=e741]
+            - button "Next testimonials" [ref=e744]
+    - generic [ref=e749]:
+      - generic [ref=e750]:
+        - heading "Начните создавать в 3D" [level=2] [ref=e751]
+        - paragraph [ref=e752]: Кредитная карта не требуется. Создайте свою первую 3D-модель менее чем за минуту.
+      - link "Начните создавать бесплатно" [ref=e754] [cursor=pointer]:
+        - /url: /discover
+    - generic [ref=e759]:
+      - generic [ref=e760]:
+        - generic [ref=e761]:
+          - list [ref=e762]:
+            - listitem [ref=e763]:
+              - link "Цены" [ref=e764] [cursor=pointer]:
+                - /url: /pricing
+            - listitem [ref=e765]:
+              - link "Сообщество" [ref=e766] [cursor=pointer]:
+                - /url: /discover
+            - listitem [ref=e767]:
+              - link "О" [ref=e768] [cursor=pointer]:
+                - /url: /about#about
+            - listitem [ref=e769]:
+              - link "Карьера" [ref=e770] [cursor=pointer]:
+                - /url: /careers
+            - listitem [ref=e771]:
+              - link "Контакт" [ref=e772] [cursor=pointer]:
+                - /url: /about#contact
+            - listitem [ref=e773]:
+              - link "Медиа-кит" [ref=e774] [cursor=pointer]:
+                - /url: /media-kit
+            - listitem [ref=e775]:
+              - link "Статус" [ref=e776] [cursor=pointer]:
+                - /url: https://status.meshy.ai/
+          - generic [ref=e777]:
+            - generic [ref=e778]:
+              - generic [ref=e779]:
+                - img "ISO 27001:2022" [ref=e780]
+                - img "SOC 2" [ref=e781]
+                - img "GDPR" [ref=e782]
+              - generic [ref=e783]:
+                - 'link "Рейтинг G2: 4.8" [ref=e784] [cursor=pointer]':
+                  - /url: https://www.g2.com/products/meshy/reviews
+                - 'link "Trustpilot: 4.8" [ref=e789] [cursor=pointer]':
+                  - /url: https://www.trustpilot.com/review/meshy.ai
+            - generic [ref=e794]:
+              - link "X (formerly Twitter)" [ref=e795] [cursor=pointer]:
+                - /url: https://twitter.com/MeshyAI
+              - link "Instagram" [ref=e799] [cursor=pointer]:
+                - /url: https://www.instagram.com/meshy.ai/
+              - link "YouTube" [ref=e803] [cursor=pointer]:
+                - /url: https://www.youtube.com/@MeshyAI
+              - link "Discord" [ref=e806] [cursor=pointer]:
+                - /url: https://discord.com/invite/KgD5yVM9Y4
+              - link "TikTok" [ref=e809] [cursor=pointer]:
+                - /url: https://www.tiktok.com/@meshy.ai
+              - link "LinkedIn" [ref=e812] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/meshyai/
+            - generic [ref=e817]:
+              - heading "Спросите ИИ о Meshy." [level=3] [ref=e818]
+              - generic [ref=e819]:
+                - link "Ask ChatGPT about Meshy" [ref=e820] [cursor=pointer]:
+                  - /url: https://chatgpt.com/?prompt=%D0%AF%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D1%8E%20%D0%B3%D0%B5%D0%BD%D0%B5%D1%80%D0%B0%D1%82%D0%BE%D1%80%D1%8B%203D-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B5%D0%B9%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D0%98%D0%98.%20%D0%9E%D0%B1%D1%8A%D1%8F%D1%81%D0%BD%D0%B8%D1%82%D0%B5%2C%20%D1%87%D1%82%D0%BE%20%D1%82%D0%B0%D0%BA%D0%BE%D0%B5%20Meshy%20(Meshy%20AI)%20%D0%B8%20%D0%BA%D0%B0%D0%BA%20%D0%BE%D0%BD%20%D0%BF%D0%BE%D0%BC%D0%BE%D0%B3%D0%B0%D0%B5%D1%82%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D1%8F%D0%BC%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%B2%D0%B0%D1%82%D1%8C%20%D0%B2%D1%8B%D1%81%D0%BE%D0%BA%D0%BE%D0%BA%D0%B0%D1%87%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5%203D-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B8%20%E2%80%94%20%D0%B2%D0%BA%D0%BB%D1%8E%D1%87%D0%B0%D1%8F%20%D0%BF%D1%80%D0%B5%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0%20%D0%B2%203D%2C%20%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B2%203D%2C%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%D1%83%D1%80%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%81%20%D0%BF%D0%BE%D0%BC%D0%BE%D1%89%D1%8C%D1%8E%20%D0%98%D0%98%2C%20%D0%B0%D0%B2%D1%82%D0%BE%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9%20%D1%80%D0%B8%D0%B3%D0%B3%D0%B8%D0%BD%D0%B3%20%D0%B8%20%D0%B0%D0%BD%D0%B8%D0%BC%D0%B0%D1%86%D0%B8%D1%8E%2C%20%D0%B0%20%D1%82%D0%B0%D0%BA%D0%B6%D0%B5%20%D0%B5%D0%B3%D0%BE%20API.%20%D0%9E%D0%B1%D0%BE%D0%B1%D1%89%D0%B8%D1%82%D0%B5%20%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%B2%D1%8B%D0%B5%20%D0%BC%D0%BE%D0%BC%D0%B5%D0%BD%D1%82%D1%8B%20%D1%81%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B3%D0%BE%20%D1%81%D0%B0%D0%B9%D1%82%D0%B0%20Meshy%20(https%3A%2F%2Fwww.meshy.ai)%20%D0%B8%20%D0%BE%D1%82%D0%B7%D1%8B%D0%B2%D0%BE%D0%B2%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%B9%20%D0%BD%D0%B0%20G2%20%D0%B8%20Trustpilot.
+                - link "Ask Perplexity about Meshy" [ref=e825] [cursor=pointer]:
+                  - /url: https://www.perplexity.ai/search/new?q=%D0%AF%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D1%8E%20%D0%B3%D0%B5%D0%BD%D0%B5%D1%80%D0%B0%D1%82%D0%BE%D1%80%D1%8B%203D-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B5%D0%B9%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D0%98%D0%98.%20%D0%9E%D0%B1%D1%8A%D1%8F%D1%81%D0%BD%D0%B8%D1%82%D0%B5%2C%20%D1%87%D1%82%D0%BE%20%D1%82%D0%B0%D0%BA%D0%BE%D0%B5%20Meshy%20(Meshy%20AI)%20%D0%B8%20%D0%BA%D0%B0%D0%BA%20%D0%BE%D0%BD%20%D0%BF%D0%BE%D0%BC%D0%BE%D0%B3%D0%B0%D0%B5%D1%82%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D1%8F%D0%BC%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%B2%D0%B0%D1%82%D1%8C%20%D0%B2%D1%8B%D1%81%D0%BE%D0%BA%D0%BE%D0%BA%D0%B0%D1%87%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5%203D-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B8%20%E2%80%94%20%D0%B2%D0%BA%D0%BB%D1%8E%D1%87%D0%B0%D1%8F%20%D0%BF%D1%80%D0%B5%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0%20%D0%B2%203D%2C%20%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B2%203D%2C%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%D1%83%D1%80%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%81%20%D0%BF%D0%BE%D0%BC%D0%BE%D1%89%D1%8C%D1%8E%20%D0%98%D0%98%2C%20%D0%B0%D0%B2%D1%82%D0%BE%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9%20%D1%80%D0%B8%D0%B3%D0%B3%D0%B8%D0%BD%D0%B3%20%D0%B8%20%D0%B0%D0%BD%D0%B8%D0%BC%D0%B0%D1%86%D0%B8%D1%8E%2C%20%D0%B0%20%D1%82%D0%B0%D0%BA%D0%B6%D0%B5%20%D0%B5%D0%B3%D0%BE%20API.%20%D0%9E%D0%B1%D0%BE%D0%B1%D1%89%D0%B8%D1%82%D0%B5%20%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%B2%D1%8B%D0%B5%20%D0%BC%D0%BE%D0%BC%D0%B5%D0%BD%D1%82%D1%8B%20%D1%81%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B3%D0%BE%20%D1%81%D0%B0%D0%B9%D1%82%D0%B0%20Meshy%20(https%3A%2F%2Fwww.meshy.ai)%20%D0%B8%20%D0%BE%D1%82%D0%B7%D1%8B%D0%B2%D0%BE%D0%B2%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%B9%20%D0%BD%D0%B0%20G2%20%D0%B8%20Trustpilot.
+                - link "Ask Claude about Meshy" [ref=e828] [cursor=pointer]:
+                  - /url: https://claude.ai/new?q=%D0%AF%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D1%8E%20%D0%B3%D0%B5%D0%BD%D0%B5%D1%80%D0%B0%D1%82%D0%BE%D1%80%D1%8B%203D-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B5%D0%B9%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D0%98%D0%98.%20%D0%9E%D0%B1%D1%8A%D1%8F%D1%81%D0%BD%D0%B8%D1%82%D0%B5%2C%20%D1%87%D1%82%D0%BE%20%D1%82%D0%B0%D0%BA%D0%BE%D0%B5%20Meshy%20(Meshy%20AI)%20%D0%B8%20%D0%BA%D0%B0%D0%BA%20%D0%BE%D0%BD%20%D0%BF%D0%BE%D0%BC%D0%BE%D0%B3%D0%B0%D0%B5%D1%82%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D1%8F%D0%BC%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%B2%D0%B0%D1%82%D1%8C%20%D0%B2%D1%8B%D1%81%D0%BE%D0%BA%D0%BE%D0%BA%D0%B0%D1%87%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5%203D-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B8%20%E2%80%94%20%D0%B2%D0%BA%D0%BB%D1%8E%D1%87%D0%B0%D1%8F%20%D0%BF%D1%80%D0%B5%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0%20%D0%B2%203D%2C%20%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B2%203D%2C%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%D1%83%D1%80%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%81%20%D0%BF%D0%BE%D0%BC%D0%BE%D1%89%D1%8C%D1%8E%20%D0%98%D0%98%2C%20%D0%B0%D0%B2%D1%82%D0%BE%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9%20%D1%80%D0%B8%D0%B3%D0%B3%D0%B8%D0%BD%D0%B3%20%D0%B8%20%D0%B0%D0%BD%D0%B8%D0%BC%D0%B0%D1%86%D0%B8%D1%8E%2C%20%D0%B0%20%D1%82%D0%B0%D0%BA%D0%B6%D0%B5%20%D0%B5%D0%B3%D0%BE%20API.%20%D0%9E%D0%B1%D0%BE%D0%B1%D1%89%D0%B8%D1%82%D0%B5%20%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%B2%D1%8B%D0%B5%20%D0%BC%D0%BE%D0%BC%D0%B5%D0%BD%D1%82%D1%8B%20%D1%81%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B3%D0%BE%20%D1%81%D0%B0%D0%B9%D1%82%D0%B0%20Meshy%20(https%3A%2F%2Fwww.meshy.ai)%20%D0%B8%20%D0%BE%D1%82%D0%B7%D1%8B%D0%B2%D0%BE%D0%B2%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%B9%20%D0%BD%D0%B0%20G2%20%D0%B8%20Trustpilot.
+                - link "Ask Gemini about Meshy" [ref=e832] [cursor=pointer]:
+                  - /url: https://www.google.com/search?udm=50&aep=11&q=%D0%AF%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D1%8E%20%D0%B3%D0%B5%D0%BD%D0%B5%D1%80%D0%B0%D1%82%D0%BE%D1%80%D1%8B%203D-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B5%D0%B9%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D0%98%D0%98.%20%D0%9E%D0%B1%D1%8A%D1%8F%D1%81%D0%BD%D0%B8%D1%82%D0%B5%2C%20%D1%87%D1%82%D0%BE%20%D1%82%D0%B0%D0%BA%D0%BE%D0%B5%20Meshy%20(Meshy%20AI)%20%D0%B8%20%D0%BA%D0%B0%D0%BA%20%D0%BE%D0%BD%20%D0%BF%D0%BE%D0%BC%D0%BE%D0%B3%D0%B0%D0%B5%D1%82%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D1%8F%D0%BC%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%B2%D0%B0%D1%82%D1%8C%20%D0%B2%D1%8B%D1%81%D0%BE%D0%BA%D0%BE%D0%BA%D0%B0%D1%87%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5%203D-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B8%20%E2%80%94%20%D0%B2%D0%BA%D0%BB%D1%8E%D1%87%D0%B0%D1%8F%20%D0%BF%D1%80%D0%B5%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0%20%D0%B2%203D%2C%20%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B2%203D%2C%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%D1%83%D1%80%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%81%20%D0%BF%D0%BE%D0%BC%D0%BE%D1%89%D1%8C%D1%8E%20%D0%98%D0%98%2C%20%D0%B0%D0%B2%D1%82%D0%BE%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9%20%D1%80%D0%B8%D0%B3%D0%B3%D0%B8%D0%BD%D0%B3%20%D0%B8%20%D0%B0%D0%BD%D0%B8%D0%BC%D0%B0%D1%86%D0%B8%D1%8E%2C%20%D0%B0%20%D1%82%D0%B0%D0%BA%D0%B6%D0%B5%20%D0%B5%D0%B3%D0%BE%20API.%20%D0%9E%D0%B1%D0%BE%D0%B1%D1%89%D0%B8%D1%82%D0%B5%20%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%B2%D1%8B%D0%B5%20%D0%BC%D0%BE%D0%BC%D0%B5%D0%BD%D1%82%D1%8B%20%D1%81%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B3%D0%BE%20%D1%81%D0%B0%D0%B9%D1%82%D0%B0%20Meshy%20(https%3A%2F%2Fwww.meshy.ai)%20%D0%B8%20%D0%BE%D1%82%D0%B7%D1%8B%D0%B2%D0%BE%D0%B2%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%B9%20%D0%BD%D0%B0%20G2%20%D0%B8%20Trustpilot.
+                - link "Ask Grok about Meshy" [ref=e838] [cursor=pointer]:
+                  - /url: https://x.com/i/grok?text=%D0%AF%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D1%8E%20%D0%B3%D0%B5%D0%BD%D0%B5%D1%80%D0%B0%D1%82%D0%BE%D1%80%D1%8B%203D-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B5%D0%B9%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D0%98%D0%98.%20%D0%9E%D0%B1%D1%8A%D1%8F%D1%81%D0%BD%D0%B8%D1%82%D0%B5%2C%20%D1%87%D1%82%D0%BE%20%D1%82%D0%B0%D0%BA%D0%BE%D0%B5%20Meshy%20(Meshy%20AI)%20%D0%B8%20%D0%BA%D0%B0%D0%BA%20%D0%BE%D0%BD%20%D0%BF%D0%BE%D0%BC%D0%BE%D0%B3%D0%B0%D0%B5%D1%82%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D1%8F%D0%BC%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%B2%D0%B0%D1%82%D1%8C%20%D0%B2%D1%8B%D1%81%D0%BE%D0%BA%D0%BE%D0%BA%D0%B0%D1%87%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5%203D-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B8%20%E2%80%94%20%D0%B2%D0%BA%D0%BB%D1%8E%D1%87%D0%B0%D1%8F%20%D0%BF%D1%80%D0%B5%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0%20%D0%B2%203D%2C%20%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B2%203D%2C%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%D1%83%D1%80%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%81%20%D0%BF%D0%BE%D0%BC%D0%BE%D1%89%D1%8C%D1%8E%20%D0%98%D0%98%2C%20%D0%B0%D0%B2%D1%82%D0%BE%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9%20%D1%80%D0%B8%D0%B3%D0%B3%D0%B8%D0%BD%D0%B3%20%D0%B8%20%D0%B0%D0%BD%D0%B8%D0%BC%D0%B0%D1%86%D0%B8%D1%8E%2C%20%D0%B0%20%D1%82%D0%B0%D0%BA%D0%B6%D0%B5%20%D0%B5%D0%B3%D0%BE%20API.%20%D0%9E%D0%B1%D0%BE%D0%B1%D1%89%D0%B8%D1%82%D0%B5%20%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%B2%D1%8B%D0%B5%20%D0%BC%D0%BE%D0%BC%D0%B5%D0%BD%D1%82%D1%8B%20%D1%81%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B3%D0%BE%20%D1%81%D0%B0%D0%B9%D1%82%D0%B0%20Meshy%20(https%3A%2F%2Fwww.meshy.ai)%20%D0%B8%20%D0%BE%D1%82%D0%B7%D1%8B%D0%B2%D0%BE%D0%B2%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%B9%20%D0%BD%D0%B0%20G2%20%D0%B8%20Trustpilot.
+                - link "Ask Copilot about Meshy" [ref=e841] [cursor=pointer]:
+                  - /url: https://copilot.microsoft.com/?q=%D0%AF%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D1%8E%20%D0%B3%D0%B5%D0%BD%D0%B5%D1%80%D0%B0%D1%82%D0%BE%D1%80%D1%8B%203D-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B5%D0%B9%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D0%98%D0%98.%20%D0%9E%D0%B1%D1%8A%D1%8F%D1%81%D0%BD%D0%B8%D1%82%D0%B5%2C%20%D1%87%D1%82%D0%BE%20%D1%82%D0%B0%D0%BA%D0%BE%D0%B5%20Meshy%20(Meshy%20AI)%20%D0%B8%20%D0%BA%D0%B0%D0%BA%20%D0%BE%D0%BD%20%D0%BF%D0%BE%D0%BC%D0%BE%D0%B3%D0%B0%D0%B5%D1%82%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D1%8F%D0%BC%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%B2%D0%B0%D1%82%D1%8C%20%D0%B2%D1%8B%D1%81%D0%BE%D0%BA%D0%BE%D0%BA%D0%B0%D1%87%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5%203D-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B8%20%E2%80%94%20%D0%B2%D0%BA%D0%BB%D1%8E%D1%87%D0%B0%D1%8F%20%D0%BF%D1%80%D0%B5%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0%20%D0%B2%203D%2C%20%D0%B8%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B2%203D%2C%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%D1%83%D1%80%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%81%20%D0%BF%D0%BE%D0%BC%D0%BE%D1%89%D1%8C%D1%8E%20%D0%98%D0%98%2C%20%D0%B0%D0%B2%D1%82%D0%BE%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9%20%D1%80%D0%B8%D0%B3%D0%B3%D0%B8%D0%BD%D0%B3%20%D0%B8%20%D0%B0%D0%BD%D0%B8%D0%BC%D0%B0%D1%86%D0%B8%D1%8E%2C%20%D0%B0%20%D1%82%D0%B0%D0%BA%D0%B6%D0%B5%20%D0%B5%D0%B3%D0%BE%20API.%20%D0%9E%D0%B1%D0%BE%D0%B1%D1%89%D0%B8%D1%82%D0%B5%20%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%B2%D1%8B%D0%B5%20%D0%BC%D0%BE%D0%BC%D0%B5%D0%BD%D1%82%D1%8B%20%D1%81%20%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B3%D0%BE%20%D1%81%D0%B0%D0%B9%D1%82%D0%B0%20Meshy%20(https%3A%2F%2Fwww.meshy.ai)%20%D0%B8%20%D0%BE%D1%82%D0%B7%D1%8B%D0%B2%D0%BE%D0%B2%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%B9%20%D0%BD%D0%B0%20G2%20%D0%B8%20Trustpilot.
+        - generic [ref=e844]:
+          - generic [ref=e845]:
+            - generic [ref=e846]:
+              - heading "Функции" [level=3] [ref=e847]
+              - list [ref=e848]:
+                - listitem [ref=e849]:
+                  - link "3D Agent" [ref=e850] [cursor=pointer]:
+                    - /url: /features/3d-agent
+                - listitem [ref=e851]:
+                  - link "Текст в 3D модель" [ref=e852] [cursor=pointer]:
+                    - /url: /features/text-to-3d
+                - listitem [ref=e853]:
+                  - link "Изображение в 3D модель" [ref=e854] [cursor=pointer]:
+                    - /url: /features/image-to-3d
+                - listitem [ref=e855]:
+                  - link "Текстурирование с использованием искусственного интеллекта" [ref=e856] [cursor=pointer]:
+                    - /url: /features/ai-texture-generator
+                - listitem [ref=e857]:
+                  - link "Генератор изображений ИИ" [ref=e858] [cursor=pointer]:
+                    - /url: /features/ai-image-generator
+                - listitem [ref=e859]:
+                  - link "Анимация" [ref=e860] [cursor=pointer]:
+                    - /url: /features/ai-animation-generator
+                - listitem [ref=e861]:
+                  - link "API" [ref=e862] [cursor=pointer]:
+                    - /url: /api
+            - generic [ref=e863]:
+              - heading "Инструменты" [level=3] [ref=e864]
+              - list [ref=e865]:
+                - listitem [ref=e866]:
+                  - link "Конвертер 3D-файлов" [ref=e867] [cursor=pointer]:
+                    - /url: /3d-tools/file-converter
+                - listitem [ref=e868]:
+                  - link "Онлайн 3D просмотрщик" [ref=e869] [cursor=pointer]:
+                    - /url: /3d-tools/online-viewer
+                - listitem [ref=e870]:
+                  - link "Генератор 3D текста" [ref=e871] [cursor=pointer]:
+                    - /url: /3d-tools/3d-text-generator
+                - listitem [ref=e872]:
+                  - link "Компрессор 3D-файлов" [ref=e873] [cursor=pointer]:
+                    - /url: /3d-tools/file-compressor
+                - listitem [ref=e874]:
+                  - link "ИИ-генератор кирпичных деталей" [ref=e875] [cursor=pointer]:
+                    - /url: /3d-tools/ai-brick-parts-generator
+                - listitem [ref=e876]:
+                  - link "Конвертер эскизов в 3D" [ref=e877] [cursor=pointer]:
+                    - /url: /3d-tools/sketch-to-3d-converter
+                - listitem [ref=e878]:
+                  - link "Все инструменты" [ref=e879] [cursor=pointer]:
+                    - /url: /3d-tools
+            - generic [ref=e880]:
+              - heading "Сравнить" [level=3] [ref=e881]
+              - list [ref=e882]:
+                - listitem [ref=e883]:
+                  - link "Meshy vs. Tripo" [ref=e884] [cursor=pointer]:
+                    - /url: /compare/meshy-vs-tripo
+                - listitem [ref=e885]:
+                  - link "Meshy vs. Trellis 2" [ref=e886] [cursor=pointer]:
+                    - /url: /compare/meshy-vs-trellis-2
+                - listitem [ref=e887]:
+                  - link "Все сравнения" [ref=e888] [cursor=pointer]:
+                    - /url: /compare
+          - generic [ref=e889]:
+            - generic [ref=e890]:
+              - heading "Учить" [level=3] [ref=e891]
+              - list [ref=e892]:
+                - listitem [ref=e893]:
+                  - link "Блог" [ref=e894] [cursor=pointer]:
+                    - /url: /blog
+                - listitem [ref=e895]:
+                  - link "Учебники" [ref=e896] [cursor=pointer]:
+                    - /url: /tutorials
+                - listitem [ref=e897]:
+                  - link "Академия 3D-печати" [ref=e898] [cursor=pointer]:
+                    - /url: /tutorials/3d-printing-academy
+                - listitem [ref=e899]:
+                  - link "Истории клиентов" [ref=e900] [cursor=pointer]:
+                    - /url: /customers
+                - listitem [ref=e901]:
+                  - link "Документация" [ref=e902] [cursor=pointer]:
+                    - /url: https://docs.meshy.ai/en
+                - listitem [ref=e903]:
+                  - link "Справочный центр" [ref=e904] [cursor=pointer]:
+                    - /url: https://help.meshy.ai/en/
+            - generic [ref=e905]:
+              - heading "Плагины" [level=3] [ref=e906]
+              - list [ref=e907]:
+                - listitem [ref=e908]:
+                  - link "Bambu Studio" [ref=e909] [cursor=pointer]:
+                    - /url: /integrations/bambu-studio
+                - listitem [ref=e910]:
+                  - link "Blender" [ref=e911] [cursor=pointer]:
+                    - /url: /integrations/blender
+                - listitem [ref=e912]:
+                  - link "Creality Print" [ref=e913] [cursor=pointer]:
+                    - /url: /integrations/creality-print
+                - listitem [ref=e914]:
+                  - link "OrcaSlicer" [ref=e915] [cursor=pointer]:
+                    - /url: /integrations/orcaslicer
+                - listitem [ref=e916]:
+                  - link "Unity" [ref=e917] [cursor=pointer]:
+                    - /url: /integrations/unity
+                - listitem [ref=e918]:
+                  - link "Ultimaker Cura" [ref=e919] [cursor=pointer]:
+                    - /url: /integrations/cura
+                - listitem [ref=e920]:
+                  - link "Elegoo Slicer" [ref=e921] [cursor=pointer]:
+                    - /url: /integrations/elegoo-slicer
+                - listitem [ref=e922]:
+                  - link "Unreal Engine" [ref=e923] [cursor=pointer]:
+                    - /url: /integrations/unreal-engine
+                - listitem [ref=e924]:
+                  - link "Roblox Studio" [ref=e925] [cursor=pointer]:
+                    - /url: /integrations/roblox
+                - listitem [ref=e926]:
+                  - link "3ds Max" [ref=e927] [cursor=pointer]:
+                    - /url: /integrations/3ds-max
+                - listitem [ref=e928]:
+                  - link "Lychee Slicer" [ref=e929] [cursor=pointer]:
+                    - /url: /integrations/lychee-slicer
+                - listitem [ref=e930]:
+                  - link "Maya" [ref=e931] [cursor=pointer]:
+                    - /url: /integrations/maya
+                - listitem [ref=e932]:
+                  - link "Godot" [ref=e933] [cursor=pointer]:
+                    - /url: /integrations/godot
+                - listitem [ref=e934]:
+                  - link "Все интеграции" [ref=e935] [cursor=pointer]:
+                    - /url: /integrations
+          - generic [ref=e936]:
+            - generic [ref=e937]:
+              - heading "Программы" [level=3] [ref=e938]
+              - list [ref=e939]:
+                - listitem [ref=e940]:
+                  - link "Партнерская программа" [ref=e941] [cursor=pointer]:
+                    - /url: /affiliates
+                - listitem [ref=e942]:
+                  - link "Программа для участников" [ref=e943] [cursor=pointer]:
+                    - /url: /creators
+                - listitem [ref=e944]:
+                  - link "Программа стипендий" [ref=e945] [cursor=pointer]:
+                    - /url: /fellowship
+                - listitem [ref=e946]:
+                  - link "Образовательная программа" [ref=e947] [cursor=pointer]:
+                    - /url: /education
+            - generic [ref=e948]:
+              - heading "Примеры использования" [level=3] [ref=e949]
+              - list [ref=e950]:
+                - listitem [ref=e951]:
+                  - link "Бесплатные 3D модели" [ref=e952] [cursor=pointer]:
+                    - /url: /use-cases/free-3d-models
+                - listitem [ref=e953]:
+                  - link "3D печать" [ref=e954] [cursor=pointer]:
+                    - /url: /use-cases/3d-printer-files
+                - listitem [ref=e955]:
+                  - link "Разработка игр" [ref=e956] [cursor=pointer]:
+                    - /url: /use-cases/free-game-assets
+                - listitem [ref=e957]:
+                  - link "3D анимация" [ref=e958] [cursor=pointer]:
+                    - /url: /use-cases/3d-animation
+                - listitem [ref=e959]:
+                  - link "Образование" [ref=e960] [cursor=pointer]:
+                    - /url: /use-cases/education
+                - listitem [ref=e961]:
+                  - link "Дизайн продукта" [ref=e962] [cursor=pointer]:
+                    - /url: /use-cases/product-design
+                - listitem [ref=e963]:
+                  - link "Кинопроизводство" [ref=e964] [cursor=pointer]:
+                    - /url: /use-cases/film-production
+                - listitem [ref=e965]:
+                  - link "ВР/АР" [ref=e966] [cursor=pointer]:
+                    - /url: /use-cases/vr-ar
+                - listitem [ref=e967]:
+                  - link "Дизайн игрушек" [ref=e968] [cursor=pointer]:
+                    - /url: /use-cases/toy-design
+                - listitem [ref=e969]:
+                  - link "Электронная коммерция" [ref=e970] [cursor=pointer]:
+                    - /url: /use-cases/e-commerce
+                - listitem [ref=e971]:
+                  - link "Интерьерный дизайн" [ref=e972] [cursor=pointer]:
+                    - /url: /use-cases/interior-design
+                - listitem [ref=e973]:
+                  - link "Визуальные эффекты (VFX)" [ref=e974] [cursor=pointer]:
+                    - /url: /use-cases/vfx
+                - listitem [ref=e975]:
+                  - link "Все сценарии использования" [ref=e976] [cursor=pointer]:
+                    - /url: /use-cases
+      - generic [ref=e977]:
+        - paragraph [ref=e978]: © 2026 MESHY LLC. ВСЕ ПРАВА ЗАЩИЩЕНЫ.
+        - generic [ref=e980]:
+          - link "Условия использования" [ref=e982] [cursor=pointer]:
+            - /url: /terms-of-use
+          - link "Политика конфиденциальности" [ref=e985] [cursor=pointer]:
+            - /url: /privacy-policy
+          - link "Политика приемлемого использования" [ref=e988] [cursor=pointer]:
+            - /url: /acceptable-use-policy
+          - link "Политика использования файлов cookie" [ref=e991] [cursor=pointer]:
+            - /url: /cookie-policy
+          - link "Центр доверия" [ref=e994] [cursor=pointer]:
+            - /url: https://app.drata.com/trust/07cad912-84f9-4f9e-ad58-6975d62ad32f
