@@ -1,0 +1,151 @@
+- generic [active] [ref=f14e1]:
+  - generic [ref=f14e4]:
+    - generic [ref=f14e6]:
+      - link "Фриланс маркетплейс" [ref=f14e8] [cursor=pointer]:
+        - /url: /
+      - textbox "Найти услуги" [ref=f14e14]
+      - generic [ref=f14e17]:
+        - generic [ref=f14e19]:
+          - link "Кворки" [ref=f14e20] [cursor=pointer]:
+            - /url: /manage_kworks
+          - link "Заказы" [ref=f14e21] [cursor=pointer]:
+            - /url: /manage_orders
+          - link "Биржа" [ref=f14e22] [cursor=pointer]:
+            - /url: /projects
+        - link "Чат" [ref=f14e25] [cursor=pointer]:
+          - /url: /inbox
+        - generic [ref=f14e27]:
+          - link "0" [ref=f14e30] [cursor=pointer]:
+            - /url: /balance
+          - link [ref=f14e36] [cursor=pointer]:
+            - /url: /user/furich
+    - list [ref=f14e42]:
+      - listitem [ref=f14e43]:
+        - link "Дизайн" [ref=f14e44] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/design
+      - listitem [ref=f14e46]:
+        - link "Разработка и IT" [ref=f14e47] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/programming
+      - listitem [ref=f14e49]:
+        - link "Тексты и переводы" [ref=f14e50] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/writing-translations
+      - listitem [ref=f14e52]:
+        - link "SEO и трафик" [ref=f14e53] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/seo
+      - listitem [ref=f14e55]:
+        - link "Соцсети и маркетинг" [ref=f14e56] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/promotion
+      - listitem [ref=f14e58]:
+        - link "Аудио, видео, съемка" [ref=f14e59] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/audio-video
+      - listitem [ref=f14e61]:
+        - link "Бизнес и жизнь" [ref=f14e62] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/business
+  - generic [ref=f14e67]:
+    - generic [ref=f14e70]:
+      - button [ref=f14e71] [cursor=pointer]
+      - generic [ref=f14e73]:
+        - generic [ref=f14e74]:
+          - paragraph [ref=f14e75]: Продавайте на Kwork больше и легче
+          - generic [ref=f14e76]: Ознакомьтесь с уроками «Как эффективно зарабатывать на Kwork», чтобы работать в удовольствие и с комфортом.
+        - link "Перейти к урокам" [ref=f14e77] [cursor=pointer]:
+          - /url: /kwork_book
+    - generic [ref=f14e78]:
+      - heading "Мои кворки" [level=1] [ref=f14e80]
+      - link "Создать кворк (РУС/EN)" [ref=f14e82] [cursor=pointer]:
+        - /url: /new
+    - generic [ref=f14e83]: Скрывать кворки на выходные
+    - generic [ref=f14e91]:
+      - generic [ref=f14e94]:
+        - generic [ref=f14e96] [cursor=pointer]:
+          - generic [ref=f14e97]: Черновики
+          - generic [ref=f14e98]: "1"
+        - generic [ref=f14e100] [cursor=pointer]:
+          - generic [ref=f14e101]: Все
+          - generic [ref=f14e102]: "1"
+      - table [ref=f14e104]:
+        - row:
+          - cell
+        - row [ref=f14e105]:
+          - 'cell "Доработаю ASP.NET Core API: багфикс, эндпоинт, правки Черновик 400 ₽ Черновик Заполните все поля, чтобы покупатели могли увидеть его в каталоге и сделать заказ. Продолжить заполнение" [ref=f14e106]':
+            - generic [ref=f14e107]:
+              - generic [ref=f14e108]:
+                - link [ref=f14e110] [cursor=pointer]:
+                  - /url: https://kwork.ru/new?draft_id=53718846
+                - generic [ref=f14e111]:
+                  - generic [ref=f14e112]:
+                    - heading [level=3] [ref=f14e113]:
+                      - 'link "Доработаю ASP.NET Core API: багфикс, эндпоинт, правки" [ref=f14e114] [cursor=pointer]':
+                        - /url: https://kwork.ru/new?draft_id=53718846
+                    - img [ref=f14e120] [cursor=pointer]: 
+                  - generic [ref=f14e127]:
+                    - generic [ref=f14e128]: Черновик
+                    - generic [ref=f14e130]: 400 ₽
+              - generic [ref=f14e136]:
+                - generic [ref=f14e137]:
+                  - text: Черновик
+                  - generic [ref=f14e138]: Заполните все поля, чтобы покупатели могли увидеть его в каталоге и сделать заказ.
+                - link "Продолжить заполнение" [ref=f14e139] [cursor=pointer]:
+                  - /url: https://kwork.ru/new?draft_id=53718846
+  - generic [ref=f14e142]:
+    - generic [ref=f14e143]:
+      - generic [ref=f14e144]:
+        - link [ref=f14e145] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f14e147]:
+          - generic [ref=f14e148]: "Онлайн: 1737"
+          - generic [ref=f14e151]: "Заказ: 21 сек. назад"
+      - generic [ref=f14e155]:
+        - generic [ref=f14e156]:
+          - generic [ref=f14e157]: О Kwork
+          - generic [ref=f14e160]:
+            - link "О проекте" [ref=f14e161] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=f14e162] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=f14e163] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Карьера в Kwork" [ref=f14e164] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=f14e165]:
+          - generic [ref=f14e166]: Сообщество
+          - generic [ref=f14e169]:
+            - link "Блог" [ref=f14e170] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=f14e171] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=f14e172] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=f14e173]:
+          - generic [ref=f14e174]: Полезное
+          - generic [ref=f14e177]:
+            - link "Покупателям" [ref=f14e178] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=f14e179] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=f14e180] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=f14e181] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Мобильное приложение" [ref=f14e182] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=f14e183]:
+          - generic [ref=f14e184]: Помощь
+          - generic [ref=f14e187]:
+            - link "Вопрос — Ответ" [ref=f14e188] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=f14e189] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=f14e190]:
+      - generic [ref=f14e191]:
+        - link [ref=f14e192] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=f14e196] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=f14e200]:
+        - link [ref=f14e201] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=f14e202]
+        - link [ref=f14e203] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=f14e204]

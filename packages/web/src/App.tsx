@@ -1002,6 +1002,24 @@ export default function App() {
             // Send was accepted — drop the local "starting" latch.
             clearSending(event.sessionId);
             markBusy(event.sessionId, true);
+            // Wake / server-started runs never go through sendMessage's local
+            // planning seed — ensure the busy pulse has a clock anchor.
+            if (event.sessionId === activeIdRef.current) {
+              setActivities((prev) => {
+                if (prev.some((item) => item.status === "running")) return prev;
+                return [
+                  {
+                    type: "activity",
+                    sessionId: event.sessionId!,
+                    id: "planning",
+                    kind: "thinking",
+                    label: "Planning next moves",
+                    status: "running",
+                    startedAt: Date.now(),
+                  },
+                ];
+              });
+            }
           }
           if (event.type === "activity" && event.sessionId && event.status === "running") {
             clearSending(event.sessionId);

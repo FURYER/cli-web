@@ -16,7 +16,7 @@ import {
   type ContextSnapshot,
 } from "./context-usage.js";
 import { ingestSessionMedia, isMediaPath, mergeThinkingText } from "./media.js";
-import { loadMcpServers } from "./mcp.js";
+import { loadMcpServersForAgent } from "./mcp.js";
 import { createAskUserCustomTool } from "./ask-user-tool.js";
 import { createMemorySecretTools } from "./memory-tools.js";
 import { createSubagentTools } from "./delegate-tools.js";
@@ -138,6 +138,11 @@ export type SessionSummary = {
   childSessionIds?: string[];
   /** If true, finishing this child does not auto-wake the parent (wait:true spawn). */
   skipParentWake?: boolean;
+  /**
+   * If true, wake the parent as soon as this child finishes — even while other
+   * sibling sub-agents are still running. Default is to wait for the whole batch.
+   */
+  wakeParentEarly?: boolean;
 };
 
 export type SessionRecord = SessionSummary & {
@@ -185,9 +190,11 @@ function setSessionBusy(session: SessionRecord, busy: boolean): void {
 type ParentWakeItem = {
   childSessionId: string;
   status: ChildAgentStatus;
+  /** Wake parent without waiting for sibling children. */
+  earlyWake?: boolean;
 };
 
-/** Coalesced wake-ups: child done → parent gets one turn with all results. */
+/** Coalesced wake-ups: child done → parent gets one turn with finished results. */
 const parentWakeQueue = new Map<string, ParentWakeItem[]>();
 const parentWakeTimers = new Map<string, ReturnType<typeof setTimeout>>();
 const parentWakeInFlight = new Set<string>();
@@ -234,6 +241,7 @@ function markChildRunFinished(session: SessionRecord, status: string): void {
     enqueueParentWake(session.parentSessionId, {
       childSessionId: session.id,
       status: session.childStatus,
+      earlyWake: Boolean(session.wakeParentEarly),
     });
   }
 }
@@ -265,17 +273,31 @@ function parentHasRunningChildren(parent: SessionRecord): boolean {
   return false;
 }
 
+function parentRunningChildren(parent: SessionRecord): SessionRecord[] {
+  const out: SessionRecord[] = [];
+  for (const id of parent.childSessionIds || []) {
+    const child = sessions.get(id);
+    if (!child) continue;
+    if (child.busy || child.childStatus === "running") out.push(child);
+  }
+  return out;
+}
+
 async function buildParentWakePrompt(
   parent: SessionRecord,
   items: ParentWakeItem[],
+  opts?: { earlyWake: boolean },
 ): Promise<string> {
+  const early = Boolean(opts?.earlyWake);
   const lines: string[] = [
-    "System: delegated sub-agents finished. Continue the orchestration automatically.",
+    early
+      ? "System: one or more watched sub-agents finished early (siblings may still be running). Continue orchestration for these results — you do not need to wait for the rest."
+      : "System: delegated sub-agents finished. Continue the orchestration automatically.",
     "Review each result, call `merge_child` for successful work (sensible order),",
     "use `ask_user` on conflicts, and fix/re-delegate only what failed.",
     "Do not re-delegate tasks that already succeeded.",
     "",
-    "## Finished children",
+    early ? "## Finished children (early wake)" : "## Finished children",
   ];
 
   for (const item of items) {
@@ -284,6 +306,7 @@ async function buildParentWakePrompt(
     lines.push(`### ${child?.title || item.childSessionId}`);
     lines.push(`- childSessionId: \`${item.childSessionId}\``);
     lines.push(`- status: **${item.status}**`);
+    if (item.earlyWake) lines.push(`- wake: **early** (did not wait for siblings)`);
     if (child?.agentBranch) lines.push(`- branch: \`${child.agentBranch}\``);
 
     try {
@@ -304,6 +327,16 @@ async function buildParentWakePrompt(
       lines.push(
         `- (could not load details: ${err instanceof Error ? err.message : String(err)})`,
       );
+    }
+  }
+
+  const stillRunning = parentRunningChildren(parent);
+  if (stillRunning.length) {
+    lines.push("");
+    lines.push("## Still running");
+    for (const c of stillRunning) {
+      const flag = c.wakeParentEarly ? " (early-wake when done)" : "";
+      lines.push(`- \`${c.id}\` ${c.title}${flag}`);
     }
   }
 
@@ -338,16 +371,39 @@ async function flushParentWake(parentSessionId: string): Promise<void> {
   const queued = parentWakeQueue.get(parentSessionId);
   if (!queued?.length) return;
 
-  // Wait until the whole parallel batch is idle, so one wake covers everyone.
-  if (parentHasRunningChildren(parent)) return;
+  const allIdle = !parentHasRunningChildren(parent);
+  const earlyItems = queued.filter((i) => i.earlyWake);
+  const batchItems = queued.filter((i) => !i.earlyWake);
 
-  if (parent.busy) return; // retry from send queue pump / sendMessage finally
+  // Default: wait for the whole parallel batch. Early-wake children may flush
+  // immediately even while siblings are still running.
+  let items: ParentWakeItem[];
+  if (allIdle) {
+    items = [...queued];
+    parentWakeQueue.set(parentSessionId, []);
+  } else if (earlyItems.length) {
+    items = earlyItems;
+    parentWakeQueue.set(parentSessionId, batchItems);
+  } else {
+    return;
+  }
 
-  const items = [...queued];
-  parentWakeQueue.set(parentSessionId, []);
+  if (parent.busy) {
+    // Put selected items back; retry when parent goes idle.
+    const again = parentWakeQueue.get(parentSessionId) ?? [];
+    const merged = [...items, ...again].filter(
+      (item, idx, arr) =>
+        arr.findIndex((x) => x.childSessionId === item.childSessionId) === idx,
+    );
+    parentWakeQueue.set(parentSessionId, merged);
+    return;
+  }
+
   parentWakeInFlight.add(parentSessionId);
   try {
-    const prompt = await buildParentWakePrompt(parent, items);
+    const prompt = await buildParentWakePrompt(parent, items, {
+      earlyWake: !allIdle,
+    });
     enqueueSessionSend(parentSessionId, prompt, {
       modelId: parent.model,
       mode: parent.mode === "plan" ? "plan" : "agent",
@@ -365,10 +421,13 @@ async function flushParentWake(parentSessionId: string): Promise<void> {
       left?.length &&
       fresh &&
       !fresh.busy &&
-      !parentHasRunningChildren(fresh) &&
       !(sessionSendQueues.get(parentSessionId)?.length)
     ) {
-      void flushParentWake(parentSessionId);
+      const canEarly = left.some((i) => i.earlyWake);
+      const idleNow = !parentHasRunningChildren(fresh);
+      if (canEarly || idleNow) {
+        void flushParentWake(parentSessionId);
+      }
     }
   }
 }
@@ -596,6 +655,7 @@ function toStoredMeta(session: SessionRecord): StoredSessionMeta {
       ? [...session.childSessionIds]
       : undefined,
     skipParentWake: session.skipParentWake,
+    wakeParentEarly: session.wakeParentEarly,
   };
 }
 
@@ -651,6 +711,7 @@ function hydratePersistedSession(item: {
   childStatus?: ChildAgentStatus;
   childSessionIds?: string[];
   skipParentWake?: boolean;
+  wakeParentEarly?: boolean;
 }): SessionRecord | null {
   if (!item?.id || !item.agentId) return null;
   return {
@@ -675,6 +736,7 @@ function hydratePersistedSession(item: {
       ? item.childSessionIds
       : undefined,
     skipParentWake: item.skipParentWake,
+    wakeParentEarly: item.wakeParentEarly,
   };
 }
 
@@ -1084,6 +1146,23 @@ async function disposeAgentHandle(session: SessionRecord): Promise<void> {
   session.agent = null;
 }
 
+/**
+ * Root chat that owns the Playwright window. Sub-agents share the parent's
+ * browser (walk up parentSessionId).
+ */
+function browserOwnerSessionId(session: SessionRecord): string {
+  let current: SessionRecord | undefined = session;
+  const seen = new Set<string>();
+  while (current?.parentSessionId) {
+    if (seen.has(current.id)) break;
+    seen.add(current.id);
+    const parent = sessions.get(current.parentSessionId);
+    if (!parent) return current.parentSessionId;
+    current = parent;
+  }
+  return current?.id ?? session.id;
+}
+
 function touchAgent(session: SessionRecord): void {
   session.lastAgentTouchAt = Date.now();
 }
@@ -1172,7 +1251,7 @@ async function ensureAgent(session: SessionRecord): Promise<SDKAgent> {
     await disposeAgentHandle(session);
   }
   const apiKey = requireApiKey();
-  const mcpServers = await loadMcpServers();
+  const mcpServers = await loadMcpServersForAgent(browserOwnerSessionId(session));
   try {
     const agent = await Agent.resume(session.agentId, {
       apiKey,
@@ -1211,7 +1290,14 @@ export async function createSession(input: {
   const model = input.model?.trim() || defaultModel();
   const mode = input.mode === "plan" ? "plan" : "agent";
   const apiKey = requireApiKey();
-  const mcpServers = await loadMcpServers();
+  const sessionId = input.id?.trim() || randomUUID();
+  const parent = input.parentSessionId
+    ? sessions.get(input.parentSessionId)
+    : undefined;
+  const browserOwner = parent
+    ? browserOwnerSessionId(parent)
+    : input.parentSessionId || sessionId;
+  const mcpServers = await loadMcpServersForAgent(browserOwner);
   const agent = await Agent.create({
     apiKey,
     name: input.title?.trim() || "Web CLI",
@@ -1222,11 +1308,8 @@ export async function createSession(input: {
   });
 
   const now = Date.now();
-  const parent = input.parentSessionId
-    ? sessions.get(input.parentSessionId)
-    : undefined;
   const session: SessionRecord = {
-    id: input.id?.trim() || randomUUID(),
+    id: sessionId,
     agentId: agent.agentId,
     workspace: input.workspace,
     model,
@@ -1269,7 +1352,8 @@ export async function resumeSession(input: {
   const model = input.model?.trim() || defaultModel();
   const mode = input.mode === "plan" ? "plan" : "agent";
   const apiKey = requireApiKey();
-  const mcpServers = await loadMcpServers();
+  const sessionId = randomUUID();
+  const mcpServers = await loadMcpServersForAgent(sessionId);
   const agent = await Agent.resume(input.agentId, {
     apiKey,
     model: { id: model },
@@ -1280,7 +1364,7 @@ export async function resumeSession(input: {
 
   const now = Date.now();
   const session: SessionRecord = {
-    id: randomUUID(),
+    id: sessionId,
     agentId: agent.agentId,
     workspace: input.workspace,
     model,
@@ -1338,6 +1422,20 @@ export async function deleteSession(id: string): Promise<boolean> {
 
   sessions.delete(id);
   persistDelete(id);
+
+  // Root chat owns the browser; sub-agent delete must not close the parent's window.
+  if (!session.parentSessionId) {
+    try {
+      const { stopPlaywrightBrowser } = await import("./playwright-browser.js");
+      await stopPlaywrightBrowser(id);
+    } catch (err) {
+      console.warn(
+        "[playwright-browser] stop on session delete failed:",
+        err instanceof Error ? err.message : err,
+      );
+    }
+  }
+
   return true;
 }
 
@@ -1418,7 +1516,7 @@ async function recreateAgent(session: SessionRecord): Promise<void> {
   }
 
   const apiKey = requireApiKey();
-  const mcpServers = await loadMcpServers();
+  const mcpServers = await loadMcpServersForAgent(browserOwnerSessionId(session));
   const agent = await Agent.create({
     apiKey,
     name: session.title || "Web CLI",
@@ -2424,7 +2522,7 @@ async function sendMessageNow(
       throw err;
     }
   }
-  const mcpServers = await loadMcpServers();
+  const mcpServers = await loadMcpServersForAgent(browserOwnerSessionId(session));
   const askUserTool = createAskUserCustomTool(sessionId);
   const memorySecretTools = createMemorySecretTools();
   // Sub-agents cannot nest further — only top-level orchestrators get these tools.
@@ -3475,6 +3573,8 @@ export type DelegateChildResult = {
   baseSha: string;
   status: ChildAgentStatus;
   waited: boolean;
+  /** True when this child will wake the parent without waiting for siblings. */
+  wakeOnDone?: boolean;
   summary?: string;
   /** Parent git prepare step that ran before the worktree was created. */
   prepare?: {
@@ -3494,6 +3594,11 @@ export async function spawnDelegatedChild(
     model?: string;
     /** If true, block until the child run finishes. Default false (parallel). */
     wait?: boolean;
+    /**
+     * If true (and wait is false), wake the parent as soon as this child
+     * finishes — even while other siblings are still running.
+     */
+    wakeOnDone?: boolean;
   },
 ): Promise<DelegateChildResult> {
   const parent = sessions.get(parentSessionId);
@@ -3505,6 +3610,8 @@ export async function spawnDelegatedChild(
   const prompt = input.prompt.trim();
   if (!prompt) throw new Error("prompt is required");
   const title = input.title.trim() || "Sub-agent";
+  const wait = Boolean(input.wait);
+  const wakeOnDone = Boolean(input.wakeOnDone) && !wait;
 
   const childId = randomUUID();
   const {
@@ -3537,6 +3644,14 @@ export async function spawnDelegatedChild(
     childStatus: "running",
   });
 
+  const childRec = sessions.get(child.id);
+  if (childRec) {
+    if (wakeOnDone) {
+      childRec.wakeParentEarly = true;
+      persistMeta(childRec);
+    }
+  }
+
   broadcast({
     type: "child_agent",
     sessionId: parentSessionId,
@@ -3555,10 +3670,11 @@ export async function spawnDelegatedChild(
     prompt,
   ].join("\n");
 
-  const wait = Boolean(input.wait);
   if (wait) {
-    const childRec = sessions.get(child.id);
-    if (childRec) childRec.skipParentWake = true;
+    if (childRec) {
+      childRec.skipParentWake = true;
+      persistMeta(childRec);
+    }
     await sendMessage(child.id, kickoff, { modelId: child.model, mode: "agent" });
     const fresh = sessions.get(child.id);
     let summary: string | undefined;
@@ -3611,12 +3727,68 @@ export async function spawnDelegatedChild(
     baseSha: wt.baseSha,
     status: "running",
     waited: false,
+    wakeOnDone,
     prepare: {
       checkpointCreated: prepared.checkpointCreated,
       filesCommitted: prepared.filesCommitted,
       headSha: prepared.headSha,
       message: prepared.message,
     },
+  };
+}
+
+/**
+ * Mark (or unmark) a child so finishing it wakes the parent immediately,
+ * without waiting for sibling sub-agents. If the child already finished,
+ * enqueues an early wake now.
+ */
+export async function setChildWakeOnDone(
+  parentSessionId: string,
+  childSessionId: string,
+  enabled = true,
+): Promise<{
+  childSessionId: string;
+  wakeOnDone: boolean;
+  status: string;
+  queuedWake: boolean;
+}> {
+  const parent = sessions.get(parentSessionId);
+  const child = sessions.get(childSessionId);
+  if (!parent) throw new Error("Parent session not found");
+  if (!child) throw new Error("Child session not found");
+  if (child.parentSessionId !== parentSessionId) {
+    throw new Error("Child does not belong to this parent");
+  }
+  if (parent.parentSessionId) {
+    throw new Error("Only the orchestrator may set wake_on_done");
+  }
+
+  child.wakeParentEarly = Boolean(enabled);
+  child.updatedAt = Date.now();
+  persistMeta(child);
+
+  let queuedWake = false;
+  if (
+    enabled &&
+    !child.skipParentWake &&
+    (child.childStatus === "done" ||
+      child.childStatus === "error" ||
+      child.childStatus === "conflict") &&
+    !child.busy
+  ) {
+    enqueueParentWake(parentSessionId, {
+      childSessionId: child.id,
+      status: child.childStatus,
+      earlyWake: true,
+    });
+    queuedWake = true;
+  }
+
+  return {
+    childSessionId: child.id,
+    wakeOnDone: Boolean(child.wakeParentEarly),
+    status: child.childStatus || (child.busy ? "running" : "unknown"),
+    queuedWake,
   };
 }
 
@@ -3745,6 +3917,7 @@ export async function getDelegatedChildResult(
   title: string;
   status: ChildAgentStatus | "unknown";
   busy: boolean;
+  wakeOnDone?: boolean;
   branch?: string;
   branchSummary?: string;
   lastAssistant?: string;
@@ -3779,6 +3952,7 @@ export async function getDelegatedChildResult(
     title: child.title,
     status: child.childStatus || "unknown",
     busy: Boolean(child.busy),
+    wakeOnDone: Boolean(child.wakeParentEarly) || undefined,
     branch: child.agentBranch,
     branchSummary,
     lastAssistant: lastAssistant?.content?.slice(0, 6000),

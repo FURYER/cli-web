@@ -21,6 +21,9 @@ export function createSubagentTools(sessionId: string): Record<string, SDKCustom
         "a checkpoint commit is created so the child sees current files. " +
         "Fails if the folder is not a git repo or a merge/rebase is in progress. " +
         "Set wait=true to block until it finishes; otherwise it runs in parallel. " +
+        "Set wake_on_done=true to wake you as soon as THIS child finishes, even if " +
+        "other siblings are still running (you can mark several children this way). " +
+        "Default wake waits until the whole parallel batch is idle. " +
         "After children finish, review with get_child_result then merge_child.",
       inputSchema: {
         type: "object",
@@ -41,6 +44,13 @@ export function createSubagentTools(sessionId: string): Record<string, SDKCustom
             type: "boolean",
             description: "If true, wait until the sub-agent finishes (default false)",
           },
+          wake_on_done: {
+            type: "boolean",
+            description:
+              "If true (and wait is false), wake the orchestrator as soon as this " +
+              "child finishes — even while other sub-agents are still running. " +
+              "Default false: wake once the whole batch is idle.",
+          },
         },
         required: ["title", "prompt"],
       },
@@ -52,13 +62,55 @@ export function createSubagentTools(sessionId: string): Record<string, SDKCustom
             prompt?: string;
             model?: string;
             wait?: boolean;
+            wake_on_done?: boolean;
+            wakeOnDone?: boolean;
           };
           const result = await spawnDelegatedChild(sessionId, {
             title: String(raw.title || ""),
             prompt: String(raw.prompt || ""),
             model: raw.model,
             wait: Boolean(raw.wait),
+            wakeOnDone: Boolean(raw.wake_on_done ?? raw.wakeOnDone),
           });
+          return textResult(result);
+        } catch (err) {
+          return textResult(
+            { error: err instanceof Error ? err.message : String(err) },
+            true,
+          );
+        }
+      },
+    },
+
+    wake_on_child_done: {
+      description:
+        "Mark a running (or already finished) sub-agent so it wakes you as soon " +
+        "as it finishes, without waiting for sibling sub-agents. " +
+        "Pass enabled=false to clear early-wake and go back to batch wake. " +
+        "If the child already finished and enabled=true, queues an early wake now.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          childSessionId: {
+            type: "string",
+            description: "Id returned by delegate_task",
+          },
+          enabled: {
+            type: "boolean",
+            description: "Default true — set false to disable early wake for this child",
+          },
+        },
+        required: ["childSessionId"],
+      },
+      execute: async (args) => {
+        try {
+          const { setChildWakeOnDone } = await import("./agent.js");
+          const raw = args as { childSessionId?: string; enabled?: boolean };
+          const result = await setChildWakeOnDone(
+            sessionId,
+            String(raw.childSessionId || ""),
+            raw.enabled !== false,
+          );
           return textResult(result);
         } catch (err) {
           return textResult(

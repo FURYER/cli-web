@@ -1,0 +1,165 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e4]:
+    - generic [ref=f4e6]:
+      - link "Фриланс маркетплейс" [ref=f4e8] [cursor=pointer]:
+        - /url: /
+      - textbox "Найти услуги" [ref=f4e14]
+      - generic [ref=f4e17]:
+        - generic [ref=f4e19]:
+          - link "Кворки" [ref=f4e20] [cursor=pointer]:
+            - /url: /manage_kworks
+          - link "Заказы" [ref=f4e21] [cursor=pointer]:
+            - /url: /manage_orders
+          - link "Биржа" [ref=f4e22] [cursor=pointer]:
+            - /url: /projects
+        - link "Чат" [ref=f4e25] [cursor=pointer]:
+          - /url: /inbox
+        - generic [ref=f4e27]:
+          - link "0" [ref=f4e30] [cursor=pointer]:
+            - /url: /balance
+          - link [ref=f4e36] [cursor=pointer]:
+            - /url: /user/furich
+    - list [ref=f4e42]:
+      - listitem [ref=f4e43]:
+        - link "Дизайн" [ref=f4e44] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/design
+      - listitem [ref=f4e46]:
+        - link "Разработка и IT" [ref=f4e47] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/programming
+      - listitem [ref=f4e49]:
+        - link "Тексты и переводы" [ref=f4e50] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/writing-translations
+      - listitem [ref=f4e52]:
+        - link "SEO и трафик" [ref=f4e53] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/seo
+      - listitem [ref=f4e55]:
+        - link "Соцсети и маркетинг" [ref=f4e56] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/promotion
+      - listitem [ref=f4e58]:
+        - link "Аудио, видео, съемка" [ref=f4e59] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/audio-video
+      - listitem [ref=f4e61]:
+        - link "Бизнес и жизнь" [ref=f4e62] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/business
+  - generic [ref=f4e64]:
+    - generic [ref=f4e67]:
+      - generic [ref=f4e68]:
+        - heading "Биржа проектов" [level=1] [ref=f4e69]
+        - generic [ref=f4e70]:
+          - generic [ref=f4e71]:
+            - link "Мои отклики" [ref=f4e72] [cursor=pointer]:
+              - /url: /offers
+            - link "Проекты" [ref=f4e73] [cursor=pointer]:
+              - /url: /projects
+          - generic [ref=f4e74]:
+            - generic [ref=f4e75]:
+              - generic [ref=f4e77]:
+                - generic [ref=f4e78]: Коннекты
+                - generic [ref=f4e80]: Осталось 30 из 30
+              - generic [ref=f4e84]:
+                - generic [ref=f4e85]: Дата пополнения
+                - generic [ref=f4e86]: 23 августа
+            - generic [ref=f4e87]: Настройка уведомлений
+      - generic [ref=f4e89]:
+        - generic [ref=f4e90]:
+          - generic [ref=f4e91]:
+            - generic [ref=f4e92]:
+              - generic [ref=f4e93]: Рубрики
+              - generic [ref=f4e95]:
+                - generic [ref=f4e96]: Любимые
+                - generic [ref=f4e102]: Все
+              - generic:
+                - generic:
+                  - list
+            - generic [ref=f4e105]:
+              - generic [ref=f4e106]: Бюджет
+              - generic [ref=f4e107]:
+                - textbox "От руб." [ref=f4e109]
+                - textbox "До руб." [ref=f4e111]
+            - generic [ref=f4e112]:
+              - generic [ref=f4e113]: Нанято, %
+              - textbox "От" [ref=f4e116]
+            - generic [ref=f4e117]:
+              - generic [ref=f4e118]: Ключевые слова
+              - textbox [ref=f4e122]: ASP.NET
+          - generic [ref=f4e124]:
+            - strong [ref=f4e126]: Статистика биржиза месяц
+            - generic [ref=f4e128]:
+              - generic [ref=f4e129]: Проектов
+              - generic [ref=f4e130]: 8 317
+            - generic [ref=f4e131]:
+              - generic [ref=f4e132]: На сумму, ₽
+              - generic [ref=f4e133]: 87 585 500
+            - generic [ref=f4e134]:
+              - generic [ref=f4e135]: Заказов
+              - generic [ref=f4e136]: 3 838
+          - generic [ref=f4e139] [cursor=pointer]:
+            - generic [ref=f4e140]:
+              - generic [ref=f4e141]: Узнайте, как получить
+              - generic [ref=f4e142]: первый заказ
+              - generic [ref=f4e143]: на бирже!
+            - button "Открыть урок" [ref=f4e145]
+        - generic [ref=f4e146]: Нет ни одного доступного проекта в выбранных категориях. Создавайте больше кворков в разных категориях, чтобы получить заказы от покупателей.
+    - text:  
+  - generic [ref=f4e151]:
+    - generic [ref=f4e152]:
+      - generic [ref=f4e153]:
+        - link [ref=f4e154] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f4e156]:
+          - generic [ref=f4e157]: "Онлайн: 1695"
+          - generic [ref=f4e160]: "Заказ: 1 мин. назад"
+      - generic [ref=f4e164]:
+        - generic [ref=f4e165]:
+          - generic [ref=f4e166]: О Kwork
+          - generic [ref=f4e169]:
+            - link "О проекте" [ref=f4e170] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=f4e171] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=f4e172] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Карьера в Kwork" [ref=f4e173] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=f4e174]:
+          - generic [ref=f4e175]: Сообщество
+          - generic [ref=f4e178]:
+            - link "Блог" [ref=f4e179] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=f4e180] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=f4e181] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=f4e182]:
+          - generic [ref=f4e183]: Полезное
+          - generic [ref=f4e186]:
+            - link "Покупателям" [ref=f4e187] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=f4e188] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=f4e189] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=f4e190] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Мобильное приложение" [ref=f4e191] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=f4e192]:
+          - generic [ref=f4e193]: Помощь
+          - generic [ref=f4e196]:
+            - link "Вопрос — Ответ" [ref=f4e197] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=f4e198] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=f4e199]:
+      - generic [ref=f4e200]:
+        - link [ref=f4e201] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=f4e205] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=f4e209]:
+        - link [ref=f4e210] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=f4e211]
+        - link [ref=f4e212] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=f4e213]

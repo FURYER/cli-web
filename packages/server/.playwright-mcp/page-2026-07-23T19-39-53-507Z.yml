@@ -1,0 +1,156 @@
+- generic [active] [ref=f3e1]:
+  - generic [ref=f3e4]:
+    - generic [ref=f3e6]:
+      - link "Фриланс маркетплейс" [ref=f3e8] [cursor=pointer]:
+        - /url: /
+      - textbox "Найти услуги" [ref=f3e14]
+      - generic [ref=f3e17]:
+        - generic [ref=f3e19]:
+          - link "Кворки" [ref=f3e20] [cursor=pointer]:
+            - /url: /manage_kworks
+          - link "Заказы" [ref=f3e21] [cursor=pointer]:
+            - /url: /manage_orders
+          - link "Биржа" [ref=f3e22] [cursor=pointer]:
+            - /url: /projects
+        - link "Чат" [ref=f3e25] [cursor=pointer]:
+          - /url: /inbox
+        - generic [ref=f3e27]:
+          - link "0" [ref=f3e30] [cursor=pointer]:
+            - /url: /balance
+          - link [ref=f3e36] [cursor=pointer]:
+            - /url: /user/furich
+    - list [ref=f3e42]:
+      - listitem [ref=f3e43]:
+        - link "Дизайн" [ref=f3e44] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/design
+      - listitem [ref=f3e46]:
+        - link "Разработка и IT" [ref=f3e47] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/programming
+      - listitem [ref=f3e49]:
+        - link "Тексты и переводы" [ref=f3e50] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/writing-translations
+      - listitem [ref=f3e52]:
+        - link "SEO и трафик" [ref=f3e53] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/seo
+      - listitem [ref=f3e55]:
+        - link "Соцсети и маркетинг" [ref=f3e56] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/promotion
+      - listitem [ref=f3e58]:
+        - link "Аудио, видео, съемка" [ref=f3e59] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/audio-video
+      - listitem [ref=f3e61]:
+        - link "Бизнес и жизнь" [ref=f3e62] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/business
+  - generic [ref=f3e64]:
+    - generic [ref=f3e67]:
+      - link "К списку проектов" [ref=f3e70] [cursor=pointer]:
+        - /url: /projects
+      - generic [ref=f3e71]:
+        - generic [ref=f3e72]:
+          - generic [ref=f3e73]:
+            - heading "Разработка калькулятора" [level=1] [ref=f3e74]
+            - generic [ref=f3e76]:
+              - text: "Здравствуйте!У нашей компании сайт на шаблоне. На сайте уже есть калькулятор, но он работает только по той продукции, которая есть на сайте (грубо говоря, это модернизированный фильтр по товару). Нам нужен калькулятор для товара по индивидуальным размерам. Пример, как это реализовано у нашего партнера:"
+              - link "https://www.alkraft.ru/production" [ref=f3e78] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production
+              - text: ". Попробуйте указать размеры, чтобы понять, как работает данный подбор. Нам в целом нужно тоже самое, только по нашей продукции. Суть в том, что система должна автоматически генерировать предложения по размеру клиента:"
+              - link "https://skrinshoter.ru/scdsP2C5Hyx" [ref=f3e79] [cursor=pointer]:
+                - /url: https://skrinshoter.ru/scdsP2C5Hyx
+              - text: ". Создается небольшая карточка товара, где прописываются основные характеристики, расчет по размерам клиента, цена и срок изготовления. Далее можно добавить в корзину и оплатить. У нашего партнера этот подбор есть как общий, по всем моделям, так и отдельно в каждой карточке товара по определенной модели. Пример:"
+              - link "https://www.alkraft.ru/production/arhitektor#tab:calc" [ref=f3e80] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/arhitektor#tab:calc
+              - text: По стоимости даже примерно не предполагаю, ставлю просто, что поставить, на это не смотрите, пожалуйста. Эту идею уже очень давно хотим реализовать, нужен исполнитель просто, который справится. Потому что как мы поняли, задача не из простых.
+          - generic [ref=f3e81]:
+            - generic [ref=f3e83]:
+              - text: "Желаемый бюджет: до"
+              - generic [ref=f3e84]: 10 000 ₽
+            - generic [ref=f3e85]:
+              - text: "Допустимый:"
+              - generic [ref=f3e86]:
+                - text: до
+                - generic [ref=f3e87]: 30 000 ₽
+        - generic [ref=f3e89]:
+          - generic [ref=f3e90]: d
+          - generic [ref=f3e92]:
+            - generic [ref=f3e93]:
+              - generic [ref=f3e94]:
+                - text: "Покупатель:"
+                - link "docmos22" [ref=f3e95] [cursor=pointer]:
+                  - /url: https://kwork.ru/user/docmos22
+              - img "Сделано более 7 покупок" [ref=f3e96]
+            - generic [ref=f3e97]:
+              - text: "Размещено проектов на бирже: 10"
+              - generic [ref=f3e98]: "Нанято: 50%"
+        - generic [ref=f3e100]:
+          - generic [ref=f3e101]:
+            - generic [ref=f3e102]: "Осталось: 1 д. 17 ч."
+            - generic [ref=f3e103]: "Предложений: 54"
+          - generic [ref=f3e104]:
+            - button "Оставить отзыв" [ref=f3e105] [cursor=pointer]
+            - link "Опубликовать похожий проект" [ref=f3e106] [cursor=pointer]:
+              - /url: /new_project?id=3223048
+            - link "Смотреть все проекты" [ref=f3e107] [cursor=pointer]:
+              - /url: /projects
+    - text:  
+  - generic [ref=f3e110]:
+    - generic [ref=f3e111]:
+      - generic [ref=f3e112]:
+        - link [ref=f3e113] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f3e115]:
+          - generic [ref=f3e116]: "Онлайн: 1575"
+          - generic [ref=f3e119]: "Заказ: 56 сек. назад"
+      - generic [ref=f3e123]:
+        - generic [ref=f3e124]:
+          - generic [ref=f3e125]: О Kwork
+          - generic [ref=f3e128]:
+            - link "О проекте" [ref=f3e129] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=f3e130] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=f3e131] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Карьера в Kwork" [ref=f3e132] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=f3e133]:
+          - generic [ref=f3e134]: Сообщество
+          - generic [ref=f3e137]:
+            - link "Блог" [ref=f3e138] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=f3e139] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=f3e140] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=f3e141]:
+          - generic [ref=f3e142]: Полезное
+          - generic [ref=f3e145]:
+            - link "Покупателям" [ref=f3e146] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=f3e147] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=f3e148] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=f3e149] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Мобильное приложение" [ref=f3e150] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=f3e151]:
+          - generic [ref=f3e152]: Помощь
+          - generic [ref=f3e155]:
+            - link "Вопрос — Ответ" [ref=f3e156] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=f3e157] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=f3e158]:
+      - generic [ref=f3e159]:
+        - link [ref=f3e160] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=f3e164] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=f3e168]:
+        - link [ref=f3e169] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=f3e170]
+        - link [ref=f3e171] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=f3e172]

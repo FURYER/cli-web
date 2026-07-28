@@ -1,3 +1,4 @@
+import "./agent-home-setup.js";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -33,6 +34,7 @@ import {
 import { registerSessionRoutes } from "./sessions.js";
 import { syncBuiltinConfigToUser } from "./cursor-config.js";
 import { ensureDefaultMcpServers } from "./mcp.js";
+import { stopAllPlaywrightBrowsers } from "./playwright-browser.js";
 import { ensureWhisperReady, stopWhisperWorker } from "./whisper.js";
 
 const envPath = loadRootEnv();
@@ -172,6 +174,7 @@ if (existsSync(webDist)) {
 
 const shutdown = async (exitCode = 0) => {
   await stopWhisperWorker().catch(() => undefined);
+  await stopAllPlaywrightBrowsers().catch(() => undefined);
   await disposeAllSessions();
   await app.close();
   process.exit(exitCode);

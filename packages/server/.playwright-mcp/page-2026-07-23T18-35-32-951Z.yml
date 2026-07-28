@@ -1,0 +1,41 @@
+- generic [ref=e1]:
+  - generic [ref=e2]: Загружаем данные...
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - generic [ref=e10]:
+        - img "логотип ФНС" [ref=e11]
+        - generic [ref=e12]: Кабинет налогоплательщика НПД МОЙ НАЛОГ
+    - main [ref=e13]:
+      - generic [ref=e19]:
+        - heading "Вход в приложение МОЙ НАЛОГ" [level=2] [ref=e20]
+        - generic [ref=e21]:
+          - generic [ref=e24]:
+            - button "ИНН и пароль" [ref=e25]
+            - button "Номер телефона*" [ref=e26] [cursor=pointer]
+            - button "Госуслуги" [ref=e27] [cursor=pointer]
+          - generic [ref=e30]:
+            - generic [ref=e31]:
+              - generic [ref=e33]:
+                - generic [ref=e34]: Логин (ваш ИНН)
+                - textbox "Логин (ваш ИНН)" [active] [ref=e38]
+              - generic [ref=e40]:
+                - generic [ref=e41]: Пароль
+                - generic [ref=e43]:
+                  - textbox "Пароль" [ref=e44]
+                  - button "Показать пароль" [disabled] [ref=e46]
+            - generic [ref=e51]:
+              - button "Войти" [disabled] [ref=e52]
+              - generic [ref=e54] [cursor=pointer]:
+                - checkbox "Запомнить меня" [checked] [ref=e55]
+                - generic [ref=e57]: Запомнить меня
+              - link "Зарегистрироваться" [ref=e59] [cursor=pointer]:
+                - /url: /auth/register/about
+    - contentinfo [ref=e60]:
+      - generic [ref=e62]:
+        - generic [ref=e63]:
+          - text: "Контакт-центр:"
+          - link "8-800-222-2222" [ref=e64] [cursor=pointer]:
+            - /url: tel:88002222222
+        - link "Написать в техподдержку" [ref=e70] [cursor=pointer]:
+          - /url: https://www.nalog.ru/rn77/service/service_feedback/?service=62
+  - iframe

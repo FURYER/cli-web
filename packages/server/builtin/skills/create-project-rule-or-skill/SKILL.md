@@ -10,14 +10,14 @@ description: >-
 # Create project rule or skill
 
 This skill is a **WebCLI built-in** (`packages/server/builtin/skills/…`, synced
-to `~/.cursor/skills/…`). Keep the canonical copy in builtin so it applies in
-every project. Do **not** move it into a repo or delete it during project
+to `~/.webcli/agent/skills/…`). Keep the canonical copy in builtin so it applies
+in every project. Do **not** move it into a repo or delete it during project
 `.cursor/` cleanup.
 
 **Project knowledge** → that repo’s `.cursor/`  
 **Product-wide habits** (this file, ask_user, git-init, …) →
-`packages/server/builtin/` (synced to `~/.cursor/`)  
-**Personal-only habits** → `~/.cursor/` only
+`packages/server/builtin/` (synced to `~/.webcli/agent/`)  
+**Personal-only habits** → `~/.cursor/` (IDE) and/or `~/.webcli/agent/` (WebCLI)
 
 ## 0. Decide: rule vs skill vs skip
 
@@ -32,9 +32,9 @@ Search the **current workspace** first:
 .cursor/skills/
 ```
 
-Also glance at `packages/server/builtin/` and `~/.cursor/skills/` /
-`~/.cursor/rules/` so you do not duplicate a built-in or personal habit into the
-project.
+Also glance at `packages/server/builtin/` and `~/.webcli/agent/skills/` /
+`~/.webcli/agent/rules/` so you do not duplicate a built-in or personal habit
+into the project.
 
 If a close match exists → **edit that file** instead of adding another.
 
@@ -92,9 +92,10 @@ Only if it should apply in **every** project (like this skill, `ask-user-interac
 `git-init-new-repo`):
 
 - **WebCLI product habit** → `packages/server/builtin/rules/<name>.mdc` or
-  `packages/server/builtin/skills/<name>/SKILL.md` (server syncs into `~/.cursor/`)
-- **Personal-only** (not shipping with the app) → `~/.cursor/rules/` or
-  `~/.cursor/skills/`
+  `packages/server/builtin/skills/<name>/SKILL.md` (server syncs into
+  `~/.webcli/agent/`)
+- **Personal-only** (not shipping with the app) → `~/.webcli/agent/rules/` or
+  `~/.webcli/agent/skills/` (WebCLI), and/or `~/.cursor/` for Cursor IDE only
 
 Otherwise default to **project-local**.
 
@@ -102,7 +103,7 @@ Otherwise default to **project-local**.
 
 1. Save the file (commit only if the user asked).
 2. Tell the user the path and one-line purpose.
-3. If you wrote under `packages/server/builtin/`, sync/copy into `~/.cursor/`
+3. If you wrote under `packages/server/builtin/`, sync/copy into `~/.webcli/agent/`
    (or restart/promote so `syncBuiltinConfigToUser` runs).
 
 ## 5. Update or delete (project files only)
@@ -112,11 +113,11 @@ Otherwise default to **project-local**.
 - Merge overlaps; ask with `ask_user` before deleting something that looks
   user-authored and unfamiliar.
 - **Never** delete or “clean up” built-ins under `packages/server/builtin/` or
-  their synced copies under `~/.cursor/` unless the user explicitly asks.
+  their synced copies under `~/.webcli/agent/` unless the user explicitly asks.
 
 ## Do not
 
 - Copy this skill into a project “for convenience”.
 - Create empty stubs “for later”.
-- Put secrets or brittle machine-only paths in shared rules/skills.
-- Leave contradictory rules — fix or delete the project ones.
+- Put WebCLI product builtins into the real Cursor IDE `~/.cursor/` — that mixes
+  them into Cursor Settings; WebCLI keeps its own tree under `~/.webcli/agent/`.

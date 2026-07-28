@@ -1,0 +1,631 @@
+- generic [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e6]:
+      - link "Фриланс маркетплейс" [ref=e8] [cursor=pointer]:
+        - /url: /
+      - textbox "Найти услуги" [ref=e14]
+      - generic [ref=e17]:
+        - generic [ref=e19]:
+          - link "Кворки" [ref=e20] [cursor=pointer]:
+            - /url: /manage_kworks
+          - link "Заказы" [ref=e21] [cursor=pointer]:
+            - /url: /manage_orders
+          - link "Биржа" [ref=e22] [cursor=pointer]:
+            - /url: /projects
+        - link "Чат" [ref=e25] [cursor=pointer]:
+          - /url: /inbox
+        - generic [ref=e27]:
+          - link "0" [ref=e30] [cursor=pointer]:
+            - /url: /balance
+          - link [ref=e36] [cursor=pointer]:
+            - /url: /user/furich
+    - list [ref=e42]:
+      - listitem [ref=e43]:
+        - link "Дизайн" [ref=e44] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/design
+      - listitem [ref=e46]:
+        - link "Разработка и IT" [ref=e47] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/programming
+      - listitem [ref=e49]:
+        - link "Тексты и переводы" [ref=e50] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/writing-translations
+      - listitem [ref=e52]:
+        - link "SEO и трафик" [ref=e53] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/seo
+      - listitem [ref=e55]:
+        - link "Соцсети и маркетинг" [ref=e56] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/promotion
+      - listitem [ref=e58]:
+        - link "Аудио, видео, съемка" [ref=e59] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/audio-video
+      - listitem [ref=e61]:
+        - link "Бизнес и жизнь" [ref=e62] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/business
+  - generic [ref=e67]:
+    - list [ref=e70]:
+      - listitem [ref=e71]:
+        - link "Разработка и IT" [ref=e72] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/programming
+      - listitem [ref=e73]:
+        - link "Доработка и настройка сайта" [ref=e74] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/website-repair
+    - generic [ref=e75]:
+      - generic [ref=e77]:
+        - heading "Доработка и настройка сайта" [level=1] [ref=e79]
+        - generic [ref=e83]:
+          - generic [ref=e84]: Доработка сайта
+          - generic [ref=e85]: Настройка сайта
+          - generic [ref=e86]: Защита и лечение сайта
+          - generic [ref=e87]: Ускорение сайта
+          - generic [ref=e88]: Плагины и темы
+          - generic [ref=e89]: Исправление ошибок
+      - generic [ref=e93]:
+        - generic [ref=e94]: 13 344 результата
+        - generic [ref=e96]:
+          - generic [ref=e97]:
+            - link [ref=e98] [cursor=pointer]:
+              - /url: https://kwork.ru/categories/website-repair?price-to=500&sort=1
+            - link [ref=e100] [cursor=pointer]:
+              - /url: https://kwork.ru/categories/website-repair?sdisplay=list&price-to=500&sort=1
+          - generic [ref=e103]:
+            - generic [ref=e104]: "Сортировать:"
+            - generic [ref=e105]:
+              - generic [ref=e106] [cursor=pointer]: Рекомендуемые
+              - generic [ref=e110]:
+                - generic [ref=e111] [cursor=pointer]: Рекомендуемые
+                - generic [ref=e112] [cursor=pointer]: Новые
+      - generic [ref=e113]:
+        - generic [ref=e116]:
+          - generic [ref=e117]:
+            - generic [ref=e118]: Рубрики
+            - generic [ref=e119]:
+              - link "Разработка и IT" [ref=e121] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/programming
+              - list [ref=e125]:
+                - listitem [ref=e126]:
+                  - link "Доработка и настройка сайта" [ref=e127] [cursor=pointer]:
+                    - /url: https://kwork.ru/categories/website-repair
+                  - list [ref=e130]:
+                    - listitem [ref=e131]:
+                      - link "Доработка сайта" [ref=e132] [cursor=pointer]:
+                        - /url: https://kwork.ru/categories/website-repair/dorabotka-sayta
+                    - listitem [ref=e135]:
+                      - link "Настройка сайта" [ref=e136] [cursor=pointer]:
+                        - /url: https://kwork.ru/categories/website-repair/nastroyka-sayta
+                    - listitem [ref=e139]:
+                      - link "Защита и лечение сайта" [ref=e140] [cursor=pointer]:
+                        - /url: https://kwork.ru/categories/website-repair/zashchita-i-lechenie-sayta
+                    - listitem [ref=e143]:
+                      - link "Ускорение сайта" [ref=e144] [cursor=pointer]:
+                        - /url: https://kwork.ru/categories/website-repair/uskorenie-sayta
+                    - listitem [ref=e147]:
+                      - link "Плагины и темы" [ref=e148] [cursor=pointer]:
+                        - /url: https://kwork.ru/categories/website-repair/plaginy-moduli-i-temy
+                    - listitem [ref=e151]:
+                      - link "Исправление ошибок" [ref=e152] [cursor=pointer]:
+                        - /url: https://kwork.ru/categories/website-repair/ispravlenie-oshibok
+            - separator [ref=e155]
+          - generic [ref=e157]:
+            - heading "Цена" [level=3] [ref=e158]
+            - generic [ref=e161]:
+              - generic [ref=e162]:
+                - link "500 руб." [ref=e165] [cursor=pointer]:
+                  - /url: https://kwork.ru/categories/website-repair?price=_500
+                - link "1 000 руб. - 4 500 руб." [ref=e168] [cursor=pointer]:
+                  - /url: https://kwork.ru/categories/website-repair?price=1000_4500
+                - link "5 000 руб. - 43 000 руб." [ref=e171] [cursor=pointer]:
+                  - /url: https://kwork.ru/categories/website-repair?price=5000_43000
+                - link "45 000 руб. и выше" [ref=e174] [cursor=pointer]:
+                  - /url: https://kwork.ru/categories/website-repair?price=45000_
+              - generic [ref=e175]:
+                - spinbutton "От руб." [ref=e177]
+                - spinbutton "До руб." [ref=e179]
+          - generic [ref=e180]:
+            - heading "Уровень продавца" [level=3] [ref=e181]
+            - generic [ref=e184]:
+              - link "Восходящая звезда и выше" [ref=e187] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sellerlvl=1
+              - link "Высший рейтинг и выше" [ref=e190] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sellerlvl=2
+              - link "Высший рейтинг плюс" [ref=e193] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sellerlvl=3
+          - generic [ref=e194]:
+            - heading "Активность продавцов" [level=3] [ref=e195]
+            - generic [ref=e197]:
+              - link "Онлайн" [ref=e200] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sonline=online
+              - link "Заходил до 1 дн. назад" [ref=e203] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sonline=1
+              - link "Заходил до 3 дн. назад" [ref=e206] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sonline=3
+              - link "Заходил до 1 нед. назад" [ref=e209] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sonline=7
+              - link "Заходил до 2 нед. назад" [ref=e212] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sonline=14
+          - generic [ref=e213]:
+            - heading "Положительных отзывов" [level=3] [ref=e214]
+            - generic [ref=e217]:
+              - link "От 1" [ref=e220] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sminreview=1
+              - link "От 5" [ref=e223] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sminreview=5
+              - link "От 20" [ref=e226] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sminreview=20
+              - link "От 100" [ref=e229] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sminreview=100
+          - generic [ref=e230]:
+            - heading "Срок выполнения" [level=3] [ref=e231]
+            - generic [ref=e235]:
+              - link "За 24 часа" [ref=e238] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sdeliverytime=1
+              - link "До 2 дней" [ref=e241] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sdeliverytime=2
+              - link "До 3 дней" [ref=e244] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sdeliverytime=3
+              - link "До 5 дней" [ref=e247] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sdeliverytime=5
+              - link "До 10 дней" [ref=e250] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sdeliverytime=10
+          - generic [ref=e251]:
+            - heading "Заказов в работе" [level=3] [ref=e252]
+            - generic [ref=e255]:
+              - link "Нет" [ref=e258] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sordersqueue=1
+              - link "До 1" [ref=e261] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sordersqueue=2
+              - link "До 3" [ref=e264] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sordersqueue=4
+              - link "До 5" [ref=e267] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sordersqueue=6
+              - link "До 8" [ref=e270] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sordersqueue=9
+          - generic [ref=e271]:
+            - heading "Просмотренные" [level=3] [ref=e272]
+            - generic [ref=e274]:
+              - link "Только не просмотренные" [ref=e277] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sview=3
+              - link "Только просмотренные" [ref=e280] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?sview=2
+          - generic [ref=e281]:
+            - heading "Заказанные" [level=3] [ref=e282]
+            - generic [ref=e284]:
+              - link "Только заказанные" [ref=e287] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?strack=2
+              - link "Только не заказанные" [ref=e290] [cursor=pointer]:
+                - /url: https://kwork.ru/categories/website-repair?strack=3
+          - generic [ref=e291]: Ещё фильтры
+        - generic [ref=e293]:
+          - generic [ref=e294]:
+            - generic [ref=e296]:
+              - link [ref=e298] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/20136036/ustanovlyu-besplatniy-ssl-sertifikat-dlya-khostinga-ru-center-nic-ru
+              - generic [ref=e300]:
+                - paragraph [ref=e301]:
+                  - link "Установлю бесплатный SSL сертификат для хостинга RU-center nic.ru" [ref=e302] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/20136036/ustanovlyu-besplatniy-ssl-sertifikat-dlya-khostinga-ru-center-nic-ru
+                - generic [ref=e304]:
+                  - generic [ref=e305]: Выбор Kwork
+                  - generic [ref=e308]: 500 ₽
+                - generic [ref=e316]:
+                  - link "bossigorxxx" [ref=e317] [cursor=pointer]:
+                    - /url: /user/bossigorxxx
+                  - generic [ref=e318]:
+                    - generic [ref=e320]: "5.0"
+                    - generic [ref=e321]: (1K+)
+            - generic [ref=e331]:
+              - link [ref=e333] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/32232476/dorabotka-i-redaktirovanie-sayta-na-wordpress
+              - generic [ref=e335]:
+                - paragraph [ref=e336]:
+                  - link "Доработка и редактирование сайта на WordPress" [ref=e337] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/32232476/dorabotka-i-redaktirovanie-sayta-na-wordpress
+                - generic [ref=e339]: 1 000 ₽
+                - generic [ref=e348]:
+                  - link "SEOspec747" [ref=e349] [cursor=pointer]:
+                    - /url: /user/seospec747
+                  - generic [ref=e350]:
+                    - generic [ref=e352]: "4.8"
+                    - generic [ref=e353]: (96)
+            - generic [ref=e363]:
+              - link [ref=e365] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/161594/nastroyka-i-dorabotka-wordpress
+              - generic [ref=e367]:
+                - paragraph [ref=e368]:
+                  - link "Настройка и доработка WordPress" [ref=e369] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/161594/nastroyka-i-dorabotka-wordpress
+                - generic [ref=e371]:
+                  - generic [ref=e372]: Выбор Kwork
+                  - generic [ref=e375]: 1 500 ₽
+                - generic [ref=e383]:
+                  - link "artemrav" [ref=e384] [cursor=pointer]:
+                    - /url: /user/artemrav
+                  - generic [ref=e385]:
+                    - generic [ref=e387]: "5.0"
+                    - generic [ref=e388]: (2K+)
+            - generic [ref=e398]:
+              - link [ref=e400] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/80575/dorabotki-sayta-na-bitriks
+              - generic [ref=e402]:
+                - paragraph [ref=e403]:
+                  - link "Доработки сайта на Битрикс" [ref=e404] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/80575/dorabotki-sayta-na-bitriks
+                - generic [ref=e406]:
+                  - generic [ref=e407]: Выбор Kwork
+                  - generic [ref=e410]: 500 ₽
+                - generic [ref=e418]:
+                  - link "alexyarik" [ref=e419] [cursor=pointer]:
+                    - /url: /user/alexyarik
+                  - generic [ref=e420]:
+                    - generic [ref=e422]: "5.0"
+                    - generic [ref=e423]: (910)
+            - generic [ref=e433]:
+              - link [ref=e435] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/12870511/dorabotka-sayta-na-wordpress
+              - generic [ref=e437]:
+                - paragraph [ref=e438]:
+                  - link "Доработка сайта на WordPress" [ref=e439] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/12870511/dorabotka-sayta-na-wordpress
+                - generic [ref=e441]: 2 000 ₽
+                - generic [ref=e450]:
+                  - link "OlegTixomirov" [ref=e451] [cursor=pointer]:
+                    - /url: /user/olegtixomirov
+                  - generic [ref=e452]:
+                    - generic [ref=e454]: "5.0"
+                    - generic [ref=e455]: (587)
+            - generic [ref=e465]:
+              - link [ref=e467] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/28578406/ustanovka-plaginov-dlya-optimizatsii-skorosti-sayta
+              - generic [ref=e469]:
+                - paragraph [ref=e470]:
+                  - link "Установка плагинов для оптимизации скорости сайта" [ref=e471] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/28578406/ustanovka-plaginov-dlya-optimizatsii-skorosti-sayta
+                - generic [ref=e473]:
+                  - generic [ref=e474]: Выбор Kwork
+                  - generic [ref=e477]: 500 ₽
+                - generic [ref=e485]:
+                  - link "EmOne" [ref=e486] [cursor=pointer]:
+                    - /url: /user/emone
+                  - generic [ref=e487]:
+                    - generic [ref=e489]: "5.0"
+                    - generic [ref=e490]: (3K+)
+            - generic [ref=e500]:
+              - link [ref=e502] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/19731854/dorabotka-sayta-na-modx-cmf
+              - generic [ref=e504]:
+                - paragraph [ref=e505]:
+                  - link "Доработка сайта на MODX CMF" [ref=e506] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/19731854/dorabotka-sayta-na-modx-cmf
+                - generic [ref=e508]: 1 000 ₽
+                - generic [ref=e517]:
+                  - link "MornGail" [ref=e518] [cursor=pointer]:
+                    - /url: /user/morngail
+                  - generic [ref=e519]:
+                    - generic [ref=e521]: "5.0"
+                    - generic [ref=e522]: (247)
+            - generic [ref=e532]:
+              - link [ref=e534] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/45587756/pomogu-nastroit-veb-sayt-na-wordpress
+              - generic [ref=e536]:
+                - paragraph [ref=e537]:
+                  - link "Помогу настроить веб-сайт на WordPress" [ref=e538] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/45587756/pomogu-nastroit-veb-sayt-na-wordpress
+                - generic [ref=e540]:
+                  - generic [ref=e541]: Выбор Kwork
+                  - generic [ref=e544]: 2 000 ₽
+                - generic [ref=e552]:
+                  - link "webbypro" [ref=e553] [cursor=pointer]:
+                    - /url: /user/webbypro
+                  - generic [ref=e554]:
+                    - generic [ref=e556]: "5.0"
+                    - generic [ref=e557]: (363)
+            - generic [ref=e567]:
+              - link [ref=e569] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/16005359/pravka-ili-dorabotka-sayta-na-php-i-js
+              - generic [ref=e571]:
+                - paragraph [ref=e572]:
+                  - link "Правка или доработка сайта на PHP и JS" [ref=e573] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/16005359/pravka-ili-dorabotka-sayta-na-php-i-js
+                - generic [ref=e575]:
+                  - generic [ref=e576]: Выбор Kwork
+                  - generic [ref=e579]: 500 ₽
+                - generic [ref=e587]:
+                  - link "menos_grande" [ref=e588] [cursor=pointer]:
+                    - /url: /user/menos_grande
+                  - generic [ref=e589]:
+                    - generic [ref=e591]: "5.0"
+                    - generic [ref=e592]: (899)
+            - generic [ref=e602]:
+              - link [ref=e604] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/9922862/dorabotka-sayta-modx
+              - generic [ref=e606]:
+                - paragraph [ref=e607]:
+                  - link "Доработка сайта MODX" [ref=e608] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/9922862/dorabotka-sayta-modx
+                - generic [ref=e610]:
+                  - generic [ref=e611]: Выбор Kwork
+                  - generic [ref=e614]: 1 000 ₽
+                - generic [ref=e622]:
+                  - link "modx_master" [ref=e623] [cursor=pointer]:
+                    - /url: /user/modx_master
+                  - generic [ref=e624]:
+                    - generic [ref=e626]: "5.0"
+                    - generic [ref=e627]: (1K+)
+            - generic [ref=e637]:
+              - link [ref=e639] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/40898/wordpress-bitriks-modx-opencart-skoraya-pomoshch-dlya-vashikh-saytov
+              - generic [ref=e641]:
+                - paragraph [ref=e642]:
+                  - 'link "WordPress, Битрикс, MODX, OpenCart: скорая помощь для ваших сайтов" [ref=e643] [cursor=pointer]':
+                    - /url: https://kwork.ru/website-repair/40898/wordpress-bitriks-modx-opencart-skoraya-pomoshch-dlya-vashikh-saytov
+                - generic [ref=e645]: 1 500 ₽
+                - generic [ref=e654]:
+                  - link "wturm" [ref=e655] [cursor=pointer]:
+                    - /url: /user/wturm
+                  - generic [ref=e656]:
+                    - generic [ref=e658]: "5.0"
+                    - generic [ref=e659]: (7K+)
+            - generic [ref=e669]:
+              - link [ref=e671] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/9491608/professionalnie-dorabotki-i-ispravlenie-oshibok-na-cms-1s-bitriks
+              - generic [ref=e673]:
+                - paragraph [ref=e674]:
+                  - link "Профессиональные доработки и исправление ошибок на CMS 1С-Битрикс" [ref=e675] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/9491608/professionalnie-dorabotki-i-ispravlenie-oshibok-na-cms-1s-bitriks
+                - generic [ref=e677]:
+                  - generic [ref=e678]: Выбор Kwork
+                  - generic [ref=e681]: 2 000 ₽
+                - generic [ref=e689]:
+                  - link "Vaskevich_Dev" [ref=e690] [cursor=pointer]:
+                    - /url: /user/vaskevich_dev
+                  - generic [ref=e691]:
+                    - generic [ref=e693]: "5.0"
+                    - generic [ref=e694]: (881)
+            - generic [ref=e704]:
+              - link [ref=e706] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/26456573/obnovlenie-cms-bitrix-bitriks-na-php-8
+              - generic [ref=e708]:
+                - paragraph [ref=e709]:
+                  - link "Обновление CMS Bitrix Битрикс на PHP 8" [ref=e710] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/26456573/obnovlenie-cms-bitrix-bitriks-na-php-8
+                - generic [ref=e712]:
+                  - generic [ref=e713]: Выбор Kwork
+                  - generic [ref=e716]: 4 000 ₽
+                - generic [ref=e724]:
+                  - link "freax" [ref=e725] [cursor=pointer]:
+                    - /url: /user/freax
+                  - generic [ref=e726]:
+                    - generic [ref=e728]: "5.0"
+                    - generic [ref=e729]: (719)
+            - generic [ref=e739]:
+              - link [ref=e741] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/10381346/wordpress-dorabotayu-sayt
+              - generic [ref=e743]:
+                - paragraph [ref=e744]:
+                  - link "Wordpress - доработаю сайт" [ref=e745] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/10381346/wordpress-dorabotayu-sayt
+                - generic [ref=e747]:
+                  - generic [ref=e748]: Выбор Kwork
+                  - generic [ref=e751]: 500 ₽
+                - generic [ref=e759]:
+                  - link "wordpress2008" [ref=e760] [cursor=pointer]:
+                    - /url: /user/wordpress2008
+                  - generic [ref=e761]:
+                    - generic [ref=e763]: "5.0"
+                    - generic [ref=e764]: (1K+)
+            - generic [ref=e774]:
+              - link [ref=e776] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/21929453/dorabotka-sayta
+              - generic [ref=e778]:
+                - paragraph [ref=e779]:
+                  - link "Доработка сайта" [ref=e780] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/21929453/dorabotka-sayta
+                - generic [ref=e782]:
+                  - generic [ref=e783]: Выбор Kwork
+                  - generic [ref=e786]: 1 000 ₽
+                - generic [ref=e794]:
+                  - link "Shahzod_webdev" [ref=e795] [cursor=pointer]:
+                    - /url: /user/shahzod_webdev
+                  - generic [ref=e796]:
+                    - generic [ref=e798]: "4.9"
+                    - generic [ref=e799]: (129)
+            - generic [ref=e809]:
+              - link [ref=e811] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/6334/dorabotka-saytov-na-1s-bitriks
+              - generic [ref=e813]:
+                - paragraph [ref=e814]:
+                  - link "Доработка сайтов на 1С-Битрикс" [ref=e815] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/6334/dorabotka-saytov-na-1s-bitriks
+                - generic [ref=e817]:
+                  - generic [ref=e818]: Выбор Kwork
+                  - generic [ref=e821]: 1 000 ₽
+                - generic [ref=e829]:
+                  - link "devyanin" [ref=e830] [cursor=pointer]:
+                    - /url: /user/devyanin
+                  - generic [ref=e831]:
+                    - generic [ref=e833]: "5.0"
+                    - generic [ref=e834]: (406)
+            - generic [ref=e844]:
+              - link [ref=e846] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/28305642/zashchita-sayta-ot-botov-i-nakrutki-pf-cherez-waf-povedencheskie-boty
+              - generic [ref=e848]:
+                - paragraph [ref=e849]:
+                  - link "Защита сайта от ботов и накрутки ПФ через WAF. Поведенческие боты" [ref=e850] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/28305642/zashchita-sayta-ot-botov-i-nakrutki-pf-cherez-waf-povedencheskie-boty
+                - generic [ref=e852]:
+                  - generic [ref=e853]: Выбор Kwork
+                  - generic [ref=e856]: от 6 000 ₽
+                - generic [ref=e865]:
+                  - link "Vyacheslav_X" [ref=e866] [cursor=pointer]:
+                    - /url: /user/vyacheslav_x
+                  - generic [ref=e867]:
+                    - generic [ref=e869]: "5.0"
+                    - generic [ref=e870]: (524)
+            - generic [ref=e880]:
+              - link [ref=e882] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/9419908/pravki-sayta-modx
+              - generic [ref=e884]:
+                - paragraph [ref=e885]:
+                  - link "Правки сайта MODX" [ref=e886] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/9419908/pravki-sayta-modx
+                - generic [ref=e888]:
+                  - generic [ref=e889]: Выбор Kwork
+                  - generic [ref=e892]: 1 000 ₽
+                - generic [ref=e900]:
+                  - link "modx_master" [ref=e901] [cursor=pointer]:
+                    - /url: /user/modx_master
+                  - generic [ref=e902]:
+                    - generic [ref=e904]: "5.0"
+                    - generic [ref=e905]: (1K+)
+            - generic [ref=e915]:
+              - link [ref=e917] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/160439/pomogu-s-perenosom-tovarov-zakazov-klientov-opencart-na-novuyu-versiyu
+              - generic [ref=e919]:
+                - paragraph [ref=e920]:
+                  - link "Помогу с переносом товаров, заказов, клиентов Opencart на новую версию" [ref=e921] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/160439/pomogu-s-perenosom-tovarov-zakazov-klientov-opencart-na-novuyu-versiyu
+                - generic [ref=e923]: 65 000 ₽
+                - generic [ref=e932]:
+                  - link "IQ-Biz" [ref=e933] [cursor=pointer]:
+                    - /url: /user/iq-biz
+                  - generic [ref=e934]:
+                    - generic [ref=e936]: "5.0"
+                    - generic [ref=e937]: (92)
+            - generic [ref=e947]:
+              - link [ref=e949] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/5137308/dorabotka-sayta-na-1s-bitriks
+              - generic [ref=e951]:
+                - paragraph [ref=e952]:
+                  - link "Доработка сайта на 1С Битрикс" [ref=e953] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/5137308/dorabotka-sayta-na-1s-bitriks
+                - generic [ref=e955]:
+                  - generic [ref=e956]: Выбор Kwork
+                  - generic [ref=e959]: 1 000 ₽
+                - generic [ref=e967]:
+                  - link "molodsom" [ref=e968] [cursor=pointer]:
+                    - /url: /user/molodsom
+                  - generic [ref=e969]:
+                    - generic [ref=e971]: "5.0"
+                    - generic [ref=e972]: (794)
+            - generic [ref=e982]:
+              - link [ref=e984] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/24479153/dorabotka-sayta-na-laravel
+              - generic [ref=e986]:
+                - paragraph [ref=e987]:
+                  - link "Доработка сайта на Laravel" [ref=e988] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/24479153/dorabotka-sayta-na-laravel
+                - generic [ref=e990]:
+                  - generic [ref=e991]: Выбор Kwork
+                  - generic [ref=e994]: 1 000 ₽
+                - generic [ref=e1002]:
+                  - link "victes" [ref=e1003] [cursor=pointer]:
+                    - /url: /user/victes
+                  - generic [ref=e1004]:
+                    - generic [ref=e1006]: "5.0"
+                    - generic [ref=e1007]: (92)
+            - generic [ref=e1017]:
+              - link [ref=e1019] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/444744/vnesu-pravki-po-saytu-ispravlyu-oshibki-na-cms-bitriks
+              - generic [ref=e1021]:
+                - paragraph [ref=e1022]:
+                  - link "Внесу правки по сайту, исправлю ошибки на CMS Битрикс" [ref=e1023] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/444744/vnesu-pravki-po-saytu-ispravlyu-oshibki-na-cms-bitriks
+                - generic [ref=e1025]: 500 ₽
+                - generic [ref=e1030]:
+                  - generic [ref=e1031]: a
+                  - generic [ref=e1035]:
+                    - link "ash404" [ref=e1036] [cursor=pointer]:
+                      - /url: /user/ash404
+                    - generic [ref=e1037]:
+                      - generic [ref=e1039]: "4.9"
+                      - generic [ref=e1040]: (161)
+            - generic [ref=e1050]:
+              - link [ref=e1052] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/18028913/dorabotka-sayta-na-1s-bitriks
+              - generic [ref=e1054]:
+                - paragraph [ref=e1055]:
+                  - link "Доработка сайта на 1С Битрикс" [ref=e1056] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/18028913/dorabotka-sayta-na-1s-bitriks
+                - generic [ref=e1058]: 1 000 ₽
+                - generic [ref=e1067]:
+                  - link "ilkarkarakurt" [ref=e1068] [cursor=pointer]:
+                    - /url: /user/ilkarkarakurt
+                  - generic [ref=e1069]:
+                    - generic [ref=e1071]: "5.0"
+                    - generic [ref=e1072]: (1K+)
+            - generic [ref=e1082]:
+              - link [ref=e1084] [cursor=pointer]:
+                - /url: https://kwork.ru/website-repair/37008458/reshenie-tekhnicheskikh-problem-s-wordpress
+              - generic [ref=e1086]:
+                - paragraph [ref=e1087]:
+                  - link "Решение технических проблем с WordPress" [ref=e1088] [cursor=pointer]:
+                    - /url: https://kwork.ru/website-repair/37008458/reshenie-tekhnicheskikh-problem-s-wordpress
+                - generic [ref=e1090]: 1 000 ₽
+                - generic [ref=e1100]:
+                  - link "LEOnidUKG" [ref=e1101] [cursor=pointer]:
+                    - /url: /user/leonidukg
+                  - generic [ref=e1102]:
+                    - generic [ref=e1104]: "5.0"
+                    - generic [ref=e1105]: (1K+)
+          - button "Показать еще" [ref=e1115] [cursor=pointer]
+  - generic [ref=e1118]:
+    - generic [ref=e1119]:
+      - generic [ref=e1120]:
+        - link [ref=e1121] [cursor=pointer]:
+          - /url: /
+        - generic [ref=e1123]:
+          - generic [ref=e1124]: "Онлайн: 1445"
+          - generic [ref=e1127]: "Заказ: 6 мин. назад"
+      - generic [ref=e1131]:
+        - generic [ref=e1132]:
+          - generic [ref=e1133]: О Kwork
+          - generic [ref=e1136]:
+            - link "О проекте" [ref=e1137] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=e1138] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=e1139] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Карьера в Kwork" [ref=e1140] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=e1141]:
+          - generic [ref=e1142]: Сообщество
+          - generic [ref=e1145]:
+            - link "Блог" [ref=e1146] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=e1147] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=e1148] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=e1149]:
+          - generic [ref=e1150]: Полезное
+          - generic [ref=e1153]:
+            - link "Покупателям" [ref=e1154] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=e1155] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=e1156] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=e1157] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Мобильное приложение" [ref=e1158] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=e1159]:
+          - generic [ref=e1160]: Помощь
+          - generic [ref=e1163]:
+            - link "Вопрос — Ответ" [ref=e1164] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=e1165] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=e1166]:
+      - generic [ref=e1167]:
+        - link [ref=e1168] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=e1172] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=e1176]:
+        - link [ref=e1177] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=e1178]
+        - link [ref=e1179] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=e1180]

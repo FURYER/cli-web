@@ -1,0 +1,442 @@
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]:
+        - link "Фриланс маркетплейс" [ref=e8] [cursor=pointer]:
+          - /url: /
+        - textbox "Найти услуги" [ref=e14]
+        - generic [ref=e17]:
+          - generic [ref=e18]: "Пользователей онлайн: 1516"
+          - generic [ref=e21]: "Последний заказ: 35 сек. назад"
+        - list [ref=e25]:
+          - listitem [ref=e26]: Вход
+          - listitem [ref=e27]:
+            - link "Регистрация" [ref=e28] [cursor=pointer]:
+              - /url: /signup
+          - listitem [ref=e29]:
+            - link "Фрилансеру" [ref=e30] [cursor=pointer]:
+              - /url: /for-sellers
+      - list [ref=e33]:
+        - listitem [ref=e34]:
+          - link "Дизайн" [ref=e35] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/design
+        - listitem [ref=e37]:
+          - link "Разработка и IT" [ref=e38] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/programming
+        - listitem [ref=e40]:
+          - link "Тексты и переводы" [ref=e41] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/writing-translations
+        - listitem [ref=e43]:
+          - link "SEO и трафик" [ref=e44] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/seo
+        - listitem [ref=e46]:
+          - link "Соцсети и маркетинг" [ref=e47] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/promotion
+        - listitem [ref=e49]:
+          - link "Аудио, видео, съемка" [ref=e50] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/audio-video
+        - listitem [ref=e52]:
+          - link "Бизнес и жизнь" [ref=e53] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/business
+    - generic [ref=e57]:
+      - generic [ref=e58]: Установите мобильное приложение Kwork, чтобы не пропустить важные события в вашем аккаунте!
+      - link "Установить" [ref=e59] [cursor=pointer]:
+        - /url: /mobileapp
+  - generic [ref=e63]:
+    - generic [ref=e64]:
+      - generic [ref=e68]:
+        - generic: Татьяна, Бухгалтер-фрилансер
+        - generic: Маргарита, Графический дизайнер
+        - generic [ref=e69]: Александр, Фронтенд-разработчик
+        - generic: Евгения, Поэт-фрилансер
+        - generic: Денис, Веб-дизайнер
+        - generic: Лилит, Веб-разработчик
+        - generic: Евгений, Диктор
+        - generic: Татьяна, Бухгалтер-фрилансер
+        - generic: Маргарита, Графический дизайнер
+      - generic [ref=e85]:
+        - heading "Покупайте фриланс-услуги в один клик" [level=1] [ref=e86]
+        - generic [ref=e88]:
+          - textbox "Создать сайт на wix" [ref=e89]
+          - button "Найти" [ref=e91] [cursor=pointer]
+        - generic [ref=e92]:
+          - generic [ref=e93]: "Популярное:"
+          - generic [ref=e94]:
+            - link "Веб дизайн" [ref=e95] [cursor=pointer]:
+              - /url: /search?query=Веб дизайн
+            - link "Логотипы" [ref=e97] [cursor=pointer]:
+              - /url: /search?query=Логотипы
+            - link "Дизайн соцсетей" [ref=e99] [cursor=pointer]:
+              - /url: /search?query=Дизайн соцсетей
+            - link "Wordpress" [ref=e101] [cursor=pointer]:
+              - /url: /search?query=Wordpress
+    - generic [ref=e113]:
+      - heading "Выберите рубрику, чтобы начать" [level=2] [ref=e114]
+      - generic [ref=e115]:
+        - link "Разработка и IT Разработка и IT" [ref=e117] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/programming
+          - img "Разработка и IT" [ref=e119]
+          - generic [ref=e120]: Разработка и IT
+        - link "SEO и трафик SEO и трафик" [ref=e122] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/seo
+          - img "SEO и трафик" [ref=e124]
+          - generic [ref=e125]: SEO и трафик
+        - link "Дизайн Дизайн" [ref=e127] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/design
+          - img "Дизайн" [ref=e129]
+          - generic [ref=e130]: Дизайн
+        - link "Соцсети и маркетинг Соцсети и маркетинг" [ref=e132] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/promotion
+          - img "Соцсети и маркетинг" [ref=e134]
+          - generic [ref=e135]: Соцсети и маркетинг
+        - link "Бизнес и жизнь Бизнес и жизнь" [ref=e137] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/business
+          - img "Бизнес и жизнь" [ref=e139]
+          - generic [ref=e140]: Бизнес и жизнь
+        - link "Аудио, видео, съемка Аудио, видео, съемка" [ref=e142] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/audio-video
+          - img "Аудио, видео, съемка" [ref=e144]
+          - generic [ref=e145]: Аудио, видео, съемка
+        - link "Тексты и переводы Тексты и переводы" [ref=e147] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/writing-translations
+          - img "Тексты и переводы" [ref=e149]
+          - generic [ref=e150]: Тексты и переводы
+    - generic [ref=e153]:
+      - generic [ref=e154]: Фриланс платформа №1
+      - generic [ref=e158]:
+        - generic [ref=e159]: "0"
+        - generic [ref=e160]: Активных кворков
+      - generic [ref=e161]:
+        - generic [ref=e162]: "0"
+        - generic [ref=e163]: Новых кворков за неделю
+      - generic [ref=e164]:
+        - generic [ref=e165]: "0"
+        - generic [ref=e166]: Новых проектов за неделю
+    - generic [ref=e168]:
+      - generic [ref=e169]:
+        - heading "Как решать задачи на Kwork" [level=2] [ref=e170]
+        - generic [ref=e171]: Идеально подходит для бизнеса и для себя
+      - generic [ref=e172]:
+        - generic [ref=e176]:
+          - heading "Выберите услугу" [level=4] [ref=e177]
+          - generic [ref=e178]: В магазине Kwork представлен большой выбор услуг от профессионалов.
+        - generic [ref=e183]:
+          - heading "Оплатите" [level=4] [ref=e184]
+          - generic [ref=e185]: Деньги будут перечислены продавцу после того, как он выполнит работу, и вы её одобрите.
+        - generic [ref=e190]:
+          - heading "Получите результат" [level=4] [ref=e191]
+          - generic [ref=e192]: 100% гарантия возврата средств в случае невыполнения заказа.
+    - generic [ref=e195]:
+      - heading "Вдохновляйтесь проектами наших фрилансеров" [level=2] [ref=e196]
+      - generic [ref=e199]:
+        - generic [ref=e201]:
+          - link "3onapa" [ref=e203] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/1565377
+          - generic [ref=e204]:
+            - link "3onapa" [ref=e205] [cursor=pointer]:
+              - /url: https://kwork.ru/user/3onapa
+            - generic [ref=e206]:
+              - text: "Автор:"
+              - link "3onapa" [ref=e207] [cursor=pointer]:
+                - /url: https://kwork.ru/user/3onapa
+        - generic [ref=e209]:
+          - link "nastyarash" [ref=e211] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/2123920
+          - generic [ref=e212]:
+            - link "nastyarash" [ref=e213] [cursor=pointer]:
+              - /url: https://kwork.ru/user/nastyarash
+            - generic [ref=e214]:
+              - text: "Автор:"
+              - link "nastyarash" [ref=e215] [cursor=pointer]:
+                - /url: https://kwork.ru/user/nastyarash
+        - generic [ref=e217]:
+          - link "KOT2332" [ref=e219] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/2775704
+          - generic [ref=e220]:
+            - link "KOT2332" [ref=e221] [cursor=pointer]:
+              - /url: https://kwork.ru/user/KOT2332
+            - generic [ref=e222]:
+              - text: "Автор:"
+              - link "KOT2332" [ref=e223] [cursor=pointer]:
+                - /url: https://kwork.ru/user/KOT2332
+        - generic [ref=e225]:
+          - link "senurable" [ref=e227] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/2338354
+          - generic [ref=e228]:
+            - link "senurable" [ref=e229] [cursor=pointer]:
+              - /url: https://kwork.ru/user/senurable
+            - generic [ref=e230]:
+              - text: "Автор:"
+              - link "senurable" [ref=e231] [cursor=pointer]:
+                - /url: https://kwork.ru/user/senurable
+        - generic [ref=e233]:
+          - link "Toxiccherry" [ref=e235] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/1148275
+          - generic [ref=e236]:
+            - link "Toxiccherry" [ref=e237] [cursor=pointer]:
+              - /url: https://kwork.ru/user/Toxiccherry
+            - generic [ref=e238]:
+              - text: "Автор:"
+              - link "Toxiccherry" [ref=e239] [cursor=pointer]:
+                - /url: https://kwork.ru/user/Toxiccherry
+        - generic [ref=e241]:
+          - link "Marina_Nikk" [ref=e243] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/2593508
+          - generic [ref=e244]:
+            - link "Marina_Nikk" [ref=e245] [cursor=pointer]:
+              - /url: https://kwork.ru/user/Marina_Nikk
+            - generic [ref=e246]:
+              - text: "Автор:"
+              - link "Marina_Nikk" [ref=e247] [cursor=pointer]:
+                - /url: https://kwork.ru/user/Marina_Nikk
+        - generic [ref=e249]:
+          - link "Colonna" [ref=e251] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/2738858
+          - generic [ref=e252]:
+            - link "Colonna" [ref=e253] [cursor=pointer]:
+              - /url: https://kwork.ru/user/Colonna
+            - generic [ref=e254]:
+              - text: "Автор:"
+              - link "Colonna" [ref=e255] [cursor=pointer]:
+                - /url: https://kwork.ru/user/Colonna
+        - generic [ref=e257]:
+          - link "intertwined" [ref=e259] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/2717430
+          - generic [ref=e260]:
+            - link "intertwined" [ref=e261] [cursor=pointer]:
+              - /url: https://kwork.ru/user/intertwined
+            - generic [ref=e262]:
+              - text: "Автор:"
+              - link "intertwined" [ref=e263] [cursor=pointer]:
+                - /url: https://kwork.ru/user/intertwined
+        - generic [ref=e265]:
+          - link "bowxwod" [ref=e267] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/2782599
+          - generic [ref=e268]:
+            - link "bowxwod" [ref=e269] [cursor=pointer]:
+              - /url: https://kwork.ru/user/bowxwod
+            - generic [ref=e270]:
+              - text: "Автор:"
+              - link "bowxwod" [ref=e271] [cursor=pointer]:
+                - /url: https://kwork.ru/user/bowxwod
+        - generic [ref=e273]:
+          - link "aramyananahit" [ref=e275] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/3115435
+          - generic [ref=e276]:
+            - link "aramyananahit" [ref=e277] [cursor=pointer]:
+              - /url: https://kwork.ru/user/aramyananahit
+            - generic [ref=e278]:
+              - text: "Автор:"
+              - link "aramyananahit" [ref=e279] [cursor=pointer]:
+                - /url: https://kwork.ru/user/aramyananahit
+        - generic [ref=e281]:
+          - link "r_subject" [ref=e283] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/2933112
+          - generic [ref=e284]:
+            - link "r_subject" [ref=e285] [cursor=pointer]:
+              - /url: https://kwork.ru/user/r_subject
+            - generic [ref=e286]:
+              - text: "Автор:"
+              - link "r_subject" [ref=e287] [cursor=pointer]:
+                - /url: https://kwork.ru/user/r_subject
+        - generic [ref=e289]:
+          - link "allnayu" [ref=e291] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/2788268
+          - generic [ref=e292]:
+            - link "allnayu" [ref=e293] [cursor=pointer]:
+              - /url: https://kwork.ru/user/allnayu
+            - generic [ref=e294]:
+              - text: "Автор:"
+              - link "allnayu" [ref=e295] [cursor=pointer]:
+                - /url: https://kwork.ru/user/allnayu
+        - generic [ref=e297]:
+          - link "3onapa" [ref=e299] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/1565377
+          - generic [ref=e300]:
+            - link "3onapa" [ref=e301] [cursor=pointer]:
+              - /url: https://kwork.ru/user/3onapa
+            - generic [ref=e302]:
+              - text: "Автор:"
+              - link "3onapa" [ref=e303] [cursor=pointer]:
+                - /url: https://kwork.ru/user/3onapa
+        - generic [ref=e305]:
+          - link "nastyarash" [ref=e307] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/2123920
+          - generic [ref=e308]:
+            - link "nastyarash" [ref=e309] [cursor=pointer]:
+              - /url: https://kwork.ru/user/nastyarash
+            - generic [ref=e310]:
+              - text: "Автор:"
+              - link "nastyarash" [ref=e311] [cursor=pointer]:
+                - /url: https://kwork.ru/user/nastyarash
+        - generic [ref=e313]:
+          - link "KOT2332" [ref=e315] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/2775704
+          - generic [ref=e316]:
+            - link "KOT2332" [ref=e317] [cursor=pointer]:
+              - /url: https://kwork.ru/user/KOT2332
+            - generic [ref=e318]:
+              - text: "Автор:"
+              - link "KOT2332" [ref=e319] [cursor=pointer]:
+                - /url: https://kwork.ru/user/KOT2332
+        - generic [ref=e321]:
+          - link "senurable" [ref=e323] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/2338354
+          - generic [ref=e324]:
+            - link "senurable" [ref=e325] [cursor=pointer]:
+              - /url: https://kwork.ru/user/senurable
+            - generic [ref=e326]:
+              - text: "Автор:"
+              - link "senurable" [ref=e327] [cursor=pointer]:
+                - /url: https://kwork.ru/user/senurable
+        - generic [ref=e329]:
+          - link "Toxiccherry" [ref=e331] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/1148275
+          - generic [ref=e332]:
+            - link "Toxiccherry" [ref=e333] [cursor=pointer]:
+              - /url: https://kwork.ru/user/Toxiccherry
+            - generic [ref=e334]:
+              - text: "Автор:"
+              - link "Toxiccherry" [ref=e335] [cursor=pointer]:
+                - /url: https://kwork.ru/user/Toxiccherry
+        - generic [ref=e337]:
+          - link "Marina_Nikk" [ref=e339] [cursor=pointer]:
+            - /url: https://kwork.ru/portfolio/2593508
+          - generic [ref=e340]:
+            - link "Marina_Nikk" [ref=e341] [cursor=pointer]:
+              - /url: https://kwork.ru/user/Marina_Nikk
+            - generic [ref=e342]:
+              - text: "Автор:"
+              - link "Marina_Nikk" [ref=e343] [cursor=pointer]:
+                - /url: https://kwork.ru/user/Marina_Nikk
+    - generic [ref=e349]:
+      - heading "Как Kwork помогает бизнесу" [level=2] [ref=e350]
+      - generic [ref=e351]:
+        - generic [ref=e352]: Оплачивайте с р/с или карты компании
+        - generic [ref=e354]: Экономьте до 87% бюджета на фрилансе
+        - generic [ref=e356]: Экономьте до 75% времени на решении фриланс задач
+    - generic [ref=e362]:
+      - heading "Что говорят о Kwork клиенты" [level=2] [ref=e363]
+      - generic [ref=e365]:
+        - link "За 500 руб. ускорил сайт и увеличил позиции в Google Денис С. За 500 руб. ускорил сайт и увеличил позиции в Google Читать отзыв" [ref=e367] [cursor=pointer]:
+          - /url: /cases/125
+          - img "За 500 руб. ускорил сайт и увеличил позиции в Google" [ref=e369]
+          - heading "Денис С." [level=4] [ref=e370]
+          - generic [ref=e371]: За 500 руб. ускорил сайт и увеличил позиции в Google
+          - generic [ref=e375]: Читать отзыв
+        - link "Диплом по ГОСТу за одну ночь! Арсен А. Диплом по ГОСТу за одну ночь! Читать отзыв" [ref=e378] [cursor=pointer]:
+          - /url: /cases/152
+          - img "Диплом по ГОСТу за одну ночь!" [ref=e380]
+          - heading "Арсен А." [level=4] [ref=e381]
+          - generic [ref=e382]: Диплом по ГОСТу за одну ночь!
+          - generic [ref=e386]: Читать отзыв
+        - link "Сэкономил 26 000 руб. на заказе видеоролика и вывел его в ТОП Youtube Дмитрий К. Сэкономил 26 000 руб. на заказе видеоролика и вывел его в ТОП Youtube Читать отзыв" [ref=e389] [cursor=pointer]:
+          - /url: /cases/142
+          - img "Сэкономил 26 000 руб. на заказе видеоролика и вывел его в ТОП Youtube" [ref=e391]
+          - heading "Дмитрий К." [level=4] [ref=e392]
+          - generic [ref=e393]: Сэкономил 26 000 руб. на заказе видеоролика и вывел его в ТОП Youtube
+          - generic [ref=e397]: Читать отзыв
+        - link "Сэкономила 7 тыс. руб. при переносе сайта на WordPress Олеся З. Сэкономила 7 тыс. руб. при переносе сайта на WordPress Читать отзыв" [ref=e400] [cursor=pointer]:
+          - /url: /cases/137
+          - img "Сэкономила 7 тыс. руб. при переносе сайта на WordPress" [ref=e402]
+          - heading "Олеся З." [level=4] [ref=e403]
+          - generic [ref=e404]: Сэкономила 7 тыс. руб. при переносе сайта на WordPress
+          - generic [ref=e408]: Читать отзыв
+        - link "Сэкономил 13 000 руб. на крауд-маркетинге Павел Ямб Сэкономил 13 000 руб. на крауд-маркетинге Читать отзыв" [ref=e411] [cursor=pointer]:
+          - /url: /cases/174
+          - img "Сэкономил 13 000 руб. на крауд-маркетинге" [ref=e413]
+          - heading "Павел Ямб" [level=4] [ref=e414]
+          - generic [ref=e415]: Сэкономил 13 000 руб. на крауд-маркетинге
+          - generic [ref=e419]: Читать отзыв
+      - link "Читать все отзывы" [ref=e423] [cursor=pointer]:
+        - /url: /cases
+    - generic [ref=e426]:
+      - heading "Закажите услуги фрилансеров прямо сейчас" [level=2] [ref=e427]
+      - generic [ref=e428]: Быстро, просто и безопасно!
+      - button "Начать" [ref=e429] [cursor=pointer]
+    - generic [ref=e431]:
+      - heading "Kwork — это потрясающе удобная фриланс платформа, которая включает:" [level=2] [ref=e432]
+      - generic [ref=e433]:
+        - generic [ref=e434]:
+          - heading "Магазин фриланс услуг" [level=4] [ref=e435]
+          - paragraph [ref=e436]: Хотите экономить деньги, время и нервы? Такая экономия возможна только тогда, когда freelance нацелен на результат. В этом плане Kwork, являясь маркетплейсом, имеет огромное преимущество перед любыми другими биржами исполнителей.
+          - paragraph [ref=e437]: "Фрилансеры оформляют свои услуги в виде кворков, которые можно купить в один клик... То есть работа исполнителей продается как товар, а это экономит массу времени, денег и нервов. Идеально подходит для типовых задач: логотипы, баннеры, SEO и др."
+          - paragraph [ref=e438]: А главное каталог и поиск услуг настроены таким образом, что вы видите лучшие предложения на основе отзывов, качества и ответственности фрилансера. Если специалист работает плохо, его кворки уходят далеко вниз, мы не показываем их заказчикам. Поэтому на Kwork вы имеете дело с профессионалами, которые стараются выполнять задачи на пять.
+          - paragraph [ref=e439]: Кроме того, маркетплейс идеален для покупки фриланс услуг, когда у вас нет четкого ТЗ – вы просто выбираете тот кворк, который больше подходит. Если вы новичок или у вас нет опыта – начните именно с магазина, в нем разберется даже ребенок.
+          - paragraph
+          - paragraph
+        - generic [ref=e440]:
+          - heading "Биржа фриланса" [level=4] [ref=e441]
+          - paragraph [ref=e442]: Вы создаете задание, и оно становится доступно тысячам фрилансеров, которые могут отправить вам предложения. Остается только выбрать лучшее и начать работу. Такой подход к удаленной работе – идеальный вариант для решения больших и уникальных задач.
+          - paragraph [ref=e443]: Отличительной чертой биржи Kwork является качество заявок от фрилансеров. Если вы когда-нибудь работали на других фриланс площадках, то знаете, какая это боль получать множество нерелевантных предложений от исполнителей, которые даже не прочитали текст вашего задания. Но на Kwork всё по-другому – благодаря особому функционалу любому фрилансеру приходится ценить каждую отправленную заявку. Поэтому подавляющее большинство полученных предложений поступают от исполнителей, внимательно ознакомившихся с сутью задачи и сразу предлагающих то или иное решение.
+          - paragraph [ref=e444]: И еще один важный момент, на бирже фриланса и в магазине Kwork безопасная оплата заказов, которая проходит через систему - исполнитель получает деньги, только когда вы одобрите результат. В случае просрочки денежные средства можно вернуть на свой счет в один клик.
+          - paragraph
+  - generic [ref=e446]:
+    - generic [ref=e447]:
+      - text: Мы используем файлы
+      - link "cookie" [ref=e448] [cursor=pointer]:
+        - /url: /jdocs/pd_policy
+      - text: ", чтобы анализировать посещения и делать сайт удобнее."
+    - button "Окей!" [ref=e449] [cursor=pointer]
+  - generic [ref=e452]:
+    - generic [ref=e453]:
+      - link [ref=e455] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e457]:
+        - generic [ref=e458]:
+          - generic [ref=e459]: О Kwork
+          - generic [ref=e462]:
+            - link "О проекте" [ref=e463] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=e464] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=e465] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Способы оплаты" [ref=e466] [cursor=pointer]:
+              - /url: /pay
+            - link "Карьера в Kwork" [ref=e467] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=e468]:
+          - generic [ref=e469]: Сообщество
+          - generic [ref=e472]:
+            - link "Блог" [ref=e473] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=e474] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=e475] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=e476]:
+          - generic [ref=e477]: Полезное
+          - generic [ref=e480]:
+            - link "Покупателям" [ref=e481] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=e482] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=e483] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=e484] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Рубрики" [ref=e485] [cursor=pointer]:
+              - /url: /categories
+            - link "Мобильное приложение" [ref=e486] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=e487]:
+          - generic [ref=e488]: Помощь
+          - generic [ref=e491]:
+            - link "Вопрос — Ответ" [ref=e492] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=e493] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=e494]:
+      - generic [ref=e495]:
+        - link [ref=e496] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=e500] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=e504]:
+        - link [ref=e505] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=e506]
+        - link [ref=e507] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=e508]

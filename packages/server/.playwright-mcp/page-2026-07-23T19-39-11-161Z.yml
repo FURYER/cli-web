@@ -1,0 +1,97 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]:
+        - link "Фриланс маркетплейс" [ref=e8] [cursor=pointer]:
+          - /url: /
+        - textbox "Найти услуги" [ref=e14]
+      - list [ref=e19]:
+        - listitem [ref=e20]:
+          - link "Дизайн" [ref=e21] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/design
+        - listitem [ref=e23]:
+          - link "Разработка и IT" [ref=e24] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/programming
+        - listitem [ref=e26]:
+          - link "Тексты и переводы" [ref=e27] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/writing-translations
+        - listitem [ref=e29]:
+          - link "SEO и трафик" [ref=e30] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/seo
+        - listitem [ref=e32]:
+          - link "Соцсети и маркетинг" [ref=e33] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/promotion
+        - listitem [ref=e35]:
+          - link "Аудио, видео, съемка" [ref=e36] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/audio-video
+        - listitem [ref=e38]:
+          - link "Бизнес и жизнь" [ref=e39] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/business
+    - generic [ref=e41]:
+      - generic [ref=e42]: СТРАНИЦА НЕ НАЙДЕНА
+      - link [ref=e47] [cursor=pointer]:
+        - /url: /new_project
+      - link [ref=e49] [cursor=pointer]:
+        - /url: /
+  - generic [ref=e52]:
+    - generic [ref=e53]:
+      - generic [ref=e54]:
+        - link [ref=e55] [cursor=pointer]:
+          - /url: /
+        - generic [ref=e57]:
+          - generic [ref=e58]: "Онлайн: 1575"
+          - generic [ref=e61]: "Заказ: 14 сек. назад"
+      - generic [ref=e65]:
+        - generic [ref=e66]:
+          - generic [ref=e67]: О Kwork
+          - generic [ref=e70]:
+            - link "О проекте" [ref=e71] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=e72] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=e73] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Карьера в Kwork" [ref=e74] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=e75]:
+          - generic [ref=e76]: Сообщество
+          - generic [ref=e79]:
+            - link "Блог" [ref=e80] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=e81] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=e82] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=e83]:
+          - generic [ref=e84]: Полезное
+          - generic [ref=e87]:
+            - link "Покупателям" [ref=e88] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=e89] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=e90] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=e91] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Мобильное приложение" [ref=e92] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=e93]:
+          - generic [ref=e94]: Помощь
+          - generic [ref=e97]:
+            - link "Вопрос — Ответ" [ref=e98] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=e99] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=e100]:
+      - generic [ref=e101]:
+        - link [ref=e102] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=e106] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=e110]:
+        - link [ref=e111] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=e112]
+        - link [ref=e113] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=e114]

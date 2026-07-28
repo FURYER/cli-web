@@ -1,0 +1,130 @@
+- generic [ref=f4e1]:
+  - link [ref=f4e2] [cursor=pointer]:
+    - /url: https://kenney.itch.io/kenney-game-assets
+    - text: Get Kenney Game Assets All-in-1 to download
+    - emphasis [ref=f4e4]: everything
+    - text: at once, plus free updates!
+  - generic [ref=f4e6]:
+    - generic:
+      - list:
+        - listitem [ref=f4e7]:
+          - link [ref=f4e8] [cursor=pointer]:
+            - /url: https://kenney.nl
+        - generic:
+          - listitem [ref=f4e10]:
+            - link "Games" [ref=f4e11] [cursor=pointer]:
+              - /url: https://kenney.nl/games
+          - listitem [ref=f4e12]:
+            - link "Tools" [ref=f4e13] [cursor=pointer]:
+              - /url: https://kenney.nl/tools
+          - listitem [ref=f4e14]:
+            - link "Assets" [ref=f4e15] [cursor=pointer]:
+              - /url: https://kenney.nl/assets
+          - listitem [ref=f4e16]:
+            - link "Starter Kits" [ref=f4e17] [cursor=pointer]:
+              - /url: https://kenney.nl/starter-kits
+    - generic:
+      - list:
+        - listitem [ref=f4e18]:
+          - link [ref=f4e19] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=f4e21]:
+          - link "Donate" [ref=f4e22] [cursor=pointer]:
+            - /url: https://kenney.nl/donate
+    - generic:
+      - link "×" [ref=f4e23] [cursor=pointer]:
+        - /url: javascript:void(0)
+      - generic:
+        - link "Games" [ref=f4e24] [cursor=pointer]:
+          - /url: https://kenney.nl/games
+        - link "Tools" [ref=f4e25] [cursor=pointer]:
+          - /url: https://kenney.nl/tools
+        - link "Assets" [ref=f4e26] [cursor=pointer]:
+          - /url: https://kenney.nl/assets
+        - link "Starter Kits" [ref=f4e27] [cursor=pointer]:
+          - /url: https://kenney.nl/starter-kits
+      - separator [ref=f4e28]
+      - generic:
+        - link "Support" [ref=f4e29] [cursor=pointer]:
+          - /url: https://kenney.nl/support
+        - link "Knowledge Base" [ref=f4e30] [cursor=pointer]:
+          - /url: https://kenney.nl/knowledge-base
+        - link "Donate" [ref=f4e31] [cursor=pointer]:
+          - /url: https://kenney.nl/donate
+      - separator [ref=f4e32]
+      - link [ref=f4e33] [cursor=pointer]:
+        - /url: "#"
+  - generic [ref=f4e38]:
+    - generic [ref=f4e39]:
+      - heading "Mini Dungeon" [level=1] [ref=f4e40]
+      - paragraph
+      - table [ref=f4e41]:
+        - rowgroup [ref=f4e42]:
+          - row [ref=f4e43]:
+            - cell "Tags" [ref=f4e44]
+            - cell [ref=f4e45]:
+              - link "dungeon" [ref=f4e46] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/tag:dungeon
+              - link "rpg" [ref=f4e47] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/tag:rpg
+              - link "roguelike" [ref=f4e48] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/tag:roguelike
+              - link "medieval" [ref=f4e49] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/tag:medieval
+          - row [ref=f4e50]:
+            - cell "Category" [ref=f4e51]
+            - cell [ref=f4e52]:
+              - link "3D" [ref=f4e53] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/category:3D
+              - text: •
+              - link "Mini" [ref=f4e54] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/series:Mini
+          - row [ref=f4e55]:
+            - cell "Features" [ref=f4e56]
+            - cell "🎞️Animation 🎨Variation(s)" [ref=f4e57]:
+              - generic [ref=f4e58]: 🎞️Animation
+              - generic [ref=f4e59]: 🎨Variation(s)
+          - row [ref=f4e60]:
+            - cell "Files" [ref=f4e61]
+            - cell "25×" [ref=f4e62]
+          - row [ref=f4e63]:
+            - cell "License" [ref=f4e64]
+            - cell [ref=f4e65]:
+              - link "Creative Commons CC0" [ref=f4e66] [cursor=pointer]:
+                - /url: https://creativecommons.org/publicdomain/zero/1.0/
+      - paragraph
+      - paragraph [ref=f4e67]:
+        - link "Download" [ref=f4e68] [cursor=pointer]:
+          - /url: "#inline-download"
+        - link "Get All-in-1 bundle" [ref=f4e69] [cursor=pointer]:
+          - /url: https://kenney.itch.io/kenney-game-assets
+      - paragraph
+      - table [ref=f4e70]:
+        - rowgroup [ref=f4e71]:
+          - row [ref=f4e72]:
+            - cell "1.6 Added weapons & shields" [ref=f4e73]:
+              - generic [ref=f4e74]: "1.6"
+              - text: Added weapons & shields
+          - row [ref=f4e75]:
+            - cell "1.5 Character rig(s)" [ref=f4e76]:
+              - generic [ref=f4e77]: "1.5"
+              - text: Character rig(s)
+          - row [ref=f4e78]:
+            - cell "1.0" [ref=f4e79]
+      - paragraph
+    - generic [ref=f4e81]:
+      - link [ref=f4e84] [cursor=pointer]:
+        - /url: https://kenney.nl/media/pages/assets/mini-dungeon/e508b09988-1771249367/preview.png
+      - link [ref=f4e88] [cursor=pointer]:
+        - /url: https://kenney.nl/media/pages/assets/mini-dungeon/5b23e91c6e-1771249373/sample.png
+  - contentinfo [ref=f4e89]:
+    - generic [ref=f4e90]: Copyright © 2010 - 2026 · All rights reserved
+    - generic [ref=f4e93]:
+      - link "Support" [ref=f4e94] [cursor=pointer]:
+        - /url: https://kenney.nl/support
+      - link "Knowledge Base" [ref=f4e95] [cursor=pointer]:
+        - /url: https://kenney.nl/knowledge-base
+      - link "Privacy Policy" [ref=f4e96] [cursor=pointer]:
+        - /url: https://kenney.nl/privacy-policy
+      - link "Terms of Service" [ref=f4e97] [cursor=pointer]:
+        - /url: https://kenney.nl/terms-of-service

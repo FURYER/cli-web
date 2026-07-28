@@ -2,26 +2,40 @@ import { existsSync } from "node:fs";
 import { rename } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import {
+  DATA_DIR_NAME,
+  DATA_DIR_NAME_STAND,
+  isStandMode,
+  LEGACY_DATA_DIR_NAME,
+  LEGACY_DATA_DIR_NAME_STAND,
+  LEGACY_WORKSPACE_META_DIR,
+  WORKSPACE_META_DIR,
+} from "./paths-constants.js";
+
+export {
+  DATA_DIR_NAME,
+  DATA_DIR_NAME_STAND,
+  isStandMode,
+  LEGACY_DATA_DIR_NAME,
+  LEGACY_DATA_DIR_NAME_STAND,
+  LEGACY_WORKSPACE_META_DIR,
+  WORKSPACE_META_DIR,
+} from "./paths-constants.js";
 
 /** Product display name (UI, logs, PWA). */
 export const APP_NAME = "WebCLI";
 
-/** Default session/push data folder under the user home. */
-export const DATA_DIR_NAME = ".webcli";
-export const DATA_DIR_NAME_STAND = ".webcli-stand";
-
-/** Pre-rebrand folders — migrated once on startup. */
-export const LEGACY_DATA_DIR_NAME = ".cursor-cli";
-export const LEGACY_DATA_DIR_NAME_STAND = ".cursor-cli-stand";
-
-/** Workspace board folder (inside each project). */
-export const WORKSPACE_META_DIR = ".webcli";
-export const LEGACY_WORKSPACE_META_DIR = ".cursor-cli";
-
-export function isStandMode(): boolean {
-  const v =
-    process.env.WEBCLI_STAND?.trim() || process.env.CURSOR_CLI_STAND?.trim();
-  return v === "1";
+/**
+ * Real OS user home (Cursor IDE, Documents, …).
+ * Prefer WEBCLI_REAL_HOME set by agent-home-setup before USERPROFILE is redirected.
+ */
+export function realHomedir(): string {
+  return (
+    process.env.WEBCLI_REAL_HOME?.trim() ||
+    process.env.USERPROFILE?.trim() ||
+    process.env.HOME?.trim() ||
+    homedir()
+  );
 }
 
 /**
@@ -34,9 +48,14 @@ export function dataDir(): string {
     process.env.CURSOR_CLI_DATA_DIR?.trim();
   if (explicit) return explicit;
   return join(
-    homedir(),
+    realHomedir(),
     isStandMode() ? DATA_DIR_NAME_STAND : DATA_DIR_NAME,
   );
+}
+
+/** Canonical WebCLI agent rules/skills root (`~/.webcli/agent`). */
+export function agentConfigDir(): string {
+  return join(dataDir(), "agent");
 }
 
 /**
@@ -48,8 +67,8 @@ export async function migrateDataDirIfNeeded(): Promise<string | null> {
   if (existsSync(next)) return null;
 
   const legacy = isStandMode()
-    ? join(homedir(), LEGACY_DATA_DIR_NAME_STAND)
-    : join(homedir(), LEGACY_DATA_DIR_NAME);
+    ? join(realHomedir(), LEGACY_DATA_DIR_NAME_STAND)
+    : join(realHomedir(), LEGACY_DATA_DIR_NAME);
 
   if (!existsSync(legacy) || legacy === next) return null;
 

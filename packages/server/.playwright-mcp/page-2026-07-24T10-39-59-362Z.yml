@@ -1,0 +1,394 @@
+- generic [ref=f4e1]:
+  - generic [ref=f4e3]:
+    - generic:
+      - text:  
+      - generic [ref=f4e4] [cursor=pointer]: 
+    - generic [ref=f4e6]:
+      - generic [ref=f4e8]:
+        - link "Фриланс маркетплейс" [ref=f4e10] [cursor=pointer]:
+          - /url: /
+        - textbox "Найти услуги" [ref=f4e16]
+        - generic [ref=f4e19]:
+          - generic [ref=f4e21]:
+            - link "Кворки" [ref=f4e22] [cursor=pointer]:
+              - /url: /manage_kworks
+            - link "Заказы" [ref=f4e23] [cursor=pointer]:
+              - /url: /manage_orders
+            - link "Биржа" [ref=f4e24] [cursor=pointer]:
+              - /url: /projects
+          - link "Чат" [ref=f4e27] [cursor=pointer]:
+            - /url: /inbox
+          - generic [ref=f4e29]:
+            - link "0" [ref=f4e32] [cursor=pointer]:
+              - /url: /balance
+            - link [ref=f4e38] [cursor=pointer]:
+              - /url: /user/furich
+      - list [ref=f4e44]:
+        - listitem [ref=f4e45]:
+          - link "Дизайн" [ref=f4e46] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/design
+        - listitem [ref=f4e48]:
+          - link "Разработка и IT" [ref=f4e49] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/programming
+        - listitem [ref=f4e51]:
+          - link "Тексты и переводы" [ref=f4e52] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/writing-translations
+        - listitem [ref=f4e54]:
+          - link "SEO и трафик" [ref=f4e55] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/seo
+        - listitem [ref=f4e57]:
+          - link "Соцсети и маркетинг" [ref=f4e58] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/promotion
+        - listitem [ref=f4e60]:
+          - link "Аудио, видео, съемка" [ref=f4e61] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/audio-video
+        - listitem [ref=f4e63]:
+          - link "Бизнес и жизнь" [ref=f4e64] [cursor=pointer]:
+            - /url: https://kwork.ru/categories/business
+  - generic [ref=f4e66]:
+    - generic [ref=f4e69]:
+      - generic [ref=f4e70]:
+        - heading "Биржа проектов" [level=1] [ref=f4e71]
+        - generic [ref=f4e72]:
+          - generic [ref=f4e73]:
+            - link "Мои отклики" [ref=f4e74] [cursor=pointer]:
+              - /url: /offers
+            - link "Проекты" [ref=f4e75] [cursor=pointer]:
+              - /url: /projects
+          - generic [ref=f4e76]:
+            - generic [ref=f4e77]:
+              - generic [ref=f4e79]:
+                - generic [ref=f4e80]: Коннекты
+                - generic [ref=f4e82]: Осталось 29 из 30
+              - generic [ref=f4e86]:
+                - generic [ref=f4e87]: Дата пополнения
+                - generic [ref=f4e88]: 23 августа
+            - generic [ref=f4e89]: Настройка уведомлений
+      - generic [ref=f4e91]:
+        - generic [ref=f4e92]:
+          - generic [ref=f4e93]:
+            - generic [ref=f4e94]:
+              - generic [ref=f4e95]: Рубрики
+              - generic [ref=f4e97]:
+                - generic [ref=f4e98]: Любимые
+                - generic [ref=f4e104]: Все
+              - list [ref=f4e109]:
+                - listitem [ref=f4e110] [cursor=pointer]:
+                  - generic [ref=f4e111]: Разработка и IT(53)
+                  - list [ref=f4e115]:
+                    - listitem [ref=f4e116]:
+                      - generic [ref=f4e117]: Создание сайта(5)
+                      - list [ref=f4e121]:
+                        - listitem [ref=f4e122]:
+                          - generic [ref=f4e123]: Новый сайт
+                        - listitem [ref=f4e125]:
+                          - generic [ref=f4e126]: Копия сайта
+            - generic [ref=f4e128]:
+              - generic [ref=f4e129]: Бюджет
+              - generic [ref=f4e130]:
+                - generic [ref=f4e131] [cursor=pointer]: Сбросить
+                - list [ref=f4e132]:
+                  - listitem [ref=f4e133]:
+                    - generic [ref=f4e134] [cursor=pointer]:
+                      - generic [ref=f4e135]: До 1 000 ₽
+                      - text: (1)
+                  - listitem [ref=f4e136]:
+                    - generic [ref=f4e137] [cursor=pointer]:
+                      - generic [ref=f4e138]: От 1 000 ₽ до 3 000 ₽
+                      - text: (4)
+                  - listitem [ref=f4e139]:
+                    - generic [ref=f4e140] [cursor=pointer]:
+                      - generic [ref=f4e141]: От 3 000 ₽ до 10 000 ₽
+                      - text: (2)
+                  - listitem [ref=f4e142]:
+                    - generic [ref=f4e143] [cursor=pointer]:
+                      - generic [ref=f4e144]: От 10 000 ₽ до 30 000 ₽
+                      - text: (7)
+                  - listitem [ref=f4e145]:
+                    - generic [ref=f4e146] [cursor=pointer]:
+                      - generic [ref=f4e147]: От 30 000 ₽
+                      - text: (12)
+              - generic [ref=f4e148]:
+                - textbox "От руб." [ref=f4e150]
+                - textbox "До руб." [ref=f4e152]
+            - generic [ref=f4e153]:
+              - generic [ref=f4e154]: Нанято, %
+              - textbox "От" [ref=f4e157]
+            - generic [ref=f4e158]:
+              - generic [ref=f4e159]: Ключевые слова
+              - textbox [ref=f4e163]
+            - generic [ref=f4e164]:
+              - generic [ref=f4e165]: Количество предложений
+              - list [ref=f4e166]:
+                - listitem [ref=f4e167]:
+                  - generic [ref=f4e168] [cursor=pointer]: До 5 (2)
+                - listitem [ref=f4e169]:
+                  - generic [ref=f4e170] [cursor=pointer]: От 5 до 10 (1)
+                - listitem [ref=f4e171]:
+                  - generic [ref=f4e172] [cursor=pointer]: От 15 до 20 (1)
+                - listitem [ref=f4e173]:
+                  - generic [ref=f4e174] [cursor=pointer]: От 20 (2)
+          - generic [ref=f4e175]:
+            - strong [ref=f4e177]: Статистика биржиза месяц
+            - generic [ref=f4e179]:
+              - generic [ref=f4e180]: Проектов
+              - generic [ref=f4e181]: 8 337
+            - generic [ref=f4e182]:
+              - generic [ref=f4e183]: На сумму, ₽
+              - generic [ref=f4e184]: 88 003 000
+            - generic [ref=f4e185]:
+              - generic [ref=f4e186]: Заказов
+              - generic [ref=f4e187]: 3 819
+          - generic [ref=f4e190] [cursor=pointer]:
+            - generic [ref=f4e191]:
+              - generic [ref=f4e192]: Узнайте, как получить
+              - generic [ref=f4e193]: первый заказ
+              - generic [ref=f4e194]: на бирже!
+            - button "Открыть урок" [ref=f4e196]
+        - generic [ref=f4e198]:
+          - generic [ref=f4e199]: "Показать:"
+          - generic [ref=f4e200]:
+            - generic [ref=f4e201] [cursor=pointer]: Все предложения
+            - generic [ref=f4e205]:
+              - generic [ref=f4e206] [cursor=pointer]: Все предложения
+              - generic [ref=f4e207] [cursor=pointer]: Новые
+              - generic [ref=f4e208] [cursor=pointer]: Просмотренные
+        - generic [ref=f4e211]:
+          - generic [ref=f4e212]:
+            - generic [ref=f4e213]:
+              - generic [ref=f4e214]:
+                - heading [level=1] [ref=f4e215]:
+                  - link "Простой почтовый базовый сервис типа яндекс, майл" [ref=f4e216] [cursor=pointer]:
+                    - /url: /projects/3219299
+                - generic [ref=f4e218]:
+                  - generic [ref=f4e219]: Нужен простой базовый сервис с возможностью развития. Регистрации пользователей, веб-интерфейс...
+                  - text: Показать полностью
+              - generic [ref=f4e221]:
+                - generic [ref=f4e223]:
+                  - text: "Желаемый бюджет: до"
+                  - generic [ref=f4e224]: 500 ₽
+                - generic [ref=f4e225]:
+                  - text: "Допустимый:"
+                  - generic [ref=f4e226]:
+                    - text: до
+                    - generic [ref=f4e227]: 1 500 ₽
+            - generic [ref=f4e229]:
+              - generic [ref=f4e230]: o
+              - generic [ref=f4e232]:
+                - generic [ref=f4e234]:
+                  - text: "Покупатель:"
+                  - link "oldfree" [ref=f4e235] [cursor=pointer]:
+                    - /url: https://kwork.ru/user/oldfree
+                - generic [ref=f4e236]:
+                  - text: "Размещено проектов на бирже: 8"
+                  - generic [ref=f4e237]:
+                    - text: ·
+                    - link "Смотреть открытые (3)" [ref=f4e238] [cursor=pointer]:
+                      - /url: /projects/list/oldfree
+                  - generic [ref=f4e239]: "Нанято: 0%"
+            - generic [ref=f4e242]:
+              - generic [ref=f4e243]: "Осталось: 2 д. 14 ч."
+              - generic [ref=f4e244]: "Предложений: 6"
+          - generic [ref=f4e245]:
+            - generic [ref=f4e246]:
+              - generic [ref=f4e247]:
+                - heading [level=1] [ref=f4e248]:
+                  - link "Помощь при создании сайта бренда Веломед на Яндекс Кит" [ref=f4e249] [cursor=pointer]:
+                    - /url: /projects/3111951
+                - generic [ref=f4e251]:
+                  - generic [ref=f4e252]: Необходима помощь при создании сайта бренда «Веломед» на платформе ЯндексКит. Буду...
+                  - text: Показать полностью
+              - generic [ref=f4e254]:
+                - generic [ref=f4e256]:
+                  - text: "Желаемый бюджет: до"
+                  - generic [ref=f4e257]: 1 000 ₽
+                - generic [ref=f4e258]:
+                  - text: "Допустимый:"
+                  - generic [ref=f4e259]:
+                    - text: до
+                    - generic [ref=f4e260]: 3 000 ₽
+            - generic [ref=f4e262]:
+              - generic [ref=f4e263]: r
+              - generic [ref=f4e265]:
+                - generic [ref=f4e266]:
+                  - generic [ref=f4e267]:
+                    - text: "Покупатель:"
+                    - link "rvsbiz" [ref=f4e268] [cursor=pointer]:
+                      - /url: https://kwork.ru/user/rvsbiz
+                  - img "Сделано более 20 покупок" [ref=f4e269]
+                - generic [ref=f4e270]:
+                  - text: "Размещено проектов на бирже: 50"
+                  - generic [ref=f4e271]:
+                    - text: ·
+                    - link "Смотреть открытые (12)" [ref=f4e272] [cursor=pointer]:
+                      - /url: /projects/list/rvsbiz
+                  - generic [ref=f4e273]: "Нанято: 57%"
+            - generic [ref=f4e276]:
+              - generic [ref=f4e277]: "Осталось: 2 д. 10 ч."
+              - generic [ref=f4e278]: "Предложений: 3"
+          - generic [ref=f4e279]:
+            - generic [ref=f4e280]:
+              - generic [ref=f4e281]:
+                - heading [level=1] [ref=f4e282]:
+                  - link "Шаблон для DLE" [ref=f4e283] [cursor=pointer]:
+                    - /url: /projects/3223260
+                - generic [ref=f4e285]:
+                  - generic [ref=f4e286]: Необходимо сделать шаблон для DLE 17.x, аналогично шаблону MoviePlay и установить его на сайт. На...
+                  - text: Показать полностью
+              - generic [ref=f4e288]:
+                - generic [ref=f4e290]:
+                  - text: "Желаемый бюджет: до"
+                  - generic [ref=f4e291]: 500 ₽
+                - generic [ref=f4e292]:
+                  - text: "Допустимый:"
+                  - generic [ref=f4e293]:
+                    - text: до
+                    - generic [ref=f4e294]: 1 500 ₽
+            - generic [ref=f4e296]:
+              - generic [ref=f4e297]: m
+              - generic [ref=f4e299]:
+                - generic [ref=f4e301]:
+                  - text: "Покупатель:"
+                  - link "mdma59" [ref=f4e302] [cursor=pointer]:
+                    - /url: https://kwork.ru/user/mdma59
+                - generic [ref=f4e303]: "Размещено проектов на бирже: 2"
+            - generic [ref=f4e305]:
+              - generic [ref=f4e306]: "Осталось: 5 ч. 39 мин."
+              - generic [ref=f4e307]: "Предложений: 4"
+          - generic [ref=f4e308]:
+            - generic [ref=f4e309]:
+              - generic [ref=f4e310]:
+                - heading [level=1] [ref=f4e311]:
+                  - link "Копирование сайта конкурента + изменения контента" [ref=f4e312] [cursor=pointer]:
+                    - /url: /projects/3223100
+                - generic [ref=f4e314]:
+                  - generic [ref=f4e315]: Копирование сайта конкурента + изменения контента (рерайт статей и изображений) под мои задачи....
+                  - text: Показать полностью
+              - generic [ref=f4e317]:
+                - generic [ref=f4e319]:
+                  - text: "Желаемый бюджет: до"
+                  - generic [ref=f4e320]: 500 ₽
+                - generic [ref=f4e321]:
+                  - text: "Допустимый:"
+                  - generic [ref=f4e322]:
+                    - text: до
+                    - generic [ref=f4e323]: 1 500 ₽
+            - generic [ref=f4e325]:
+              - generic [ref=f4e326]: g
+              - generic [ref=f4e328]:
+                - generic [ref=f4e329]:
+                  - generic [ref=f4e330]:
+                    - text: "Покупатель:"
+                    - link "ggpavel" [ref=f4e331] [cursor=pointer]:
+                      - /url: https://kwork.ru/user/ggpavel
+                  - img "Сделано более 20 покупок" [ref=f4e332]
+                - generic [ref=f4e333]:
+                  - text: "Размещено проектов на бирже: 4"
+                  - generic [ref=f4e334]:
+                    - text: ·
+                    - link "Смотреть открытые (2)" [ref=f4e335] [cursor=pointer]:
+                      - /url: /projects/list/ggpavel
+                  - generic [ref=f4e336]: "Нанято: 50%"
+            - generic [ref=f4e339]:
+              - generic [ref=f4e340]: "Осталось: 3 ч. 13 мин."
+              - generic [ref=f4e341]: "Предложений: 20"
+          - generic [ref=f4e342]:
+            - generic [ref=f4e343]:
+              - generic [ref=f4e344]:
+                - heading [level=1] [ref=f4e345]:
+                  - link "Создать простой (не CMS) новостной сайт" [ref=f4e346] [cursor=pointer]:
+                    - /url: /projects/3219496
+                - generic [ref=f4e348]:
+                  - generic [ref=f4e349]: Создать простой (не CMS) новостной сайт с плагином, позволяющий его редактирование обычному...
+                  - text: Показать полностью
+              - generic [ref=f4e351]:
+                - generic [ref=f4e353]:
+                  - text: "Желаемый бюджет: до"
+                  - generic [ref=f4e354]: 3 000 ₽
+                - generic [ref=f4e355]:
+                  - text: "Допустимый:"
+                  - generic [ref=f4e356]:
+                    - text: до
+                    - generic [ref=f4e357]: 9 000 ₽
+            - generic [ref=f4e359]:
+              - generic [ref=f4e360]: M
+              - generic [ref=f4e362]:
+                - generic [ref=f4e363]:
+                  - generic [ref=f4e364]:
+                    - text: "Покупатель:"
+                    - link "Miriade" [ref=f4e365] [cursor=pointer]:
+                      - /url: https://kwork.ru/user/miriade
+                  - img "Сделано более 7 покупок" [ref=f4e366]
+                - generic [ref=f4e367]:
+                  - text: "Размещено проектов на бирже: 19"
+                  - generic [ref=f4e368]:
+                    - text: ·
+                    - link "Смотреть открытые (2)" [ref=f4e369] [cursor=pointer]:
+                      - /url: /projects/list/miriade
+                  - generic [ref=f4e370]: "Нанято: 44%"
+            - generic [ref=f4e373]:
+              - generic [ref=f4e374]: "Осталось: 1 ч. 39 мин."
+              - generic [ref=f4e375]: "Предложений: 38"
+    - text:  
+  - generic [ref=f4e378]:
+    - generic [ref=f4e379]:
+      - generic [ref=f4e380]:
+        - link [ref=f4e381] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f4e383]:
+          - generic [ref=f4e384]: "Онлайн: 2222"
+          - generic [ref=f4e387]: "Заказ: 9 сек. назад"
+      - generic [ref=f4e391]:
+        - generic [ref=f4e392]:
+          - generic [ref=f4e393]: О Kwork
+          - generic [ref=f4e396]:
+            - link "О проекте" [ref=f4e397] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=f4e398] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=f4e399] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Карьера в Kwork" [ref=f4e400] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=f4e401]:
+          - generic [ref=f4e402]: Сообщество
+          - generic [ref=f4e405]:
+            - link "Блог" [ref=f4e406] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=f4e407] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=f4e408] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=f4e409]:
+          - generic [ref=f4e410]: Полезное
+          - generic [ref=f4e413]:
+            - link "Покупателям" [ref=f4e414] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=f4e415] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=f4e416] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=f4e417] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Мобильное приложение" [ref=f4e418] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=f4e419]:
+          - generic [ref=f4e420]: Помощь
+          - generic [ref=f4e423]:
+            - link "Вопрос — Ответ" [ref=f4e424] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=f4e425] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=f4e426]:
+      - generic [ref=f4e427]:
+        - link [ref=f4e428] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=f4e432] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=f4e436]:
+        - link [ref=f4e437] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=f4e438]
+        - link [ref=f4e439] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=f4e440]

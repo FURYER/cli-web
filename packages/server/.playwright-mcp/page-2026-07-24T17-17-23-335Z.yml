@@ -1,0 +1,180 @@
+- generic [ref=e1]:
+  - list:
+    - listitem:
+      - link "View all by Voxel Core Lab" [ref=e2] [cursor=pointer]:
+        - /url: https://voxelcorelab.itch.io
+    - listitem:
+      - link "Follow Voxel Core Lab" [ref=e6] [cursor=pointer]:
+        - /url: https://itch.io/login?return_to=https%3A%2F%2Fvoxelcorelab.itch.io%2Fwatercolor-terrain-textures&intent=follow_user
+    - listitem:
+      - link "Add To Collection" [ref=e11] [cursor=pointer]:
+        - /url: https://itch.io/login?return_to=https%3A%2F%2Fvoxelcorelab.itch.io%2Fwatercolor-terrain-textures&intent=add_to_collection
+    - listitem:
+      - link "More like this" [ref=e14] [cursor=pointer]:
+        - /url: https://itch.io/games-like/3387502/watercolor-terrain-textures
+  - generic [ref=e19]:
+    - heading "Hand-Painted Seamless Terrain Textures – Watercolor Grass, Stone, Dirt & Water (16 PNGs)" [level=1] [ref=e21]
+    - generic [ref=e23]:
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - heading [level=2] [ref=e26]:
+            - text: 🎨
+            - strong [ref=e27]: Hand-Painted Watercolor Terrain Textures
+          - paragraph [ref=e28]:
+            - text: A pack of
+            - strong [ref=e29]: 16 seamless, hand-painted textures designed
+            - text: for
+            - strong [ref=e30]: stylized 3D terrain
+            - text: in games and real-time environments.
+          - paragraph [ref=e31]: Perfect for fantasy landscapes, artistic game worlds, or any project that needs a soft watercolor look.
+          - heading [level=3] [ref=e32]:
+            - text: 🧵
+            - strong [ref=e33]: "Includes:"
+          - list [ref=e34]:
+            - listitem [ref=e35]:
+              - text: 4x
+              - strong [ref=e36]: Grass
+              - text: textures
+            - listitem [ref=e37]:
+              - text: 4x
+              - strong [ref=e38]: Stone
+              - text: textures
+            - listitem [ref=e39]:
+              - text: 4x
+              - strong [ref=e40]: Water
+              - text: textures
+            - listitem [ref=e41]:
+              - text: 4x
+              - strong [ref=e42]: Dirt
+              - text: textures
+          - paragraph
+          - heading [level=3] [ref=e43]:
+            - text: 📦
+            - strong [ref=e44]: "Format:"
+          - list [ref=e45]:
+            - listitem [ref=e46]: 16 PNG files
+            - listitem [ref=e47]: 1024×1024 px
+            - listitem [ref=e48]:
+              - strong [ref=e49]: Seamless / tileable
+          - paragraph
+          - heading [level=3] [ref=e50]:
+            - text: 🛠️
+            - strong [ref=e51]: "Ideal For:"
+          - list [ref=e52]:
+            - listitem [ref=e53]: 3D terrain in Unity, Unreal, Godot, etc.
+            - listitem [ref=e54]: Stylized RPGs, fantasy games, or creative prototypes / Game-Jam
+            - listitem [ref=e55]: Worldbuilding with a natural, handcrafted look
+            - listitem [ref=e56]: Stylized world maps
+          - heading [level=3] [ref=e57]:
+            - text: 🧾
+            - strong [ref=e58]: "License:"
+          - list [ref=e59]:
+            - listitem [ref=e60]:
+              - text: This pack is released under the
+              - strong [ref=e61]: CC0 1.0 Universal license
+              - text: (Creative Commons Zero)
+            - listitem [ref=e62]: You can use, modify, and share the textures freely – even for commercial projects
+            - listitem [ref=e63]:
+              - strong [ref=e64]: No attribution required
+              - text: ", but if you'd like to credit me, just mention:"
+              - emphasis [ref=e65]: Jonas Voland
+          - paragraph [ref=e66]:
+            - emphasis [ref=e67]: This pack was created as a small, heartfelt contribution to the game dev community. Enjoy using it in your projects!
+          - heading [level=3] [ref=e68]:
+            - text: 💬
+            - strong [ref=e69]: "Notes:"
+          - paragraph [ref=e70]: If you use them in a project, feel free to share – I’d love to see what you create!
+          - paragraph [ref=e71]:
+            - text: Made by
+            - strong [ref=e72]: Jonas Voland
+            - text: Published by
+            - strong [ref=e73]: Voxel Core Lab GmbH
+        - link "More information" [ref=e76] [cursor=pointer]:
+          - /url: javascript:void(0)
+        - heading "Download" [level=2] [ref=e79]
+        - generic [ref=e81]:
+          - link "Download Now" [ref=e82] [cursor=pointer]:
+            - /url: https://voxelcorelab.itch.io/watercolor-terrain-textures/purchase
+          - generic [ref=e83]: Name your own price
+        - generic [ref=e85]:
+          - paragraph [ref=e86]: "Click download now to get access to the following files:"
+          - generic [ref=e90]:
+            - strong [ref=e91]: VoxelCoreLab_Watercolor_Terrain_Textures_1024px.zip
+            - generic [ref=e92]: 28 MB
+        - generic [ref=e93]:
+          - heading "Development log" [level=2] [ref=e94]
+          - list [ref=e95]:
+            - listitem [ref=e96]:
+              - link "Releasing 16 Hand-Painted Watercolor Terrain Textures (Free CC0)" [ref=e97] [cursor=pointer]:
+                - /url: https://voxelcorelab.itch.io/watercolor-terrain-textures/devlog/986400/releasing-16-hand-painted-watercolor-terrain-textures-free-cc0
+              - generic "14 July 2025 @ 17:06 UTC" [ref=e99]:  Jul 14, 2025
+        - generic [ref=e100]:
+          - heading "Comments" [level=2] [ref=e101]
+          - paragraph [ref=e102]:
+            - link "Log in with itch.io" [ref=e103] [cursor=pointer]:
+              - /url: https://itch.io/login?return_to=https%3A%2F%2Fvoxelcorelab.itch.io%2Fwatercolor-terrain-textures
+            - text: to leave a comment.
+          - generic [ref=e105]:
+            - generic [ref=e107]:
+              - link [ref=e108] [cursor=pointer]:
+                - /url: https://itch.io/profile/hydish
+              - generic [ref=e110]:
+                - link "hydish" [ref=e112] [cursor=pointer]:
+                  - /url: https://itch.io/profile/hydish
+                - generic "2025-07-15 08:24:08" [ref=e113]:
+                  - link "1 year ago" [ref=e114] [cursor=pointer]:
+                    - /url: https://itch.io/post/13355393
+                - generic [ref=e115]: (+1)
+              - generic [ref=e116]:
+                - paragraph [ref=e118]: A dreamer
+                - generic [ref=e119]:
+                  - link " Like" [ref=e120] [cursor=pointer]:
+                    - /url: https://itch.io/login?return_to=https%3A%2F%2Fvoxelcorelab.itch.io%2Fwatercolor-terrain-textures&intent=community
+                    - generic [ref=e121]: 
+                    - generic [ref=e122]: Like
+                  - link "Reply" [ref=e123] [cursor=pointer]:
+                    - /url: https://itch.io/login?return_to=https%3A%2F%2Fvoxelcorelab.itch.io%2Fwatercolor-terrain-textures&intent=community
+            - generic [ref=e125]:
+              - link [ref=e126] [cursor=pointer]:
+                - /url: https://itch.io/profile/404-forge
+              - generic [ref=e128]:
+                - link "404 Forge" [ref=e130] [cursor=pointer]:
+                  - /url: https://itch.io/profile/404-forge
+                - generic "2025-07-14 17:13:16" [ref=e131]:
+                  - link "1 year ago" [ref=e132] [cursor=pointer]:
+                    - /url: https://itch.io/post/13350125
+                - generic [ref=e133]: (+2)
+              - generic [ref=e134]:
+                - paragraph [ref=e136]: Beautiful, might use this for my Project!
+                - generic [ref=e137]:
+                  - link " Like" [ref=e138] [cursor=pointer]:
+                    - /url: https://itch.io/login?return_to=https%3A%2F%2Fvoxelcorelab.itch.io%2Fwatercolor-terrain-textures&intent=community
+                    - generic [ref=e139]: 
+                    - generic [ref=e140]: Like
+                  - link "Reply" [ref=e141] [cursor=pointer]:
+                    - /url: https://itch.io/login?return_to=https%3A%2F%2Fvoxelcorelab.itch.io%2Fwatercolor-terrain-textures&intent=community
+      - generic [ref=e143]:
+        - link [ref=e144] [cursor=pointer]:
+          - /url: https://img.itch.zone/aW1hZ2UvMzM4NzUwMi8yMjE0MjMxNC5wbmc=/original/4aCR8i.png
+        - link [ref=e146] [cursor=pointer]:
+          - /url: https://img.itch.zone/aW1hZ2UvMzM4NzUwMi8yMjE0MjM1MC5wbmc=/original/a67bHX.png
+    - generic [ref=e148]:
+      - link [ref=e149] [cursor=pointer]:
+        - /url: https://itch.io/
+      - link "itch.io" [ref=e152] [cursor=pointer]:
+        - /url: https://itch.io/
+      - generic [ref=e153]: ·
+      - link "View all by Voxel Core Lab" [ref=e154] [cursor=pointer]:
+        - /url: https://voxelcorelab.itch.io
+      - generic [ref=e155]: ·
+      - link "Report" [ref=e156] [cursor=pointer]:
+        - /url: javascript:void(0);
+      - generic [ref=e157]: ·
+      - link "Embed" [ref=e158] [cursor=pointer]:
+        - /url: javascript:void(0);
+      - generic [ref=e159]:
+        - link "Game assets" [ref=e160] [cursor=pointer]:
+          - /url: https://itch.io/game-assets
+        - text: ›
+        - link "Free" [ref=e161] [cursor=pointer]:
+          - /url: https://itch.io/game-assets/free

@@ -21,7 +21,8 @@ Creates a **git worktree + branch** for a child chat and starts the agent there.
 delegate_task({
   title: "Auth API",
   prompt: "Implement … (concrete acceptance criteria)",
-  wait: false
+  wait: false,
+  wake_on_done: false
 })
 ```
 
@@ -40,7 +41,20 @@ operation) and retry. The tool result includes a `prepare` object
 
 - `wait: false` (default) — runs in parallel; returns `childSessionId` immediately.
 - `wait: true` — blocks until that child finishes (simpler sequential flow).
+- `wake_on_done: true` — when **this** child finishes, wake you immediately even
+  if siblings are still running. Mark as many children as you need this way.
+  Default `false` waits until the whole parallel batch is idle.
 - Child cwd is an isolated worktree under the host data dir; branch is `webcli/agent/<id>`.
+
+### `wake_on_child_done`
+Toggle early-wake on an existing child (same effect as `wake_on_done` at spawn).
+
+```
+wake_on_child_done({ childSessionId: "…", enabled: true })
+```
+
+If the child already finished and `enabled: true`, queues an early wake now.
+`enabled: false` returns that child to batch wake.
 
 ### `get_child_result`
 Review status, last assistant message, and `git log`/`diff --stat` vs base.
@@ -54,10 +68,12 @@ On **conflict**: resolve files in the parent repo (or `git merge --abort`), then
 
 1. Decide the split is worth it (see rule `delegate-subagents`).
 2. `delegate_task` × N with `wait: false` (each call auto-prepares if still dirty).
-3. **You can end your turn** — when all those children finish, the system
-   automatically sends you a wake-up message with their results.
-4. In that wake-up turn: `merge_child` in a sensible order (independent first).
-5. If conflict → ask the user with `ask_user`, then continue.
+3. For children whose result you need ASAP (unblock merge / next step), set
+   `wake_on_done: true` (or call `wake_on_child_done` later).
+4. **You can end your turn** — the system wakes you when those early children
+   finish (and again when the remaining batch is idle, if any).
+5. In a wake-up turn: `merge_child` in a sensible order (independent first).
+6. If conflict → ask the user with `ask_user`, then continue.
 
 (`wait: true` still works for a single sequential child; that path does **not**
 auto-wake because you already get the result in the tool response.)

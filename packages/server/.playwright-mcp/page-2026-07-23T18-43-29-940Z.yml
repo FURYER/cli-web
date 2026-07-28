@@ -1,0 +1,131 @@
+- generic [active] [ref=f10e1]:
+  - generic [ref=f10e4]:
+    - generic [ref=f10e6]:
+      - link "Фриланс маркетплейс" [ref=f10e8] [cursor=pointer]:
+        - /url: /
+      - textbox "Найти услуги" [ref=f10e14]
+      - generic [ref=f10e17]:
+        - generic [ref=f10e19]:
+          - link "Кворки" [ref=f10e20] [cursor=pointer]:
+            - /url: /manage_kworks
+          - link "Заказы" [ref=f10e21] [cursor=pointer]:
+            - /url: /manage_orders
+          - link "Биржа" [ref=f10e22] [cursor=pointer]:
+            - /url: /projects
+        - link "Чат" [ref=f10e25] [cursor=pointer]:
+          - /url: /inbox
+        - generic [ref=f10e27]:
+          - link "0" [ref=f10e30] [cursor=pointer]:
+            - /url: /balance
+          - link "f" [ref=f10e36] [cursor=pointer]:
+            - /url: /user/furich
+    - list [ref=f10e43]:
+      - listitem [ref=f10e44]:
+        - link "Дизайн" [ref=f10e45] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/design
+      - listitem [ref=f10e47]:
+        - link "Разработка и IT" [ref=f10e48] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/programming
+      - listitem [ref=f10e50]:
+        - link "Тексты и переводы" [ref=f10e51] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/writing-translations
+      - listitem [ref=f10e53]:
+        - link "SEO и трафик" [ref=f10e54] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/seo
+      - listitem [ref=f10e56]:
+        - link "Соцсети и маркетинг" [ref=f10e57] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/promotion
+      - listitem [ref=f10e59]:
+        - link "Аудио, видео, съемка" [ref=f10e60] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/audio-video
+      - listitem [ref=f10e62]:
+        - link "Бизнес и жизнь" [ref=f10e63] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/business
+  - generic [ref=f10e70]:
+    - generic [ref=f10e71]:
+      - generic [ref=f10e72]:
+        - generic [ref=f10e73]:
+          - generic [ref=f10e74]:
+            - generic [ref=f10e75]: f
+            - heading "furich" [level=1] [ref=f10e82]
+            - generic [ref=f10e83]:
+              - generic [ref=f10e84]: Телефон подтвержден
+              - generic [ref=f10e85]:
+                - generic [ref=f10e86]: 
+                - text: На сайте с 23 июля 2026
+              - generic [ref=f10e87]: Онлайн
+          - generic [ref=f10e90]:
+            - generic [ref=f10e91]: Данил
+            - generic [ref=f10e92]: C#/.NET разработчик
+            - generic [ref=f10e93]: "Senior C#/.NET разработчик, 4+ года опыта. Делаю и дорабатываю бэкенд на ASP.NET Core: API, микросервисы, базы данных, интеграции (в т.ч. с 1С), real-time на SignalR, Docker/CI. Беру задачу под ключ: оценка, код, проверка, короткие правки. Сроки соблюдаю. Стек: C#, ASP.NET Core, EF Core, PostgreSQL, SQL Server, RabbitMQ, MassTransit, Redis, Docker, Kubernetes, SignalR. GitHub: https://github.com/FURYER"
+            - generic [ref=f10e94]: Описание проверяется модератором
+        - link "Настройки профиля" [ref=f10e102] [cursor=pointer]:
+          - /url: /settings
+      - generic [ref=f10e103]:
+        - heading "Мои кворки" [level=3] [ref=f10e104]
+        - paragraph [ref=f10e105]: У пользователя furich нет активных кворков
+    - generic [ref=f10e108]:
+      - heading "Отзывы о furich" [level=3] [ref=f10e109]
+      - generic [ref=f10e111]: Пока нет
+  - generic [ref=f10e115]:
+    - generic [ref=f10e116]:
+      - generic [ref=f10e117]:
+        - link [ref=f10e118] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f10e120]:
+          - generic [ref=f10e121]: "Онлайн: 1740"
+          - generic [ref=f10e124]: "Заказ: 7 сек. назад"
+      - generic [ref=f10e128]:
+        - generic [ref=f10e129]:
+          - generic [ref=f10e130]: О Kwork
+          - generic [ref=f10e133]:
+            - link "О проекте" [ref=f10e134] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=f10e135] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=f10e136] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Карьера в Kwork" [ref=f10e137] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=f10e138]:
+          - generic [ref=f10e139]: Сообщество
+          - generic [ref=f10e142]:
+            - link "Блог" [ref=f10e143] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=f10e144] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=f10e145] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=f10e146]:
+          - generic [ref=f10e147]: Полезное
+          - generic [ref=f10e150]:
+            - link "Покупателям" [ref=f10e151] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=f10e152] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=f10e153] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=f10e154] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Мобильное приложение" [ref=f10e155] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=f10e156]:
+          - generic [ref=f10e157]: Помощь
+          - generic [ref=f10e160]:
+            - link "Вопрос — Ответ" [ref=f10e161] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=f10e162] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=f10e163]:
+      - generic [ref=f10e164]:
+        - link [ref=f10e165] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=f10e169] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=f10e173]:
+        - link [ref=f10e174] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=f10e175]
+        - link [ref=f10e176] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=f10e177]

@@ -16,5 +16,7 @@ markdown “parallel” plan.
   do it yourself.
 - Only the **orchestrator** (top-level chat) may spawn; children cannot nest.
 - Parent must be a **git** repo (dirty tree → auto checkpoint before spawn).
+- Need a result before the whole batch is idle? `wake_on_done: true` on that
+  child (or `wake_on_child_done`) — you can mark several.
 
 Details, prompts, conflict handling: skill `delegate-subagents`.

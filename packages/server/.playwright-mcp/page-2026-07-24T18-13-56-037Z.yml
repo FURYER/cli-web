@@ -1,0 +1,133 @@
+- generic [ref=f6e1]:
+  - link [ref=f6e2] [cursor=pointer]:
+    - /url: https://kenney.itch.io/kenney-game-assets
+    - text: Get Kenney Game Assets All-in-1 to download
+    - emphasis [ref=f6e4]: everything
+    - text: at once, plus free updates!
+  - generic [ref=f6e6]:
+    - generic:
+      - list:
+        - listitem [ref=f6e7]:
+          - link [ref=f6e8] [cursor=pointer]:
+            - /url: https://kenney.nl
+        - generic:
+          - listitem [ref=f6e10]:
+            - link "Games" [ref=f6e11] [cursor=pointer]:
+              - /url: https://kenney.nl/games
+          - listitem [ref=f6e12]:
+            - link "Tools" [ref=f6e13] [cursor=pointer]:
+              - /url: https://kenney.nl/tools
+          - listitem [ref=f6e14]:
+            - link "Assets" [ref=f6e15] [cursor=pointer]:
+              - /url: https://kenney.nl/assets
+          - listitem [ref=f6e16]:
+            - link "Starter Kits" [ref=f6e17] [cursor=pointer]:
+              - /url: https://kenney.nl/starter-kits
+    - generic:
+      - list:
+        - listitem [ref=f6e18]:
+          - link [ref=f6e19] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=f6e21]:
+          - link "Donate" [ref=f6e22] [cursor=pointer]:
+            - /url: https://kenney.nl/donate
+    - generic:
+      - link "×" [ref=f6e23] [cursor=pointer]:
+        - /url: javascript:void(0)
+      - generic:
+        - link "Games" [ref=f6e24] [cursor=pointer]:
+          - /url: https://kenney.nl/games
+        - link "Tools" [ref=f6e25] [cursor=pointer]:
+          - /url: https://kenney.nl/tools
+        - link "Assets" [ref=f6e26] [cursor=pointer]:
+          - /url: https://kenney.nl/assets
+        - link "Starter Kits" [ref=f6e27] [cursor=pointer]:
+          - /url: https://kenney.nl/starter-kits
+      - separator [ref=f6e28]
+      - generic:
+        - link "Support" [ref=f6e29] [cursor=pointer]:
+          - /url: https://kenney.nl/support
+        - link "Knowledge Base" [ref=f6e30] [cursor=pointer]:
+          - /url: https://kenney.nl/knowledge-base
+        - link "Donate" [ref=f6e31] [cursor=pointer]:
+          - /url: https://kenney.nl/donate
+      - separator [ref=f6e32]
+      - link [ref=f6e33] [cursor=pointer]:
+        - /url: "#"
+  - generic [ref=f6e38]:
+    - generic [ref=f6e39]:
+      - heading "Modular Dungeon Kit" [level=1] [ref=f6e40]
+      - paragraph
+      - table [ref=f6e41]:
+        - rowgroup [ref=f6e42]:
+          - row [ref=f6e43]:
+            - cell "Tags" [ref=f6e44]
+            - cell [ref=f6e45]:
+              - link "dungeon" [ref=f6e46] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/tag:dungeon
+              - link "modular" [ref=f6e47] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/tag:modular
+              - link "tiles" [ref=f6e48] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/tag:tiles
+          - row [ref=f6e49]:
+            - cell "Category" [ref=f6e50]
+            - cell [ref=f6e51]:
+              - link "3D" [ref=f6e52] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/category:3D
+              - text: •
+              - link "Modular" [ref=f6e53] [cursor=pointer]:
+                - /url: https://kenney.nl/assets/series:Modular
+          - row [ref=f6e54]:
+            - cell "Features" [ref=f6e55]
+            - cell "🎞️Animation 🎨Variation(s)" [ref=f6e56]:
+              - generic [ref=f6e57]: 🎞️Animation
+              - generic [ref=f6e58]: 🎨Variation(s)
+          - row [ref=f6e59]:
+            - cell "Files" [ref=f6e60]
+            - cell "40×" [ref=f6e61]
+          - row [ref=f6e62]:
+            - cell "License" [ref=f6e63]
+            - cell [ref=f6e64]:
+              - link "Creative Commons CC0" [ref=f6e65] [cursor=pointer]:
+                - /url: https://creativecommons.org/publicdomain/zero/1.0/
+      - paragraph
+      - paragraph [ref=f6e66]:
+        - link "Download" [ref=f6e67] [cursor=pointer]:
+          - /url: "#inline-download"
+        - link "Get All-in-1 bundle" [ref=f6e68] [cursor=pointer]:
+          - /url: https://kenney.itch.io/kenney-game-assets
+      - paragraph
+      - table [ref=f6e69]:
+        - rowgroup [ref=f6e70]:
+          - row [ref=f6e71]:
+            - cell "2.1 Ground texture, tweaked colors, additional detail" [ref=f6e72]:
+              - generic [ref=f6e73]: "2.1"
+              - text: Ground texture, tweaked colors, additional detail
+          - row [ref=f6e74]:
+            - cell "2.0 Improvements, colors & higher walls" [ref=f6e75]:
+              - generic [ref=f6e76]: "2.0"
+              - text: Improvements, colors & higher walls
+          - row [ref=f6e77]:
+            - cell "1.0" [ref=f6e78]
+      - paragraph
+    - generic [ref=f6e80]:
+      - link [ref=f6e83] [cursor=pointer]:
+        - /url: https://kenney.nl/media/pages/assets/modular-dungeon-kit/0360646c6c-1771926042/preview.png
+      - generic [ref=f6e85]:
+        - link [ref=f6e87] [cursor=pointer]:
+          - /url: https://kenney.nl/media/pages/assets/modular-dungeon-kit/fe4b7d1cba-1771926047/sample.png
+        - link [ref=f6e89] [cursor=pointer]:
+          - /url: https://kenney.nl/media/pages/assets/modular-dungeon-kit/203379525b-1771926053/preview-variation-b.png
+        - link [ref=f6e91] [cursor=pointer]:
+          - /url: https://kenney.nl/media/pages/assets/modular-dungeon-kit/154fbf758f-1771926058/preview-variation-a.png
+  - contentinfo [ref=f6e92]:
+    - generic [ref=f6e93]: Copyright © 2010 - 2026 · All rights reserved
+    - generic [ref=f6e96]:
+      - link "Support" [ref=f6e97] [cursor=pointer]:
+        - /url: https://kenney.nl/support
+      - link "Knowledge Base" [ref=f6e98] [cursor=pointer]:
+        - /url: https://kenney.nl/knowledge-base
+      - link "Privacy Policy" [ref=f6e99] [cursor=pointer]:
+        - /url: https://kenney.nl/privacy-policy
+      - link "Terms of Service" [ref=f6e100] [cursor=pointer]:
+        - /url: https://kenney.nl/terms-of-service

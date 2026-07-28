@@ -1,6 +1,6 @@
 import { constants } from "node:fs";
 import { access, opendir, readdir, stat } from "node:fs/promises";
-import { homedir } from "node:os";
+import { realHomedir } from "./paths.js";
 import { dirname, join, parse, resolve, sep } from "node:path";
 
 export type FsEntry = {
@@ -56,7 +56,7 @@ export async function listDriveRoots(): Promise<string[]> {
 }
 
 export async function listShortcuts(): Promise<FsShortcut[]> {
-  const home = homedir();
+  const home = realHomedir();
   const candidates: FsShortcut[] = [
     { label: "Home", path: home },
     { label: "Documents", path: join(home, "Documents") },
@@ -105,7 +105,7 @@ export async function listDirectory(
   const includeFiles = Boolean(options?.includeFiles);
   const roots = await listDriveRoots();
   const shortcuts = await listShortcuts();
-  const home = homedir();
+  const home = realHomedir();
   const fallback =
     process.env.DEFAULT_WORKSPACE?.trim() ||
     shortcuts.find((s) => s.label === "Documents")?.path ||

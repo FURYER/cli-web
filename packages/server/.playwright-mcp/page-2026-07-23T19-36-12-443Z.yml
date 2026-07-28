@@ -1,0 +1,153 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e6]:
+      - link "Фриланс маркетплейс" [ref=e8] [cursor=pointer]:
+        - /url: /
+      - textbox "Найти услуги" [ref=e14]
+      - generic [ref=e17]:
+        - generic [ref=e19]:
+          - link "Кворки" [ref=e20] [cursor=pointer]:
+            - /url: /manage_kworks
+          - link "Заказы" [ref=e21] [cursor=pointer]:
+            - /url: /manage_orders
+          - link "Биржа" [ref=e22] [cursor=pointer]:
+            - /url: /projects
+        - link "Чат" [ref=e25] [cursor=pointer]:
+          - /url: /inbox
+        - generic [ref=e27]:
+          - link "0" [ref=e30] [cursor=pointer]:
+            - /url: /balance
+          - link [ref=e36] [cursor=pointer]:
+            - /url: /user/furich
+    - list [ref=e42]:
+      - listitem [ref=e43]:
+        - link "Дизайн" [ref=e44] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/design
+      - listitem [ref=e46]:
+        - link "Разработка и IT" [ref=e47] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/programming
+      - listitem [ref=e49]:
+        - link "Тексты и переводы" [ref=e50] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/writing-translations
+      - listitem [ref=e52]:
+        - link "SEO и трафик" [ref=e53] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/seo
+      - listitem [ref=e55]:
+        - link "Соцсети и маркетинг" [ref=e56] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/promotion
+      - listitem [ref=e58]:
+        - link "Аудио, видео, съемка" [ref=e59] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/audio-video
+      - listitem [ref=e61]:
+        - link "Бизнес и жизнь" [ref=e62] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/business
+  - generic [ref=e64]:
+    - generic [ref=e67]:
+      - link "К списку проектов" [ref=e70] [cursor=pointer]:
+        - /url: /projects
+      - generic [ref=e71]:
+        - generic [ref=e72]:
+          - generic [ref=e73]:
+            - heading "Разработка калькулятора" [level=1] [ref=e74]
+            - generic [ref=e76]:
+              - text: "Здравствуйте!У нашей компании сайт на шаблоне. На сайте уже есть калькулятор, но он работает только по той продукции, которая есть на сайте (грубо говоря, это модернизированный фильтр по товару). Нам нужен калькулятор для товара по индивидуальным размерам. Пример, как это реализовано у нашего партнера:"
+              - link "https://www.alkraft.ru/production" [ref=e78] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production
+              - text: ". Попробуйте указать размеры, чтобы понять, как работает данный подбор. Нам в целом нужно тоже самое, только по нашей продукции. Суть в том, что система должна автоматически генерировать предложения по размеру клиента:"
+              - link "https://skrinshoter.ru/scdsP2C5Hyx" [ref=e79] [cursor=pointer]:
+                - /url: https://skrinshoter.ru/scdsP2C5Hyx
+              - text: ". Создается небольшая карточка товара, где прописываются основные характеристики, расчет по размерам клиента, цена и срок изготовления. Далее можно добавить в корзину и оплатить. У нашего партнера этот подбор есть как общий, по всем моделям, так и отдельно в каждой карточке товара по определенной модели. Пример:"
+              - link "https://www.alkraft.ru/production/arhitektor#tab:calc" [ref=e80] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/arhitektor#tab:calc
+              - text: По стоимости даже примерно не предполагаю, ставлю просто, что поставить, на это не смотрите, пожалуйста. Эту идею уже очень давно хотим реализовать, нужен исполнитель просто, который справится. Потому что как мы поняли, задача не из простых.
+          - generic [ref=e81]:
+            - generic [ref=e83]:
+              - text: "Желаемый бюджет: до"
+              - generic [ref=e84]: 10 000 ₽
+            - generic [ref=e85]:
+              - text: "Допустимый:"
+              - generic [ref=e86]:
+                - text: до
+                - generic [ref=e87]: 30 000 ₽
+        - generic [ref=e89]:
+          - generic [ref=e90]: d
+          - generic [ref=e92]:
+            - generic [ref=e93]:
+              - generic [ref=e94]:
+                - text: "Покупатель:"
+                - link "docmos22" [ref=e95] [cursor=pointer]:
+                  - /url: https://kwork.ru/user/docmos22
+              - img "Сделано более 7 покупок" [ref=e96]
+            - generic [ref=e97]:
+              - text: "Размещено проектов на бирже: 10"
+              - generic [ref=e98]: "Нанято: 50%"
+        - generic [ref=e100]:
+          - generic [ref=e101]:
+            - generic [ref=e102]: "Осталось: 1 д. 17 ч."
+            - generic [ref=e103]: "Предложений: 53"
+          - generic [ref=e104]:
+            - button "Оставить отзыв" [ref=e105] [cursor=pointer]
+            - generic [ref=e106] [cursor=pointer]: Предложить услугу
+    - text:  
+  - generic [ref=e109]:
+    - generic [ref=e110]:
+      - generic [ref=e111]:
+        - link [ref=e112] [cursor=pointer]:
+          - /url: /
+        - generic [ref=e114]:
+          - generic [ref=e115]: "Онлайн: 1582"
+          - generic [ref=e118]: "Заказ: 2 мин. назад"
+      - generic [ref=e122]:
+        - generic [ref=e123]:
+          - generic [ref=e124]: О Kwork
+          - generic [ref=e127]:
+            - link "О проекте" [ref=e128] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=e129] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=e130] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Карьера в Kwork" [ref=e131] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=e132]:
+          - generic [ref=e133]: Сообщество
+          - generic [ref=e136]:
+            - link "Блог" [ref=e137] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=e138] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=e139] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=e140]:
+          - generic [ref=e141]: Полезное
+          - generic [ref=e144]:
+            - link "Покупателям" [ref=e145] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=e146] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=e147] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=e148] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Мобильное приложение" [ref=e149] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=e150]:
+          - generic [ref=e151]: Помощь
+          - generic [ref=e154]:
+            - link "Вопрос — Ответ" [ref=e155] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=e156] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=e157]:
+      - generic [ref=e158]:
+        - link [ref=e159] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=e163] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=e167]:
+        - link [ref=e168] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=e169]
+        - link [ref=e170] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=e171]

@@ -1,0 +1,900 @@
+- generic [active] [ref=f7e1]:
+  - generic: 
+  - navigation [ref=f7e18]:
+    - generic [ref=f7e20]:
+      - generic [ref=f7e21]:
+        - link [ref=f7e22] [cursor=pointer]:
+          - /url: https://www.alkraft.ru
+        - link [ref=f7e23] [cursor=pointer]:
+          - /url: https://www.alkraft.ru
+      - generic [ref=f7e24]: Производство и продажа ревизионных сантехнических люков
+      - text: 
+      - generic [ref=f7e25]:
+        - list [ref=f7e26]:
+          - generic [ref=f7e27]:
+            - link "О компании" [ref=f7e29] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/about
+            - link "Продукция" [ref=f7e31] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production
+            - generic [ref=f7e32]:
+              - generic [ref=f7e33] [cursor=pointer]: Клиентам
+              - text: 
+            - link "Контакты" [ref=f7e35] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/contacts
+        - generic [ref=f7e36]:
+          - link "" [ref=f7e37] [cursor=pointer]:
+            - /url: /cabinet
+          - link " 0" [ref=f7e38] [cursor=pointer]:
+            - /url: /cart
+            - text: 
+            - generic [ref=f7e39]: "0"
+      - generic [ref=f7e41]:
+        - generic [ref=f7e42]:
+          - generic [ref=f7e43]: Россия
+          - link "+7 (800) 301-34-12" [ref=f7e44] [cursor=pointer]:
+            - /url: tel:78003013412
+        - generic [ref=f7e45]:
+          - generic [ref=f7e46]: Москва
+          - link "+7 (495) 106-58-89" [ref=f7e47] [cursor=pointer]:
+            - /url: tel:74951065889
+      - link " info@alkraft.ru" [ref=f7e50] [cursor=pointer]:
+        - /url: mailto:info@alkraft.ru
+        - generic [ref=f7e51]: 
+        - text: info@alkraft.ru
+      - generic [ref=f7e52]: Работаем по Москве и всей России
+  - generic [ref=f7e55]:
+    - list [ref=f7e57]:
+      - listitem [ref=f7e58]:
+        - link "" [ref=f7e59] [cursor=pointer]:
+          - /url: https://www.alkraft.ru
+      - generic [ref=f7e61]: 
+      - listitem [ref=f7e62]:
+        - link "Продукция" [ref=f7e63] [cursor=pointer]:
+          - /url: https://www.alkraft.ru/production
+    - generic [ref=f7e64]:
+      - heading "Продукция Алкрафт" [level=1] [ref=f7e66]
+      - link "Стать партнером" [ref=f7e68] [cursor=pointer]:
+        - /url: /bepartner
+  - generic [ref=f7e71]:
+    - list [ref=f7e74]:
+      - listitem [ref=f7e75] [cursor=pointer]:
+        - generic [ref=f7e76]: Люк под плитку
+      - listitem [ref=f7e77] [cursor=pointer]:
+        - generic [ref=f7e78]: Люк под покраску
+      - listitem [ref=f7e79] [cursor=pointer]:
+        - generic [ref=f7e80]: Люк-дверь
+      - listitem [ref=f7e81] [cursor=pointer]:
+        - generic [ref=f7e82]: Огнестойкий люк
+      - listitem [ref=f7e83] [cursor=pointer]:
+        - generic [ref=f7e84]: Напольный люк
+    - generic [ref=f7e87]:
+      - heading "Подбор люка под плитку" [level=2] [ref=f7e88]
+      - generic [ref=f7e89]:
+        - generic [ref=f7e91]:
+          - generic [ref=f7e92]: "Укажите размер проема:"
+          - generic [ref=f7e94]:
+            - generic [ref=f7e95]:
+              - generic [ref=f7e96]:
+                - generic [ref=f7e97]: Ширина, мм
+                - textbox "0" [ref=f7e98]
+              - generic [ref=f7e99]: x
+              - generic [ref=f7e100]:
+                - generic [ref=f7e101]: Высота, мм
+                - textbox "0" [ref=f7e102]
+            - button "ПОДОБРАТЬ" [ref=f7e104] [cursor=pointer]
+        - generic [ref=f7e105]:
+          - paragraph [ref=f7e106]:
+            - generic [ref=f7e107] [cursor=pointer]:
+              - emphasis [ref=f7e108]: 
+              - text: Отправить заявку
+          - paragraph [ref=f7e109]
+          - list [ref=f7e110]:
+            - listitem [ref=f7e111]:
+              - text: Отправьте заявку на подбор и расчет люка под плитку на почту
+              - link "info@alkraft.ru" [ref=f7e112] [cursor=pointer]:
+                - /url: mailto:info@alkraft.ru?subject=Заявка на подбор люка под плитку
+              - text: Мы подберем и дадим выгодную цену на люки под плитку
+    - text:    
+  - generic [ref=f7e115]:
+    - link "Люк под плитку \"Инженер\" (Алкрафт) в интерьере Люки под плитку" [ref=f7e116] [cursor=pointer]:
+      - /url: https://www.alkraft.ru/lyuki-pod-plitku
+      - img "Люк под плитку \"Инженер\" (Алкрафт) в интерьере" [ref=f7e120]
+      - generic [ref=f7e121]: Люки под плитку
+    - link "Люк под покраску (Алкрафт) Люки под покраску" [ref=f7e122] [cursor=pointer]:
+      - /url: https://www.alkraft.ru/lyuki-pod-pokrasku
+      - img "Люк под покраску (Алкрафт)" [ref=f7e126]
+      - generic [ref=f7e127]: Люки под покраску
+    - link "Технические двери Технические двери" [ref=f7e128] [cursor=pointer]:
+      - /url: https://www.alkraft.ru/techno-doors
+      - img "Технические двери" [ref=f7e132]
+      - generic [ref=f7e133]: Технические двери
+    - link "Огнестойкие люки Огнестойкие люки" [ref=f7e134] [cursor=pointer]:
+      - /url: https://www.alkraft.ru/protivopozharnye-lyuki
+      - img "Огнестойкие люки" [ref=f7e138]
+      - generic [ref=f7e139]: Огнестойкие люки
+    - link "Напольный люк \"Инспектор\" (Алкрафт) в интерьере Напольные люки" [ref=f7e140] [cursor=pointer]:
+      - /url: https://www.alkraft.ru/napolnye-lyuki
+      - img "Напольный люк \"Инспектор\" (Алкрафт) в интерьере" [ref=f7e144]
+      - generic [ref=f7e145]: Напольные люки
+    - link "Металлическая люк-дверца с замком (Алкрафт) в интерьере Металлические лючки" [ref=f7e146] [cursor=pointer]:
+      - /url: https://www.alkraft.ru/metallicheskie-luki
+      - img "Металлическая люк-дверца с замком (Алкрафт) в интерьере" [ref=f7e150]
+      - generic [ref=f7e151]: Металлические лючки
+  - generic [ref=f7e154]:
+    - generic [ref=f7e158]:
+      - text: 
+      - generic [ref=f7e159]:
+        - generic [ref=f7e160]:
+          - generic [ref=f7e161] [cursor=pointer]: Тип 
+          - generic [ref=f7e162]:
+            - text: 
+            - generic [ref=f7e163]:
+              - generic [ref=f7e164]:
+                - checkbox "люк под плитку (6)"
+                - generic [ref=f7e165] [cursor=pointer]: люк под плитку (6)
+              - generic [ref=f7e166]:
+                - checkbox "люк под покраску (6)"
+                - generic [ref=f7e167] [cursor=pointer]: люк под покраску (6)
+              - generic [ref=f7e168]:
+                - checkbox "металлическая дверца (3)"
+                - generic [ref=f7e169] [cursor=pointer]: металлическая дверца (3)
+              - generic [ref=f7e170]:
+                - checkbox "напольный люк (3)"
+                - generic [ref=f7e171] [cursor=pointer]: напольный люк (3)
+              - generic [ref=f7e172]:
+                - checkbox "противопожарный люк (2)"
+                - generic [ref=f7e173] [cursor=pointer]: противопожарный люк (2)
+              - generic [ref=f7e174]:
+                - checkbox "техническая дверь (2)"
+                - generic [ref=f7e175] [cursor=pointer]: техническая дверь (2)
+        - generic [ref=f7e176]:
+          - generic [ref=f7e177] [cursor=pointer]: Место установки 
+          - generic [ref=f7e178]:
+            - text: 
+            - generic [ref=f7e179]:
+              - generic [ref=f7e180]:
+                - checkbox "в пол (3)"
+                - generic [ref=f7e181] [cursor=pointer]: в пол (3)
+              - generic [ref=f7e182]:
+                - checkbox "в потолок (3)"
+                - generic [ref=f7e183] [cursor=pointer]: в потолок (3)
+              - generic [ref=f7e184]:
+                - checkbox "в стену (10)"
+                - generic [ref=f7e185] [cursor=pointer]: в стену (10)
+        - generic [ref=f7e186]:
+          - generic [ref=f7e187] [cursor=pointer]: Механизм 
+          - generic [ref=f7e188]:
+            - text: 
+            - generic [ref=f7e189]:
+              - generic [ref=f7e190]:
+                - checkbox "вынимаемые / съемные (5)"
+                - generic [ref=f7e191] [cursor=pointer]: вынимаемые / съемные (5)
+              - generic [ref=f7e192]:
+                - checkbox "на петле (12)"
+                - generic [ref=f7e193] [cursor=pointer]: на петле (12)
+        - generic [ref=f7e194]:
+          - generic [ref=f7e195] [cursor=pointer]: Метод открывания 
+          - generic [ref=f7e196]:
+            - text: 
+            - generic [ref=f7e197]:
+              - generic [ref=f7e198]:
+                - checkbox "за ручку (7)"
+                - generic [ref=f7e199] [cursor=pointer]: за ручку (7)
+              - generic [ref=f7e200]:
+                - checkbox "от нажатия (10)"
+                - generic [ref=f7e201] [cursor=pointer]: от нажатия (10)
+              - generic [ref=f7e202]:
+                - checkbox "с замком (4)"
+                - generic [ref=f7e203] [cursor=pointer]: с замком (4)
+        - generic [ref=f7e204]:
+          - generic [ref=f7e205] [cursor=pointer]: Уплотнитель 
+          - generic [ref=f7e206]:
+            - text: 
+            - generic [ref=f7e207]:
+              - generic [ref=f7e208]:
+                - checkbox "без уплотнителя (7)"
+                - generic [ref=f7e209] [cursor=pointer]: без уплотнителя (7)
+              - generic [ref=f7e210]:
+                - checkbox "от влаги (10)"
+                - generic [ref=f7e211] [cursor=pointer]: от влаги (10)
+              - generic [ref=f7e212]:
+                - checkbox "от дыма (3)"
+                - generic [ref=f7e213] [cursor=pointer]: от дыма (3)
+              - generic [ref=f7e214]:
+                - checkbox "от запахов (10)"
+                - generic [ref=f7e215] [cursor=pointer]: от запахов (10)
+        - generic [ref=f7e216]:
+          - generic [ref=f7e217] [cursor=pointer]: Гарантия 
+          - generic [ref=f7e218]:
+            - text: 
+            - generic [ref=f7e219]:
+              - generic [ref=f7e220]:
+                - checkbox "5 лет (14)"
+                - generic [ref=f7e221] [cursor=pointer]: 5 лет (14)
+              - generic [ref=f7e222]:
+                - checkbox "10 лет (3)"
+                - generic [ref=f7e223] [cursor=pointer]: 10 лет (3)
+        - generic [ref=f7e224]:
+          - generic [ref=f7e225] [cursor=pointer]: Цена 
+          - generic [ref=f7e226]:
+            - text: 
+            - generic [ref=f7e227]:
+              - generic [ref=f7e228]:
+                - textbox [ref=f7e230]: "2590"
+                - generic [ref=f7e231]: "-"
+                - textbox [ref=f7e233]: "11750"
+              - generic [ref=f7e236]:
+                - slider [ref=f7e239]
+                - slider [ref=f7e241]
+      - generic [ref=f7e243]: Очистить фильтр
+    - generic [ref=f7e245]:
+      - generic [ref=f7e247]:
+        - text: 
+        - combobox [ref=f7e248]:
+          - option "сначала недорогие"
+          - option "сначала дорогие"
+          - option "по наименованию" [selected]
+      - generic [ref=f7e250]:
+        - generic [ref=f7e251]:
+          - link [ref=f7e252] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/arhitektor
+          - link "Люк под плитку \"Архитектор\"" [ref=f7e256] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/arhitektor
+          - generic [ref=f7e257]:
+            - generic [ref=f7e258]:
+              - term [ref=f7e259]: "Тип:"
+              - definition [ref=f7e260]: люк под плитку
+            - generic [ref=f7e261]:
+              - term [ref=f7e262]: "Место установки:"
+              - definition [ref=f7e263]: в стену
+            - generic [ref=f7e264]:
+              - term [ref=f7e265]: "Механизм:"
+              - definition [ref=f7e266]: на петле
+            - generic [ref=f7e267]:
+              - term [ref=f7e268]: "Метод открывания:"
+              - definition [ref=f7e269]: от нажатия
+            - generic [ref=f7e270]:
+              - term [ref=f7e271]: "Уплотнитель:"
+              - definition [ref=f7e272]: от влаги / от дыма / от запахов
+            - generic [ref=f7e273]:
+              - term [ref=f7e274]: "Гарантия:"
+              - definition [ref=f7e275]: 5 лет
+          - generic [ref=f7e277]:
+            - generic [ref=f7e278]:
+              - generic [ref=f7e279]: от
+              - text: 7'710
+              - generic [ref=f7e280]: руб
+              - generic [ref=f7e281]: в наличии
+            - link "Подробнее" [ref=f7e282] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/arhitektor
+        - generic [ref=f7e283]:
+          - link [ref=f7e284] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/brigadir
+          - link "Люк-дверь под покраску \"Бригадир\"" [ref=f7e288] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/brigadir
+          - generic [ref=f7e289]:
+            - generic [ref=f7e290]:
+              - term [ref=f7e291]: "Тип:"
+              - definition [ref=f7e292]: люк под покраску / техническая дверь
+            - generic [ref=f7e293]:
+              - term [ref=f7e294]: "Место установки:"
+              - definition [ref=f7e295]: в стену
+            - generic [ref=f7e296]:
+              - term [ref=f7e297]: "Механизм:"
+              - definition [ref=f7e298]: на петле
+            - generic [ref=f7e299]:
+              - term [ref=f7e300]: "Метод открывания:"
+              - definition [ref=f7e301]: за ручку / от нажатия / с замком
+            - generic [ref=f7e302]:
+              - term [ref=f7e303]: "Уплотнитель:"
+              - definition [ref=f7e304]: без уплотнителя
+            - generic [ref=f7e305]:
+              - term [ref=f7e306]: "Гарантия:"
+              - definition [ref=f7e307]: 5 лет
+          - generic [ref=f7e309]:
+            - generic [ref=f7e310]: Под заказ
+            - link "Подробнее" [ref=f7e311] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/brigadir
+        - generic [ref=f7e312]:
+          - link [ref=f7e313] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/brigadir-p
+          - link "Люк-дверь под плитку \"Бригадир-П\"" [ref=f7e317] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/brigadir-p
+          - generic [ref=f7e318]:
+            - generic [ref=f7e319]:
+              - term [ref=f7e320]: "Тип:"
+              - definition [ref=f7e321]: люк под плитку / техническая дверь
+            - generic [ref=f7e322]:
+              - term [ref=f7e323]: "Место установки:"
+              - definition [ref=f7e324]: в стену
+            - generic [ref=f7e325]:
+              - term [ref=f7e326]: "Механизм:"
+              - definition [ref=f7e327]: на петле
+            - generic [ref=f7e328]:
+              - term [ref=f7e329]: "Метод открывания:"
+              - definition [ref=f7e330]: от нажатия
+            - generic [ref=f7e331]:
+              - term [ref=f7e332]: "Уплотнитель:"
+              - definition [ref=f7e333]: без уплотнителя
+            - generic [ref=f7e334]:
+              - term [ref=f7e335]: "Гарантия:"
+              - definition [ref=f7e336]: 5 лет
+          - generic [ref=f7e338]:
+            - generic [ref=f7e339]: Под заказ
+            - link "Подробнее" [ref=f7e340] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/brigadir-p
+        - generic [ref=f7e341]:
+          - link [ref=f7e342] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/metallicheskaya-dverca-na-magnite
+          - link "Металлический лючок на магните" [ref=f7e346] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/metallicheskaya-dverca-na-magnite
+          - generic [ref=f7e347]:
+            - generic [ref=f7e348]:
+              - term [ref=f7e349]: "Тип:"
+              - definition [ref=f7e350]: металлическая дверца
+            - generic [ref=f7e351]:
+              - term [ref=f7e352]: "Механизм:"
+              - definition [ref=f7e353]: на петле
+            - generic [ref=f7e354]:
+              - term [ref=f7e355]: "Метод открывания:"
+              - definition [ref=f7e356]: за ручку
+            - generic [ref=f7e357]:
+              - term [ref=f7e358]: "Уплотнитель:"
+              - definition [ref=f7e359]: без уплотнителя
+            - generic [ref=f7e360]:
+              - term [ref=f7e361]: "Гарантия:"
+              - definition [ref=f7e362]: 5 лет
+          - generic [ref=f7e364]:
+            - generic [ref=f7e365]: Под заказ
+            - link "Подробнее" [ref=f7e366] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/metallicheskaya-dverca-na-magnite
+        - generic [ref=f7e367]:
+          - link [ref=f7e368] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/metallicheskaya-dverca-nazhimnaya
+          - link "Металлический лючок нажимной" [ref=f7e372] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/metallicheskaya-dverca-nazhimnaya
+          - generic [ref=f7e373]:
+            - generic [ref=f7e374]:
+              - term [ref=f7e375]: "Тип:"
+              - definition [ref=f7e376]: металлическая дверца
+            - generic [ref=f7e377]:
+              - term [ref=f7e378]: "Механизм:"
+              - definition [ref=f7e379]: на петле
+            - generic [ref=f7e380]:
+              - term [ref=f7e381]: "Метод открывания:"
+              - definition [ref=f7e382]: от нажатия
+            - generic [ref=f7e383]:
+              - term [ref=f7e384]: "Уплотнитель:"
+              - definition [ref=f7e385]: без уплотнителя
+            - generic [ref=f7e386]:
+              - term [ref=f7e387]: "Гарантия:"
+              - definition [ref=f7e388]: 5 лет
+          - generic [ref=f7e390]:
+            - generic [ref=f7e391]: Под заказ
+            - link "Подробнее" [ref=f7e392] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/metallicheskaya-dverca-nazhimnaya
+        - generic [ref=f7e393]:
+          - link [ref=f7e394] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/metallicheskaya-dverca-s-zamkom
+          - link "Металлический лючок с замком" [ref=f7e398] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/metallicheskaya-dverca-s-zamkom
+          - generic [ref=f7e399]:
+            - generic [ref=f7e400]:
+              - term [ref=f7e401]: "Тип:"
+              - definition [ref=f7e402]: металлическая дверца
+            - generic [ref=f7e403]:
+              - term [ref=f7e404]: "Механизм:"
+              - definition [ref=f7e405]: на петле
+            - generic [ref=f7e406]:
+              - term [ref=f7e407]: "Метод открывания:"
+              - definition [ref=f7e408]: с замком
+            - generic [ref=f7e409]:
+              - term [ref=f7e410]: "Уплотнитель:"
+              - definition [ref=f7e411]: без уплотнителя
+            - generic [ref=f7e412]:
+              - term [ref=f7e413]: "Гарантия:"
+              - definition [ref=f7e414]: 5 лет
+          - generic [ref=f7e416]:
+            - generic [ref=f7e417]: Под заказ
+            - link "Подробнее" [ref=f7e418] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/metallicheskaya-dverca-s-zamkom
+        - generic [ref=f7e419]:
+          - link [ref=f7e420] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/inzhener2
+          - link "Люк под плитку \"Инженер-2\"" [ref=f7e424] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/inzhener2
+          - generic [ref=f7e425]:
+            - generic [ref=f7e426]:
+              - term [ref=f7e427]: "Тип:"
+              - definition [ref=f7e428]: люк под плитку
+            - generic [ref=f7e429]:
+              - term [ref=f7e430]: "Место установки:"
+              - definition [ref=f7e431]: в стену
+            - generic [ref=f7e432]:
+              - term [ref=f7e433]: "Механизм:"
+              - definition [ref=f7e434]: на петле
+            - generic [ref=f7e435]:
+              - term [ref=f7e436]: "Метод открывания:"
+              - definition [ref=f7e437]: от нажатия
+            - generic [ref=f7e438]:
+              - term [ref=f7e439]: "Уплотнитель:"
+              - definition [ref=f7e440]: без уплотнителя
+            - generic [ref=f7e441]:
+              - term [ref=f7e442]: "Гарантия:"
+              - definition [ref=f7e443]: 5 лет
+          - generic [ref=f7e445]:
+            - generic [ref=f7e446]:
+              - generic [ref=f7e447]: от
+              - text: 5'230
+              - generic [ref=f7e448]: руб
+              - generic [ref=f7e449]: в наличии
+            - link "Подробнее" [ref=f7e450] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/inzhener2
+        - generic [ref=f7e451]:
+          - link [ref=f7e452] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/inspektor
+          - link "Напольный люк \"Инспектор\"" [ref=f7e456] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/inspektor
+          - generic [ref=f7e457]:
+            - generic [ref=f7e458]:
+              - term [ref=f7e459]: "Тип:"
+              - definition [ref=f7e460]: напольный люк
+            - generic [ref=f7e461]:
+              - term [ref=f7e462]: "Место установки:"
+              - definition [ref=f7e463]: в пол
+            - generic [ref=f7e464]:
+              - term [ref=f7e465]: "Механизм:"
+              - definition [ref=f7e466]: вынимаемые / съемные
+            - generic [ref=f7e467]:
+              - term [ref=f7e468]: "Метод открывания:"
+              - definition [ref=f7e469]: за ручку
+            - generic [ref=f7e470]:
+              - term [ref=f7e471]: "Уплотнитель:"
+              - definition [ref=f7e472]: от влаги / от запахов
+            - generic [ref=f7e473]:
+              - term [ref=f7e474]: "Гарантия:"
+              - definition [ref=f7e475]: 10 лет
+          - generic [ref=f7e477]:
+            - generic [ref=f7e478]:
+              - generic [ref=f7e479]: от
+              - text: 4'220
+              - generic [ref=f7e480]: руб
+              - generic [ref=f7e481]: в наличии
+            - link "Подробнее" [ref=f7e482] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/inspektor
+        - generic [ref=f7e483]:
+          - link [ref=f7e484] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/comfort
+          - link "Напольный люк \"Комфорт\"" [ref=f7e488] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/comfort
+          - generic [ref=f7e489]:
+            - generic [ref=f7e490]:
+              - term [ref=f7e491]: "Тип:"
+              - definition [ref=f7e492]: напольный люк
+            - generic [ref=f7e493]:
+              - term [ref=f7e494]: "Место установки:"
+              - definition [ref=f7e495]: в пол
+            - generic [ref=f7e496]:
+              - term [ref=f7e497]: "Механизм:"
+              - definition [ref=f7e498]: вынимаемые / съемные
+            - generic [ref=f7e499]:
+              - term [ref=f7e500]: "Метод открывания:"
+              - definition [ref=f7e501]: за ручку
+            - generic [ref=f7e502]:
+              - term [ref=f7e503]: "Уплотнитель:"
+              - definition [ref=f7e504]: от влаги / от запахов
+            - generic [ref=f7e505]:
+              - term [ref=f7e506]: "Гарантия:"
+              - definition [ref=f7e507]: 10 лет
+          - generic [ref=f7e509]:
+            - generic [ref=f7e510]:
+              - generic [ref=f7e511]: от
+              - text: 6'240
+              - generic [ref=f7e512]: руб
+              - generic [ref=f7e513]: в наличии
+            - link "Подробнее" [ref=f7e514] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/comfort
+        - generic [ref=f7e515]:
+          - link [ref=f7e516] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/comfort-r
+          - link "Напольный люк \"Комфорт-Р\"" [ref=f7e520] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/comfort-r
+          - generic [ref=f7e521]:
+            - generic [ref=f7e522]:
+              - term [ref=f7e523]: "Тип:"
+              - definition [ref=f7e524]: напольный люк
+            - generic [ref=f7e525]:
+              - term [ref=f7e526]: "Место установки:"
+              - definition [ref=f7e527]: в пол
+            - generic [ref=f7e528]:
+              - term [ref=f7e529]: "Механизм:"
+              - definition [ref=f7e530]: вынимаемые / съемные
+            - generic [ref=f7e531]:
+              - term [ref=f7e532]: "Метод открывания:"
+              - definition [ref=f7e533]: за ручку
+            - generic [ref=f7e534]:
+              - term [ref=f7e535]: "Уплотнитель:"
+              - definition [ref=f7e536]: от влаги / от запахов
+            - generic [ref=f7e537]:
+              - term [ref=f7e538]: "Гарантия:"
+              - definition [ref=f7e539]: 10 лет
+          - generic [ref=f7e541]:
+            - generic [ref=f7e542]: Под заказ
+            - link "Подробнее" [ref=f7e543] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/comfort-r
+        - generic [ref=f7e544]:
+          - link [ref=f7e545] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/master
+          - link "Люк под покраску \"Мастер\"" [ref=f7e549] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/master
+          - generic [ref=f7e550]:
+            - generic [ref=f7e551]:
+              - term [ref=f7e552]: "Тип:"
+              - definition [ref=f7e553]: люк под покраску
+            - generic [ref=f7e554]:
+              - term [ref=f7e555]: "Место установки:"
+              - definition [ref=f7e556]: в потолок / в стену
+            - generic [ref=f7e557]:
+              - term [ref=f7e558]: "Механизм:"
+              - definition [ref=f7e559]: на петле
+            - generic [ref=f7e560]:
+              - term [ref=f7e561]: "Метод открывания:"
+              - definition [ref=f7e562]: от нажатия
+            - generic [ref=f7e563]:
+              - term [ref=f7e564]: "Уплотнитель:"
+              - definition [ref=f7e565]: от влаги / от запахов
+            - generic [ref=f7e566]:
+              - term [ref=f7e567]: "Гарантия:"
+              - definition [ref=f7e568]: 5 лет
+          - generic [ref=f7e570]:
+            - generic [ref=f7e571]:
+              - generic [ref=f7e572]: от
+              - text: 2'630
+              - generic [ref=f7e573]: руб
+              - generic [ref=f7e574]: в наличии
+            - link "Подробнее" [ref=f7e575] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/master
+        - generic [ref=f7e576]:
+          - link [ref=f7e577] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/master-s
+          - link "Люк под покраску \"Мастер-С\"" [ref=f7e581] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/master-s
+          - generic [ref=f7e582]:
+            - generic [ref=f7e583]:
+              - term [ref=f7e584]: "Тип:"
+              - definition [ref=f7e585]: люк под покраску
+            - generic [ref=f7e586]:
+              - term [ref=f7e587]: "Место установки:"
+              - definition [ref=f7e588]: в потолок
+            - generic [ref=f7e589]:
+              - term [ref=f7e590]: "Механизм:"
+              - definition [ref=f7e591]: вынимаемые / съемные
+            - generic [ref=f7e592]:
+              - term [ref=f7e593]: "Метод открывания:"
+              - definition [ref=f7e594]: от нажатия
+            - generic [ref=f7e595]:
+              - term [ref=f7e596]: "Уплотнитель:"
+              - definition [ref=f7e597]: от влаги / от запахов
+            - generic [ref=f7e598]:
+              - term [ref=f7e599]: "Гарантия:"
+              - definition [ref=f7e600]: 5 лет
+          - generic [ref=f7e602]:
+            - generic [ref=f7e603]:
+              - generic [ref=f7e604]: от
+              - text: 3'600
+              - generic [ref=f7e605]: руб
+              - generic [ref=f7e606]: в наличии
+            - link "Подробнее" [ref=f7e607] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/master-s
+        - generic [ref=f7e608]:
+          - link "новинка" [ref=f7e609] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/mehanik
+          - link "Люк под плитку \"Механик\"" [ref=f7e614] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/mehanik
+          - generic [ref=f7e615]:
+            - generic [ref=f7e616]:
+              - term [ref=f7e617]: "Тип:"
+              - definition [ref=f7e618]: люк под плитку
+            - generic [ref=f7e619]:
+              - term [ref=f7e620]: "Место установки:"
+              - definition [ref=f7e621]: в стену
+            - generic [ref=f7e622]:
+              - term [ref=f7e623]: "Механизм:"
+              - definition [ref=f7e624]: на петле
+            - generic [ref=f7e625]:
+              - term [ref=f7e626]: "Метод открывания:"
+              - definition [ref=f7e627]: от нажатия
+            - generic [ref=f7e628]:
+              - term [ref=f7e629]: "Уплотнитель:"
+              - definition [ref=f7e630]: от влаги / от запахов
+            - generic [ref=f7e631]:
+              - term [ref=f7e632]: "Гарантия:"
+              - definition [ref=f7e633]: 5 лет
+          - generic [ref=f7e635]:
+            - generic [ref=f7e636]:
+              - generic [ref=f7e637]: от
+              - text: 11'750
+              - generic [ref=f7e638]: руб
+              - generic [ref=f7e639]: в наличии
+            - link "Подробнее" [ref=f7e640] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/mehanik
+        - generic [ref=f7e641]:
+          - link [ref=f7e642] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/ogneborec
+          - link "Огнестойкий люк под плитку \"Огнеборец\"" [ref=f7e646] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/ogneborec
+          - generic [ref=f7e647]:
+            - generic [ref=f7e648]:
+              - term [ref=f7e649]: "Тип:"
+              - definition [ref=f7e650]: люк под плитку / противопожарный люк
+            - generic [ref=f7e651]:
+              - term [ref=f7e652]: "Место установки:"
+              - definition [ref=f7e653]: в стену
+            - generic [ref=f7e654]:
+              - term [ref=f7e655]: "Механизм:"
+              - definition [ref=f7e656]: на петле
+            - generic [ref=f7e657]:
+              - term [ref=f7e658]: "Метод открывания:"
+              - definition [ref=f7e659]: за ручку / с замком
+            - generic [ref=f7e660]:
+              - term [ref=f7e661]: "Уплотнитель:"
+              - definition [ref=f7e662]: от влаги / от дыма / от запахов
+            - generic [ref=f7e663]:
+              - term [ref=f7e664]: "Гарантия:"
+              - definition [ref=f7e665]: 5 лет
+          - generic [ref=f7e667]:
+            - generic [ref=f7e668]: Под заказ
+            - link "Подробнее" [ref=f7e669] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/ogneborec
+        - generic [ref=f7e670]:
+          - link [ref=f7e671] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/pozharniy
+          - link "Огнестойкий люк под покраску \"Пожарный\"" [ref=f7e675] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/pozharniy
+          - generic [ref=f7e676]:
+            - generic [ref=f7e677]:
+              - term [ref=f7e678]: "Тип:"
+              - definition [ref=f7e679]: люк под покраску / противопожарный люк
+            - generic [ref=f7e680]:
+              - term [ref=f7e681]: "Место установки:"
+              - definition [ref=f7e682]: в стену
+            - generic [ref=f7e683]:
+              - term [ref=f7e684]: "Механизм:"
+              - definition [ref=f7e685]: на петле
+            - generic [ref=f7e686]:
+              - term [ref=f7e687]: "Метод открывания:"
+              - definition [ref=f7e688]: за ручку / с замком
+            - generic [ref=f7e689]:
+              - term [ref=f7e690]: "Уплотнитель:"
+              - definition [ref=f7e691]: от влаги / от дыма / от запахов
+            - generic [ref=f7e692]:
+              - term [ref=f7e693]: "Гарантия:"
+              - definition [ref=f7e694]: 5 лет
+          - generic [ref=f7e696]:
+            - generic [ref=f7e697]: Под заказ
+            - link "Подробнее" [ref=f7e698] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/pozharniy
+        - generic [ref=f7e699]:
+          - link [ref=f7e700] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/santehnik
+          - link "Универсальный стеновой люк \"Сантехник\"" [ref=f7e704] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/santehnik
+          - generic [ref=f7e705]:
+            - generic [ref=f7e706]:
+              - term [ref=f7e707]: "Тип:"
+              - definition [ref=f7e708]: люк под плитку / люк под покраску
+            - generic [ref=f7e709]:
+              - term [ref=f7e710]: "Место установки:"
+              - definition [ref=f7e711]: в стену
+            - generic [ref=f7e712]:
+              - term [ref=f7e713]: "Механизм:"
+              - definition [ref=f7e714]: вынимаемые / съемные
+            - generic [ref=f7e715]:
+              - term [ref=f7e716]: "Метод открывания:"
+              - definition [ref=f7e717]: от нажатия
+            - generic [ref=f7e718]:
+              - term [ref=f7e719]: "Уплотнитель:"
+              - definition [ref=f7e720]: от влаги / от запахов
+            - generic [ref=f7e721]:
+              - term [ref=f7e722]: "Гарантия:"
+              - definition [ref=f7e723]: 5 лет
+          - generic [ref=f7e725]:
+            - generic [ref=f7e726]:
+              - generic [ref=f7e727]: от
+              - text: 3'050
+              - generic [ref=f7e728]: руб
+              - generic [ref=f7e729]: в наличии
+            - link "Подробнее" [ref=f7e730] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/santehnik
+        - generic [ref=f7e731]:
+          - link [ref=f7e732] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/shtukatur
+          - link "Люк под покраску \"Штукатур\"" [ref=f7e736] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production/shtukatur
+          - generic [ref=f7e737]:
+            - generic [ref=f7e738]:
+              - term [ref=f7e739]: "Тип:"
+              - definition [ref=f7e740]: люк под покраску
+            - generic [ref=f7e741]:
+              - term [ref=f7e742]: "Место установки:"
+              - definition [ref=f7e743]: в потолок / в стену
+            - generic [ref=f7e744]:
+              - term [ref=f7e745]: "Механизм:"
+              - definition [ref=f7e746]: на петле
+            - generic [ref=f7e747]:
+              - term [ref=f7e748]: "Метод открывания:"
+              - definition [ref=f7e749]: от нажатия
+            - generic [ref=f7e750]:
+              - term [ref=f7e751]: "Уплотнитель:"
+              - definition [ref=f7e752]: без уплотнителя
+            - generic [ref=f7e753]:
+              - term [ref=f7e754]: "Гарантия:"
+              - definition [ref=f7e755]: 5 лет
+          - generic [ref=f7e757]:
+            - generic [ref=f7e758]:
+              - generic [ref=f7e759]: от
+              - text: 2'590
+              - generic [ref=f7e760]: руб
+              - generic [ref=f7e761]: закончились
+            - link "Подробнее" [ref=f7e762] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/production/shtukatur
+  - contentinfo [ref=f7e763]:
+    - generic [ref=f7e764]:
+      - generic [ref=f7e765]:
+        - generic [ref=f7e766]:
+          - generic [ref=f7e767]:
+            - generic [ref=f7e768]: РОССИЯ
+            - link "+7 (800) 301-34-12" [ref=f7e769] [cursor=pointer]:
+              - /url: tel:78003013412
+          - generic [ref=f7e770]: МОСКВА
+          - link "+7 (495) 106-58-89" [ref=f7e771] [cursor=pointer]:
+            - /url: tel:74951065889
+          - text: пн-пт с 09:00 до 18:00 (мск)
+          - generic [ref=f7e772]:
+            - paragraph [ref=f7e773]:
+              - link [ref=f7e774] [cursor=pointer]:
+                - /url: https://vk.com/alkraft_luki
+                - emphasis [ref=f7e775]
+                - text: ВКонтакте
+            - paragraph [ref=f7e776]:
+              - link [ref=f7e777] [cursor=pointer]:
+                - /url: https://www.youtube.com/@alkraft-official
+                - emphasis [ref=f7e778]
+                - text: Youtube-канал
+            - paragraph [ref=f7e779]:
+              - link [ref=f7e780] [cursor=pointer]:
+                - /url: https://t.me/alkraft_luki
+                - emphasis [ref=f7e781]
+                - text: Телеграм-канал
+            - paragraph [ref=f7e782]:
+              - link [ref=f7e783] [cursor=pointer]:
+                - /url: https://www.dzen.ru/alkraft
+                - emphasis [ref=f7e784]
+                - text: Дзен
+            - paragraph [ref=f7e785]:
+              - link [ref=f7e786] [cursor=pointer]:
+                - /url: https://rutube.ru/channel/39641751
+                - emphasis [ref=f7e787]
+                - text: RUTUBE
+        - generic [ref=f7e788]:
+          - generic [ref=f7e789]:
+            - link "Люки под плитку" [ref=f7e790] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/lyuki-pod-plitku
+            - generic [ref=f7e791]:
+              - link "Архитектор" [ref=f7e793] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/arhitektor
+              - link "Инженер-2" [ref=f7e795] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/inzhener2
+              - link "Механик" [ref=f7e797] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/mehanik
+              - link "Сантехник" [ref=f7e799] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/santehnik
+          - generic [ref=f7e800]:
+            - link "Люки под покраску" [ref=f7e801] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/lyuki-pod-pokrasku
+            - generic [ref=f7e802]:
+              - link "Мастер" [ref=f7e804] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/master
+              - link "Мастер-С" [ref=f7e806] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/master-s
+              - link "Штукатур" [ref=f7e808] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/shtukatur
+          - generic [ref=f7e809]:
+            - link "Металлические лючки" [ref=f7e810] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/metallicheskie-luki
+            - generic [ref=f7e811]:
+              - link "Дверца на магните" [ref=f7e813] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/metallicheskaya-dverca-na-magnite
+              - link "Дверца нажимная" [ref=f7e815] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/metallicheskaya-dverca-nazhimnaya
+              - link "Дверца с замком" [ref=f7e817] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/metallicheskaya-dverca-s-zamkom
+          - generic [ref=f7e818]:
+            - link "Напольные люки" [ref=f7e819] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/napolnye-lyuki
+            - generic [ref=f7e820]:
+              - link "Инспектор" [ref=f7e822] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/inspektor
+              - link "Комфорт" [ref=f7e824] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/comfort
+              - link "Комфорт-Р" [ref=f7e826] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/comfort-r
+          - generic [ref=f7e827]:
+            - link "Огнестойкие люки" [ref=f7e828] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/protivopozharnye-lyuki
+            - generic [ref=f7e829]:
+              - link "Огнеборец" [ref=f7e831] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/ogneborec
+              - link "Пожарный" [ref=f7e833] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/pozharniy
+          - generic [ref=f7e834]:
+            - link "Технические двери" [ref=f7e835] [cursor=pointer]:
+              - /url: https://www.alkraft.ru/techno-doors
+            - generic [ref=f7e836]:
+              - link "Бригадир" [ref=f7e838] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/brigadir
+              - link "Бригадир-П" [ref=f7e840] [cursor=pointer]:
+                - /url: https://www.alkraft.ru/production/brigadir-p
+          - link "Люки сантехнические" [ref=f7e842] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/lyuki-santekhnicheskiye
+        - generic [ref=f7e843]:
+          - link "Контакты" [ref=f7e845] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/contacts
+          - link "О компании" [ref=f7e847] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/about
+          - link "Продукция" [ref=f7e849] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/production
+          - link "Где купить" [ref=f7e851] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/where-to-buy
+          - link "Отзывы" [ref=f7e853] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/otzivi
+          - link "Гарантия" [ref=f7e855] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/warranty
+          - link "Оплата" [ref=f7e857] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/oplata
+          - link "Доставка" [ref=f7e859] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/dostavka
+          - link "Обмен и возврат" [ref=f7e861] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/vozvrat
+          - link "Стать партнером" [ref=f7e863] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/bepartner
+          - link "Сертификаты" [ref=f7e865] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/certificates
+          - link "Заказы" [ref=f7e867] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/retail/orders
+          - link "API" [ref=f7e869] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/api
+          - link "Личный кабинет" [ref=f7e871] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/cabinet
+          - link "Карта сайта" [ref=f7e873] [cursor=pointer]:
+            - /url: https://www.alkraft.ru/sitemap
+      - generic [ref=f7e875]:
+        - img "Логотип Алкрафт" [ref=f7e877]
+        - generic [ref=f7e878]: Производственная Компания «Алкрафт»
+        - generic [ref=f7e879]: Тверская область, м.о. Кимрский, г. Кимры, ул. Дмитрия Баслыка, д. 8
+        - generic [ref=f7e880]:
+          - text: "Телефон:"
+          - link "+7 (800) 301-34-12" [ref=f7e881] [cursor=pointer]:
+            - /url: tel:78003013412
+        - generic [ref=f7e882]:
+          - text: "E-mail:"
+          - link "info@alkraft.ru" [ref=f7e883] [cursor=pointer]:
+            - /url: mailto:info@alkraft.ru
+        - generic [ref=f7e884]: © 2026 Все права защищены
+        - link "Политика конфиденциальности" [ref=f7e886] [cursor=pointer]:
+          - /url: https://www.alkraft.ru/privacy-policy
+        - link "Политика обработки персональных данных" [ref=f7e888] [cursor=pointer]:
+          - /url: https://www.alkraft.ru/personal-policy
+        - link "Согласие на обработку файлов cookies" [ref=f7e890] [cursor=pointer]:
+          - /url: https://www.alkraft.ru/cookies-policy
+        - link "Управление файлами cookies" [ref=f7e892] [cursor=pointer]:
+          - /url: https://www.alkraft.ru/manage-cookies
+  - generic [ref=f7e893]:
+    - strong [ref=f7e895]: Мы используем файлы cookie
+    - generic [ref=f7e896]: Они необходимы для обеспечения работы нашего Сайта, анализа использования Сайта и для запоминания Ваших персональных настроек
+    - generic [ref=f7e897]: Принимаю
+    - generic [ref=f7e899]:
+      - link "Настроить" [ref=f7e900] [cursor=pointer]:
+        - /url: https://www.alkraft.ru/manage-cookies
+      - link "Согласие на обработку файлов cookies" [ref=f7e901] [cursor=pointer]:
+        - /url: https://www.alkraft.ru/cookies-policy

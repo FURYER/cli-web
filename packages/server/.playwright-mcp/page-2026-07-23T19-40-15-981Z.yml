@@ -1,0 +1,229 @@
+- generic [active] [ref=f6e1]:
+  - generic [ref=f6e4]:
+    - generic [ref=f6e6]:
+      - link "Фриланс маркетплейс" [ref=f6e8] [cursor=pointer]:
+        - /url: /
+      - textbox "Найти услуги" [ref=f6e14]
+      - generic [ref=f6e17]:
+        - generic [ref=f6e19]:
+          - link "Кворки" [ref=f6e20] [cursor=pointer]:
+            - /url: /manage_kworks
+          - link "Заказы" [ref=f6e21] [cursor=pointer]:
+            - /url: /manage_orders
+          - link "Биржа" [ref=f6e22] [cursor=pointer]:
+            - /url: /projects
+        - link "Чат" [ref=f6e25] [cursor=pointer]:
+          - /url: /inbox
+        - generic [ref=f6e27]:
+          - link "0" [ref=f6e30] [cursor=pointer]:
+            - /url: /balance
+          - link [ref=f6e36] [cursor=pointer]:
+            - /url: /user/furich
+    - list [ref=f6e42]:
+      - listitem [ref=f6e43]:
+        - link "Дизайн" [ref=f6e44] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/design
+      - listitem [ref=f6e46]:
+        - link "Разработка и IT" [ref=f6e47] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/programming
+      - listitem [ref=f6e49]:
+        - link "Тексты и переводы" [ref=f6e50] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/writing-translations
+      - listitem [ref=f6e52]:
+        - link "SEO и трафик" [ref=f6e53] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/seo
+      - listitem [ref=f6e55]:
+        - link "Соцсети и маркетинг" [ref=f6e56] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/promotion
+      - listitem [ref=f6e58]:
+        - link "Аудио, видео, съемка" [ref=f6e59] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/audio-video
+      - listitem [ref=f6e61]:
+        - link "Бизнес и жизнь" [ref=f6e62] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/business
+  - generic [ref=f6e67]:
+    - heading "Редактирование предложения" [level=1] [ref=f6e68]
+    - link "К списку предложений" [ref=f6e71] [cursor=pointer]:
+      - /url: /offers
+    - generic [ref=f6e72]: Детали проекта
+    - generic [ref=f6e73]:
+      - generic [ref=f6e74]:
+        - generic [ref=f6e75]:
+          - heading [level=1] [ref=f6e76]:
+            - link "Разработка калькулятора" [ref=f6e77] [cursor=pointer]:
+              - /url: /projects/3223048
+          - generic [ref=f6e79]:
+            - generic [ref=f6e80]: Здравствуйте! У нашей компании сайт на шаблоне. На сайте уже есть калькулятор, но он работает...
+            - text: Показать полностью
+        - generic [ref=f6e82]:
+          - generic [ref=f6e84]:
+            - text: "Желаемый бюджет: до"
+            - generic [ref=f6e85]: 10 000 ₽
+          - generic [ref=f6e86]:
+            - text: "Допустимый:"
+            - generic [ref=f6e87]:
+              - text: до
+              - generic [ref=f6e88]: 30 000 ₽
+      - generic [ref=f6e90]:
+        - generic [ref=f6e91]: d
+        - generic [ref=f6e93]:
+          - generic [ref=f6e94]:
+            - generic [ref=f6e95]:
+              - text: "Покупатель:"
+              - link "docmos22" [ref=f6e96] [cursor=pointer]:
+                - /url: https://kwork.ru/user/docmos22
+            - img "Сделано более 7 покупок" [ref=f6e97]
+          - generic [ref=f6e98]:
+            - text: "Размещено проектов на бирже: 10"
+            - generic [ref=f6e99]: "Нанято: 50%"
+      - generic [ref=f6e101]:
+        - generic [ref=f6e102]:
+          - generic [ref=f6e103]: "Осталось: 1 д. 17 ч."
+          - generic [ref=f6e104]: "Предложений: 54"
+        - generic [ref=f6e105]:
+          - generic [ref=f6e106]:
+            - generic [ref=f6e107]: Разработка и IT
+            - generic [ref=f6e109]: Скрипты, боты и mini apps
+          - generic [ref=f6e110]: активен до 25 июля
+    - generic [ref=f6e111]: Редактирование предложения
+    - generic [ref=f6e112]:
+      - generic [ref=f6e113]:
+        - text: Как вы будете решать задачу клиента
+        - generic [ref=f6e115]:
+          - list [ref=f6e116]:
+            - listitem [ref=f6e117]: Опишите свой релевантный опыт. Расскажите про 1-3 ваших кейса по решению подобных задач.
+            - listitem [ref=f6e118]: Укажите, как именно вы собираетесь выполнять это задание. Опишите ключевые моменты.
+            - listitem [ref=f6e119]:
+              - text: Составляйте уникальные отклики, которые покажут вашу компетентность и заинтересованность в проекте. Не используйте
+              - generic [ref=f6e120]: шаблонные тексты
+          - paragraph [ref=f6e122]: Пройдите урок по работе на Бирже, научитесь писать продающие отклики и увеличьте свои шансы на получение заказа!
+        - generic [ref=f6e123]:
+          - generic [ref=f6e124]: Описание
+          - generic [ref=f6e125]:
+            - generic [ref=f6e130]:
+              - generic [ref=f6e131]:
+                - generic [ref=f6e132]: Здравствуйте!
+                - generic [ref=f6e133]: "Посмотрел ТЗ и пример партнёра alkraft: нужен калькулятор по индивидуальным размерам — клиент указывает размеры, система подбирает/генерирует вариант по вашей продукции, показывает характеристики, цену и срок изготовления, после чего можно добавить в корзину. Плюс такой же сценарий в карточке отдельной модели."
+                - generic [ref=f6e134]: "Как предлагаю сделать:"
+                - generic [ref=f6e135]: 1) Посмотреть ваш шаблон сайта и текущий калькулятор (сейчас он по сути подбор из уже размещённых товаров).
+                - generic [ref=f6e136]: "2) Согласовать правила: размеры → доступные варианты → цена и срок."
+                - generic [ref=f6e137]: 3) Реализовать общий подбор и подбор в карточке модели — по логике, как у партнёра, но под вашу продукцию.
+                - generic [ref=f6e138]: 4) Мини-карточка с характеристиками и добавление в корзину/оплату.
+                - generic [ref=f6e139]: 5) Проверка на ваших типовых размерах.
+                - generic [ref=f6e140]: Работаю с серверной логикой, расчётами и API (C#/.NET). Точный способ встраивания зависит от CMS/шаблона — сначала уточню это, чтобы не делать вслепую.
+                - generic [ref=f6e141]: "Нужны: ссылка на сайт, доступ к админке или коду, прайс/формулы, 3–5 примеров «размеры → ожидаемый результат»."
+                - generic [ref=f6e142]: После просмотра шаблона зафиксирую план и сроки в переписке на Kwork.
+                - generic [ref=f6e143]: Данил
+              - textbox "Напишите, как вы будете решать задачу клиента" [ref=f6e144]: "<div>Здравствуйте!</div><div>Посмотрел ТЗ и пример партнёра alkraft: нужен калькулятор по индивидуальным размерам &mdash; клиент указывает размеры, система подбирает/генерирует вариант по вашей продукции, показывает характеристики, цену и срок изготовления, после чего можно добавить в корзину. Плюс такой же сценарий в карточке отдельной модели.</div><div>Как предлагаю сделать:</div><div>1) Посмотреть ваш шаблон сайта и текущий калькулятор (сейчас он по сути подбор из уже размещённых товаров).</div><div>2) Согласовать правила: размеры &rarr; доступные варианты &rarr; цена и срок.</div><div>3) Реализовать общий подбор и подбор в карточке модели &mdash; по логике, как у партнёра, но под вашу продукцию.</div><div>4) Мини-карточка с характеристиками и добавление в корзину/оплату.</div><div>5) Проверка на ваших типовых размерах.</div><div>Работаю с серверной логикой, расчётами и API (C#/.NET). Точный способ встраивания зависит от CMS/шаблона &mdash; сначала уточню это, чтобы не делать вслепую.</div><div>Нужны: ссылка на сайт, доступ к админке или коду, прайс/формулы, 3&ndash;5 примеров &laquo;размеры &rarr; ожидаемый результат&raquo;.</div><div>После просмотра шаблона зафиксирую план и сроки в переписке на Kwork.</div><div>Данил</div>"
+            - generic [ref=f6e145]: 1091 из 2000 символов (минимум 150)
+      - generic [ref=f6e147]:
+        - generic [ref=f6e148]:
+          - generic [ref=f6e149]: Стоимость
+          - generic [ref=f6e150]:
+            - textbox "Стоимость" [ref=f6e151]:
+              - /placeholder: 2 000 - 30 000
+              - text: "10000"
+            - generic [ref=f6e155]: "Вы получите: 8 000 руб. Подробнее"
+        - generic [ref=f6e156]:
+          - generic [ref=f6e157]:
+            - text: "Желаемый бюджет покупателя:"
+            - generic [ref=f6e158]:
+              - text: до
+              - generic [ref=f6e159]: 10 000 ₽
+          - generic [ref=f6e160]:
+            - text: "Допустимый:"
+            - generic [ref=f6e161]:
+              - text: до
+              - generic [ref=f6e162]: 30 000 ₽
+        - generic [ref=f6e164]:
+          - generic [ref=f6e165]: Желаемый порядок оплаты
+          - generic [ref=f6e167]:
+            - generic [ref=f6e168] [cursor=pointer]:
+              - generic [ref=f6e169]: Целиком, когда заказ выполнен
+              - generic [ref=f6e170]: Оплата поступит после успешного завершения всего заказа.
+            - generic [ref=f6e173] [cursor=pointer]:
+              - generic [ref=f6e174]: По мере выполнения задач
+              - generic [ref=f6e175]: Оплата поступит частями по мере выполнения согласованных задач.
+        - generic [ref=f6e178]:
+          - generic [ref=f6e179]: Название заказа
+          - generic [ref=f6e181]:
+            - generic [ref=f6e186]:
+              - generic [ref=f6e187]: Калькулятор по индивидуальным размерам + корзина
+              - textbox "Введите название заказа" [ref=f6e188]: <div>Калькулятор по индивидуальным размерам + корзина</div>
+            - generic [ref=f6e189]: 48 из 70 символов
+        - text: Название задачи Название задачи Название задачи
+        - generic [ref=f6e191]:
+          - generic [ref=f6e192]: Срок выполнения
+          - combobox "Search for option" [ref=f6e196]:
+            - generic [ref=f6e197]:
+              - textbox [ref=f6e198]: 5 дней
+              - searchbox [ref=f6e201]
+      - generic [ref=f6e204]:
+        - generic [ref=f6e206]:
+          - generic [ref=f6e207]:
+            - text: "Итого:"
+            - generic [ref=f6e208]: 10 000 ₽
+          - generic [ref=f6e209]: "Вы получите: 8 000 руб. Подробнее"
+        - button "Предложить" [ref=f6e210] [cursor=pointer]
+  - generic [ref=f6e214]:
+    - generic [ref=f6e215]:
+      - generic [ref=f6e216]:
+        - link [ref=f6e217] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f6e219]:
+          - generic [ref=f6e220]: "Онлайн: 1575"
+          - generic [ref=f6e223]: "Заказ: 1 мин. назад"
+      - generic [ref=f6e227]:
+        - generic [ref=f6e228]:
+          - generic [ref=f6e229]: О Kwork
+          - generic [ref=f6e232]:
+            - link "О проекте" [ref=f6e233] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=f6e234] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=f6e235] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Карьера в Kwork" [ref=f6e236] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=f6e237]:
+          - generic [ref=f6e238]: Сообщество
+          - generic [ref=f6e241]:
+            - link "Блог" [ref=f6e242] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=f6e243] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=f6e244] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=f6e245]:
+          - generic [ref=f6e246]: Полезное
+          - generic [ref=f6e249]:
+            - link "Покупателям" [ref=f6e250] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=f6e251] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=f6e252] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=f6e253] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Мобильное приложение" [ref=f6e254] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=f6e255]:
+          - generic [ref=f6e256]: Помощь
+          - generic [ref=f6e259]:
+            - link "Вопрос — Ответ" [ref=f6e260] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=f6e261] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=f6e262]:
+      - generic [ref=f6e263]:
+        - link [ref=f6e264] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=f6e268] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=f6e272]:
+        - link [ref=f6e273] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=f6e274]
+        - link [ref=f6e275] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=f6e276]

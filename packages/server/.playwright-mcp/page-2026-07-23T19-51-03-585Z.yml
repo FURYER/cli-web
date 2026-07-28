@@ -1,0 +1,169 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e4]:
+    - generic [ref=f1e6]:
+      - link "Фриланс маркетплейс" [ref=f1e8] [cursor=pointer]:
+        - /url: /
+      - textbox "Найти услуги" [ref=f1e14]
+      - generic [ref=f1e17]:
+        - generic [ref=f1e19]:
+          - link "Кворки" [ref=f1e20] [cursor=pointer]:
+            - /url: /manage_kworks
+          - link "Заказы" [ref=f1e21] [cursor=pointer]:
+            - /url: /manage_orders
+          - link "Биржа" [ref=f1e22] [cursor=pointer]:
+            - /url: /projects
+        - link "Чат" [ref=f1e25] [cursor=pointer]:
+          - /url: /inbox
+        - generic [ref=f1e27]:
+          - link "0" [ref=f1e30] [cursor=pointer]:
+            - /url: /balance
+          - link [ref=f1e36] [cursor=pointer]:
+            - /url: /user/furich
+    - list [ref=f1e42]:
+      - listitem [ref=f1e43]:
+        - link "Дизайн" [ref=f1e44] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/design
+      - listitem [ref=f1e46]:
+        - link "Разработка и IT" [ref=f1e47] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/programming
+      - listitem [ref=f1e49]:
+        - link "Тексты и переводы" [ref=f1e50] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/writing-translations
+      - listitem [ref=f1e52]:
+        - link "SEO и трафик" [ref=f1e53] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/seo
+      - listitem [ref=f1e55]:
+        - link "Соцсети и маркетинг" [ref=f1e56] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/promotion
+      - listitem [ref=f1e58]:
+        - link "Аудио, видео, съемка" [ref=f1e59] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/audio-video
+      - listitem [ref=f1e61]:
+        - link "Бизнес и жизнь" [ref=f1e62] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/business
+  - generic [ref=f1e67]:
+    - generic [ref=f1e70]:
+      - button [ref=f1e71] [cursor=pointer]
+      - generic [ref=f1e73]:
+        - generic [ref=f1e74]:
+          - paragraph [ref=f1e75]: Продавайте на Kwork больше и легче
+          - generic [ref=f1e76]: Ознакомьтесь с уроками «Как эффективно зарабатывать на Kwork», чтобы работать в удовольствие и с комфортом.
+        - link "Перейти к урокам" [ref=f1e77] [cursor=pointer]:
+          - /url: /kwork_book
+    - generic [ref=f1e78]:
+      - heading "Мои кворки" [level=1] [ref=f1e80]
+      - link "Создать кворк (РУС/EN)" [ref=f1e82] [cursor=pointer]:
+        - /url: /new
+    - generic [ref=f1e84]:
+      - generic "Изменить статус" [ref=f1e87]: Принимаю заказы
+      - generic [ref=f1e91]: Скрывать кворки на выходные
+    - generic [ref=f1e97]:
+      - generic [ref=f1e100]:
+        - generic [ref=f1e102] [cursor=pointer]:
+          - generic [ref=f1e103]: Активные
+          - generic [ref=f1e104]: "1"
+        - generic [ref=f1e106] [cursor=pointer]:
+          - generic [ref=f1e107]: Черновики
+          - generic [ref=f1e108]: "1"
+        - generic [ref=f1e110] [cursor=pointer]:
+          - generic [ref=f1e111]: Все
+          - generic [ref=f1e112]: "2"
+      - table [ref=f1e114]:
+        - row:
+          - cell
+        - row [ref=f1e115]:
+          - 'cell "Доработаю ASP.NET Core API: багфикс, эндпоинт, правки  Просмотры: 0  Продажи: 0 Заработано: 0 Конкуренция: Высокая Здесь будет отображаться рейтинг кворка после 8 продаж 4 800 ₽" [ref=f1e116]':
+            - generic [ref=f1e117]:
+              - generic [ref=f1e118]:
+                - link [ref=f1e120] [cursor=pointer]:
+                  - /url: https://kwork.ru/website-repair/53718846/dorabotayu-asp-net-core-api-bagfiks-endpoint-pravki
+                - generic [ref=f1e121]:
+                  - generic [ref=f1e122]:
+                    - heading [level=3] [ref=f1e123]:
+                      - 'link "Доработаю ASP.NET Core API: багфикс, эндпоинт, правки" [ref=f1e124] [cursor=pointer]':
+                        - /url: https://kwork.ru/website-repair/53718846/dorabotayu-asp-net-core-api-bagfiks-endpoint-pravki
+                    - img [ref=f1e130] [cursor=pointer]: 
+                  - generic [ref=f1e145]:
+                    - generic [ref=f1e146]:
+                      - generic [ref=f1e147]:
+                        - generic [ref=f1e148]:
+                          - generic [ref=f1e149]:
+                            - text: 
+                            - generic [ref=f1e150]: "Просмотры:"
+                          - generic [ref=f1e151]: "0"
+                        - generic [ref=f1e154]:
+                          - generic [ref=f1e155]:
+                            - text: 
+                            - generic [ref=f1e156]: "Продажи:"
+                          - generic [ref=f1e157]: "0"
+                        - generic [ref=f1e160]:
+                          - generic [ref=f1e161]: "Заработано:"
+                          - generic [ref=f1e163]: "0"
+                        - generic [ref=f1e166]:
+                          - generic [ref=f1e167]: "Конкуренция:"
+                          - generic [ref=f1e169]: Высокая
+                      - generic [ref=f1e173]: Здесь будет отображаться рейтинг кворка после 8 продаж
+                    - generic [ref=f1e175]: 4 800 ₽
+              - generic:  
+  - generic [ref=f1e182]:
+    - generic [ref=f1e183]:
+      - generic [ref=f1e184]:
+        - link [ref=f1e185] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f1e187]:
+          - generic [ref=f1e188]: "Онлайн: 1516"
+          - generic [ref=f1e191]: "Заказ: 49 сек. назад"
+      - generic [ref=f1e195]:
+        - generic [ref=f1e196]:
+          - generic [ref=f1e197]: О Kwork
+          - generic [ref=f1e200]:
+            - link "О проекте" [ref=f1e201] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=f1e202] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=f1e203] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Карьера в Kwork" [ref=f1e204] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=f1e205]:
+          - generic [ref=f1e206]: Сообщество
+          - generic [ref=f1e209]:
+            - link "Блог" [ref=f1e210] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=f1e211] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=f1e212] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=f1e213]:
+          - generic [ref=f1e214]: Полезное
+          - generic [ref=f1e217]:
+            - link "Покупателям" [ref=f1e218] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=f1e219] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=f1e220] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=f1e221] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Мобильное приложение" [ref=f1e222] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=f1e223]:
+          - generic [ref=f1e224]: Помощь
+          - generic [ref=f1e227]:
+            - link "Вопрос — Ответ" [ref=f1e228] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=f1e229] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=f1e230]:
+      - generic [ref=f1e231]:
+        - link [ref=f1e232] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=f1e236] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=f1e240]:
+        - link [ref=f1e241] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=f1e242]
+        - link [ref=f1e243] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=f1e244]

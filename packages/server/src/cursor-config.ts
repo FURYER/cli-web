@@ -1,7 +1,16 @@
-import { copyFile, mkdir, readdir, readFile, stat } from "node:fs/promises";
-import { homedir } from "node:os";
+import {
+  copyFile,
+  lstat,
+  mkdir,
+  readdir,
+  readFile,
+  rm,
+  stat,
+  symlink,
+} from "node:fs/promises";
 import { basename, dirname, extname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { agentConfigDir, realHomedir } from "./paths.js";
 
 export type ConfigDocKind = "rule" | "skill";
 export type ConfigDocSource = "user" | "project" | "builtin";
@@ -23,8 +32,14 @@ function builtinRoot(): string {
   return join(dirname(fileURLToPath(import.meta.url)), "..", "builtin");
 }
 
-function userCursorDir(): string {
-  return join(homedir(), ".cursor");
+/** WebCLI agent rules/skills (`~/.webcli/agent`). */
+function webcliAgentDir(): string {
+  return agentConfigDir();
+}
+
+/** Real Cursor IDE user config (`%USERPROFILE%\.cursor` before WebCLI redirect). */
+function ideCursorDir(): string {
+  return join(realHomedir(), ".cursor");
 }
 
 function parseFrontmatter(raw: string): { description?: string; name?: string } {
@@ -138,7 +153,7 @@ export async function listRules(workspace?: string): Promise<ConfigDocSummary[]>
   const builtinKeys = new Set(
     builtin.map((item) => basename(item.path).toLowerCase()),
   );
-  const user = (await collectRules("user", userCursorDir())).filter(
+  const user = (await collectRules("user", webcliAgentDir())).filter(
     (item) => !builtinKeys.has(basename(item.path).toLowerCase()),
   );
   const items: ConfigDocSummary[] = [...builtin, ...user];
@@ -151,7 +166,7 @@ export async function listRules(workspace?: string): Promise<ConfigDocSummary[]>
 export async function listSkills(workspace?: string): Promise<ConfigDocSummary[]> {
   const builtin = await collectSkills("builtin", builtinRoot());
   const builtinKeys = new Set(builtin.map((item) => item.name.toLowerCase()));
-  const user = (await collectSkills("user", userCursorDir())).filter(
+  const user = (await collectSkills("user", webcliAgentDir())).filter(
     (item) => !builtinKeys.has(item.name.toLowerCase()),
   );
   const items: ConfigDocSummary[] = [...builtin, ...user];
@@ -167,7 +182,8 @@ export async function readConfigDoc(
 ): Promise<ConfigDocDetail> {
   const allowedRoots = [
     builtinRoot(),
-    userCursorDir(),
+    webcliAgentDir(),
+    ideCursorDir(),
     workspace?.trim() ? join(workspace.trim(), ".cursor") : null,
   ].filter(Boolean) as string[];
 
@@ -201,11 +217,43 @@ export async function readConfigDoc(
   };
 }
 
-/** Install built-in skills into ~/.cursor/skills for agents with settingSources: user. */
+async function listBuiltinSkillNames(): Promise<string[]> {
+  const srcSkills = join(builtinRoot(), "skills");
+  if (!(await pathExists(srcSkills))) return [];
+  const entries = await readdir(srcSkills, { withFileTypes: true });
+  return entries.filter((e) => e.isDirectory()).map((e) => e.name);
+}
+
+async function listBuiltinRuleFiles(): Promise<string[]> {
+  const srcRules = join(builtinRoot(), "rules");
+  if (!(await pathExists(srcRules))) return [];
+  const files = await listFilesRecursive(srcRules, new Set([".md", ".mdc"]));
+  return files.map((f) => basename(f));
+}
+
+async function ensureDirJunction(target: string, linkPath: string): Promise<void> {
+  await mkdir(dirname(linkPath), { recursive: true });
+  if (await pathExists(linkPath)) {
+    try {
+      const st = await lstat(linkPath);
+      if (st.isSymbolicLink()) {
+        await rm(linkPath);
+      } else {
+        await rm(linkPath, { recursive: true, force: true });
+      }
+    } catch {
+      await rm(linkPath, { recursive: true, force: true });
+    }
+  }
+  const type = process.platform === "win32" ? "junction" : "dir";
+  await symlink(target, linkPath, type);
+}
+
+/** Install built-in skills into ~/.webcli/agent/skills. */
 export async function syncBuiltinSkillsToUser(): Promise<void> {
   const srcSkills = join(builtinRoot(), "skills");
   if (!(await pathExists(srcSkills))) return;
-  const destRoot = join(userCursorDir(), "skills");
+  const destRoot = join(webcliAgentDir(), "skills");
   await mkdir(destRoot, { recursive: true });
   const entries = await readdir(srcSkills, { withFileTypes: true });
   for (const entry of entries) {
@@ -218,11 +266,11 @@ export async function syncBuiltinSkillsToUser(): Promise<void> {
   }
 }
 
-/** Install built-in rules into ~/.cursor/rules. */
+/** Install built-in rules into ~/.webcli/agent/rules. */
 export async function syncBuiltinRulesToUser(): Promise<void> {
   const srcRules = join(builtinRoot(), "rules");
   if (!(await pathExists(srcRules))) return;
-  const destRoot = join(userCursorDir(), "rules");
+  const destRoot = join(webcliAgentDir(), "rules");
   await mkdir(destRoot, { recursive: true });
   const files = await listFilesRecursive(srcRules, new Set([".md", ".mdc"]));
   for (const from of files) {
@@ -231,7 +279,99 @@ export async function syncBuiltinRulesToUser(): Promise<void> {
   }
 }
 
+/**
+ * Junction personal (non-builtin) IDE skills/rules into ~/.webcli/agent so the
+ * WebCLI agent still sees them via settingSources: user.
+ */
+async function linkPersonalIdeConfig(): Promise<void> {
+  const builtinSkills = new Set(
+    (await listBuiltinSkillNames()).map((n) => n.toLowerCase()),
+  );
+  const builtinRules = new Set(
+    (await listBuiltinRuleFiles()).map((n) => n.toLowerCase()),
+  );
+
+  const ideSkills = join(ideCursorDir(), "skills");
+  const agentSkills = join(webcliAgentDir(), "skills");
+  await mkdir(agentSkills, { recursive: true });
+  if (await pathExists(ideSkills)) {
+    const entries = await readdir(ideSkills, { withFileTypes: true });
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      if (builtinSkills.has(entry.name.toLowerCase())) continue;
+      const from = join(ideSkills, entry.name);
+      const to = join(agentSkills, entry.name);
+      if (await pathExists(to)) continue;
+      try {
+        await ensureDirJunction(from, to);
+      } catch (err) {
+        console.warn(
+          `Failed to link IDE skill ${entry.name}:`,
+          err instanceof Error ? err.message : err,
+        );
+      }
+    }
+  }
+
+  const ideRules = join(ideCursorDir(), "rules");
+  const agentRules = join(webcliAgentDir(), "rules");
+  await mkdir(agentRules, { recursive: true });
+  if (await pathExists(ideRules)) {
+    const files = await listFilesRecursive(ideRules, new Set([".md", ".mdc"]));
+    for (const from of files) {
+      const name = basename(from);
+      if (builtinRules.has(name.toLowerCase())) continue;
+      const to = join(agentRules, name);
+      if (await pathExists(to)) continue;
+      try {
+        await copyFile(from, to);
+      } catch (err) {
+        console.warn(
+          `Failed to copy IDE rule ${name}:`,
+          err instanceof Error ? err.message : err,
+        );
+      }
+    }
+  }
+}
+
+/** Remove previously synced WebCLI builtins from the real Cursor IDE ~/.cursor. */
+async function cleanupIdeBuiltinCopies(): Promise<void> {
+  const skillNames = await listBuiltinSkillNames();
+  const ideSkills = join(ideCursorDir(), "skills");
+  for (const name of skillNames) {
+    const path = join(ideSkills, name);
+    if (!(await pathExists(path))) continue;
+    try {
+      await rm(path, { recursive: true, force: true });
+    } catch (err) {
+      console.warn(
+        `Failed to remove IDE skill copy ${name}:`,
+        err instanceof Error ? err.message : err,
+      );
+    }
+  }
+
+  const ruleFiles = await listBuiltinRuleFiles();
+  const ideRules = join(ideCursorDir(), "rules");
+  for (const name of ruleFiles) {
+    const path = join(ideRules, name);
+    if (!(await pathExists(path))) continue;
+    try {
+      await rm(path, { force: true });
+    } catch (err) {
+      console.warn(
+        `Failed to remove IDE rule copy ${name}:`,
+        err instanceof Error ? err.message : err,
+      );
+    }
+  }
+}
+
 export async function syncBuiltinConfigToUser(): Promise<void> {
+  await mkdir(webcliAgentDir(), { recursive: true });
   await syncBuiltinSkillsToUser();
   await syncBuiltinRulesToUser();
+  await linkPersonalIdeConfig();
+  await cleanupIdeBuiltinCopies();
 }

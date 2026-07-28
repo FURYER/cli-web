@@ -890,15 +890,16 @@ function isAskActivityMessage(message: ChatMessage): boolean {
 /**
  * Ask rows stay `running` while the card is open. After skip/stop/answer the
  * server should mark them completed; heal older/stuck rows so timers stop.
- * While the turn is still busy, do not heal — the ask_question WS can lag the
- * tool-call activity, and healing would hide a live Ask user step.
+ *
+ * While busy, still heal ask rows that sit *before* a later user message —
+ * otherwise a stale running ask steals the next pending card (T-39).
+ * Only the ask after the latest user turn is left running for WS lag.
  */
 function healStuckAskActivities(
   messages: ChatMessage[],
   pendingQuestions: PendingAskQuestion[],
   busy = false,
 ): ChatMessage[] {
-  if (busy) return messages;
   const liveIds = new Set<string>();
   for (const pq of pendingQuestions) {
     liveIds.add(pq.callId);
@@ -911,6 +912,12 @@ function healStuckAskActivities(
     }
     const activityId = message.activityId || message.id;
     if (liveIds.has(activityId)) return message;
+
+    const hasUserAfter = messages.some(
+      (m, j) => j > index && m.role === "user",
+    );
+    // Current-turn ask: tool row can land before ask_question WS.
+    if (busy && !hasUserAfter) return message;
 
     const after = messages[index + 1];
     const endAt =
@@ -933,6 +940,12 @@ function flattenWorkPieces(pieces: WorkPiece[]): StepItem[] {
   return pieces.flatMap((piece) => (piece.type === "steps" ? piece.steps : []));
 }
 
+/**
+ * Attach a pending card only by exact call/tool id.
+ * Do NOT fall back to "first running ask while walking oldest→newest" — that
+ * pins a new question onto an old Working block above later user messages.
+ * Unmatched pendings stay orphans and land in the live work flush at the end.
+ */
 function matchPendingForAsk(
   step: StepItem,
   pendingQuestions: PendingAskQuestion[],
@@ -943,11 +956,7 @@ function matchPendingForAsk(
     if (pq.toolCallId && pq.toolCallId === step.id) return pq;
     if (pq.callId === step.id) return pq;
   }
-  // Fallback only for the live/running ask step — never attach onto a
-  // completed historical ask while walking oldest→newest (T-39).
-  // Orphan pendings still land in flushWork({ live: true }).
-  if (step.status !== "running" || !isAskToolStep(step)) return undefined;
-  return pendingQuestions.find((pq) => !placed.has(pq.callId));
+  return undefined;
 }
 
 function buildTimeline(
@@ -995,14 +1004,29 @@ function buildTimeline(
     if (isAskToolStep(step)) attachPendingForStep(step);
   };
 
-  const flushWork = (opts: { live: boolean }) => {
-    pushStepsPiece();
+  /** Prefer parking an orphan card after the latest running ask in this work. */
+  const appendOrphanPendings = () => {
+    const unplaced = pendingQuestions.filter((pq) => !placedPending.has(pq.callId));
+    if (unplaced.length === 0) return;
 
-    if (opts.live) {
-      // Orphan pending cards (no matching ask step yet) stay inside this live
-      // Working block — never after it, or answering would jump them upward.
-      for (const pq of pendingQuestions) {
-        if (placedPending.has(pq.callId)) continue;
+    // Split steps so the card sits after the last running ask, not above older tools.
+    let lastRunningAskAt = -1;
+    for (let i = 0; i < currentSteps.length; i++) {
+      const step = currentSteps[i]!;
+      if (step.status === "running" && isAskToolStep(step)) lastRunningAskAt = i;
+    }
+    if (lastRunningAskAt >= 0 && currentSteps.length > 0) {
+      const before = currentSteps.slice(0, lastRunningAskAt + 1);
+      const after = currentSteps.slice(lastRunningAskAt + 1);
+      currentSteps = [];
+      if (before.length) {
+        pieces.push({
+          type: "steps",
+          key: `steps-${stepPieceIndex++}-${before[0]!.id}`,
+          steps: before,
+        });
+      }
+      for (const pq of unplaced) {
         pieces.push({
           type: "question",
           key: `pending-${pq.callId}`,
@@ -1010,6 +1034,34 @@ function buildTimeline(
         });
         placedPending.add(pq.callId);
       }
+      if (after.length) {
+        pieces.push({
+          type: "steps",
+          key: `steps-${stepPieceIndex++}-${after[0]!.id}`,
+          steps: after,
+        });
+      }
+      return;
+    }
+
+    pushStepsPiece();
+    for (const pq of unplaced) {
+      pieces.push({
+        type: "question",
+        key: `pending-${pq.callId}`,
+        pending: pq,
+      });
+      placedPending.add(pq.callId);
+    }
+  };
+
+  const flushWork = (opts: { live: boolean }) => {
+    if (opts.live) {
+      // Orphan pending cards (no matching ask step id yet) stay inside this
+      // live Working block — never spliced into an older closed block.
+      appendOrphanPendings();
+    } else {
+      pushStepsPiece();
     }
 
     const outPieces = pieces;
@@ -1036,21 +1088,25 @@ function buildTimeline(
       liveIds.add(pq.callId);
       if (pq.toolCallId) liveIds.add(pq.toolCallId);
     }
-    const healedLive = busy
-      ? liveSteps
-      : liveSteps.map((step) => {
-          if (step.status !== "running" || !isAskToolStep(step)) return step;
-          if (liveIds.has(step.id)) return step;
-          return {
-            ...step,
-            status: "completed" as const,
-            durationMs:
-              step.durationMs ??
-              (typeof step.startedAt === "number"
-                ? Math.max(0, Date.now() - step.startedAt)
-                : undefined),
-          };
-        });
+    const healedLive = liveSteps.map((step) => {
+      if (step.status !== "running" || !isAskToolStep(step)) return step;
+      if (liveIds.has(step.id)) return step;
+      const beforeCutoff =
+        cutoffMs != null &&
+        typeof step.startedAt === "number" &&
+        step.startedAt < cutoffMs;
+      // Keep only a current-turn ask (no cutoff / after cutoff) while busy.
+      if (busy && !beforeCutoff) return step;
+      return {
+        ...step,
+        status: "completed" as const,
+        durationMs:
+          step.durationMs ??
+          (typeof step.startedAt === "number"
+            ? Math.max(0, Date.now() - step.startedAt)
+            : undefined),
+      };
+    });
 
     for (const step of healedLive) {
       if (consumedLiveIds.has(step.id)) continue;
@@ -1795,7 +1851,11 @@ export function Chat({
       (!isPlanningPlaceholderId(item.id) && !persistedActivityIds.has(item.id)),
   );
 
-  /** Real agent output that should replace the planning placeholder. */
+  /**
+   * True when this turn already produced something the user can read (assistant
+   * text / tools). Used only to pick the idle-busy label — must NOT hide the
+   * busy pulse after a mid-turn assistant bubble.
+   */
   const hasVisibleOutput = (() => {
     if (streamingText.trim()) return true;
     if (pendingQuestions.length > 0) return true;
@@ -1829,12 +1889,27 @@ export function Chat({
 
   const timelineLive = liveOnly.filter((item) => {
     if (isPlanningPlaceholderId(item.id)) return false;
-    // Keep empty thinking shells out of the timeline so Planning stays visible.
-    if (item.kind === "thinking" && !item.detail?.trim()) return false;
+    // Keep empty *completed* thoughts out; keep empty *running* thoughts in so
+    // "Thinking · …" stays visible while the model is silent mid-turn.
+    if (
+      item.kind === "thinking" &&
+      !item.detail?.trim() &&
+      item.status !== "running"
+    ) {
+      return false;
+    }
     return true;
   });
 
-  const showPlanning = Boolean(busy) && !hasVisibleOutput;
+  const hasRunningLiveChrome =
+    Boolean(streamingText.trim()) ||
+    pendingQuestions.length > 0 ||
+    timelineLive.some((item) => item.status === "running");
+
+  // Pulse while busy with nothing else on screen (after a mid-turn reply the
+  // old hasVisibleOutput gate wrongly hid this and left only Stop).
+  const showPlanning = Boolean(busy) && !hasRunningLiveChrome;
+  const busyPulseLabel = hasVisibleOutput ? "Working" : "Planning next moves";
   const planningStartedAt = useMemo(() => {
     const placeholder = activities.find(
       (item) => isPlanningPlaceholderId(item.id) && item.status === "running",
@@ -1848,10 +1923,6 @@ export function Chat({
     const id = window.setInterval(() => setPlanningNow(Date.now()), 250);
     return () => window.clearInterval(id);
   }, [showPlanning]);
-  const planningElapsed =
-    showPlanning && planningStartedAt
-      ? Math.max(0, planningNow - planningStartedAt)
-      : undefined;
 
   /** Wall-clock start for the in-progress reply (live elapsed timer). */
   const liveReplyStartedAt = useMemo(() => {
@@ -1874,6 +1945,14 @@ export function Chat({
     if (candidates.length === 0) return undefined;
     return Math.min(...candidates);
   }, [busy, planningStartedAt, activities, messages]);
+
+  const planningElapsed = showPlanning
+    ? Math.max(
+        0,
+        planningNow -
+          (planningStartedAt ?? liveReplyStartedAt ?? planningNow),
+      )
+    : undefined;
 
   const askWaiting = pendingQuestions.length > 0;
   const askPauseStartedRef = useRef<number | null>(null);
@@ -2278,14 +2357,16 @@ export function Chat({
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
               </span>
               <span>
-                Planning next moves
-                {planningElapsed != null ? ` · ${formatDuration(planningElapsed)}` : "…"}
+                {busyPulseLabel}
+                {planningElapsed != null
+                  ? ` · ${formatDuration(planningElapsed)}`
+                  : "…"}
               </span>
             </div>
           ) : null}
 
           {/* Always-visible live timer while generating (when not already shown above). */}
-          {busy && liveElapsed != null && !streamingText && !showPlanning ? (
+          {busy && liveElapsed != null && !streamingText && !showPlanning && !hasRunningLiveChrome ? (
             <div className="flex flex-wrap items-center gap-2">
               <MessageDuration durationMs={liveElapsed} live />
             </div>

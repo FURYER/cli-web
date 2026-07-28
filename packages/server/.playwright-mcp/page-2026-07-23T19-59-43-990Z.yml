@@ -1,0 +1,244 @@
+- generic [ref=f9e1]:
+  - generic [ref=f9e4]:
+    - generic [ref=f9e6]:
+      - link "Фриланс маркетплейс" [ref=f9e8] [cursor=pointer]:
+        - /url: /
+      - textbox "Найти услуги" [ref=f9e14]
+      - generic [ref=f9e17]:
+        - generic [ref=f9e19]:
+          - link "Кворки" [ref=f9e20] [cursor=pointer]:
+            - /url: /manage_kworks
+          - link "Заказы" [ref=f9e21] [cursor=pointer]:
+            - /url: /manage_orders
+          - link "Биржа" [ref=f9e22] [cursor=pointer]:
+            - /url: /projects
+        - link "Чат" [ref=f9e25] [cursor=pointer]:
+          - /url: /inbox
+        - generic [ref=f9e27]:
+          - link "0" [ref=f9e30] [cursor=pointer]:
+            - /url: /balance
+          - link [ref=f9e36] [cursor=pointer]:
+            - /url: /user/furich
+    - list [ref=f9e42]:
+      - listitem [ref=f9e43]:
+        - link "Дизайн" [ref=f9e44] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/design
+      - listitem [ref=f9e46]:
+        - link "Разработка и IT" [ref=f9e47] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/programming
+      - listitem [ref=f9e49]:
+        - link "Тексты и переводы" [ref=f9e50] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/writing-translations
+      - listitem [ref=f9e52]:
+        - link "SEO и трафик" [ref=f9e53] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/seo
+      - listitem [ref=f9e55]:
+        - link "Соцсети и маркетинг" [ref=f9e56] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/promotion
+      - listitem [ref=f9e58]:
+        - link "Аудио, видео, съемка" [ref=f9e59] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/audio-video
+      - listitem [ref=f9e61]:
+        - link "Бизнес и жизнь" [ref=f9e62] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/business
+  - generic [ref=f9e64]:
+    - text:  
+    - generic [ref=f9e66]:
+      - generic [ref=f9e67]:
+        - heading "Редактирование кворка" [level=1] [ref=f9e68]
+        - link "К списку кворков" [ref=f9e71] [cursor=pointer]:
+          - /url: https://kwork.ru/manage_kworks
+      - generic [ref=f9e73]:
+        - generic [ref=f9e74]:
+          - generic [ref=f9e76]:
+            - generic [ref=f9e77]: "1"
+            - generic [ref=f9e78]: Основное
+          - generic [ref=f9e79]:
+            - generic [ref=f9e80]:
+              - generic [ref=f9e81]: Название
+              - generic [ref=f9e82]:
+                - generic [ref=f9e83]: Черновик 1
+                - generic [ref=f9e84]: 10 из 70 символов
+            - generic [ref=f9e87]:
+              - generic [ref=f9e88]: Рубрика
+              - generic [ref=f9e90]:
+                - generic [ref=f9e92]:
+                  - generic [ref=f9e93] [cursor=pointer]: Разработка и IT
+                  - generic:
+                    - generic:
+                      - textbox
+                    - list
+                - generic [ref=f9e98]:
+                  - generic [ref=f9e99] [cursor=pointer]: Доработка и настройка сайта
+                  - generic:
+                    - generic:
+                      - textbox
+                    - list
+            - generic [ref=f9e103]:
+              - generic [ref=f9e104]: Обложка кворка
+              - generic [ref=f9e108] [cursor=pointer]:
+                - generic [ref=f9e110]:
+                  - generic [ref=f9e113]: Загрузить обложку
+                  - generic [ref=f9e114]: "Минимальный размер: 660 х 440 px"
+                  - generic [ref=f9e115]: "Вес: 30 кб — 10 Мб"
+                  - generic [ref=f9e116]: "Форматы: jpg, jpeg, png"
+                - button "Choose File" [ref=f9e117]
+        - generic [ref=f9e118]: Продолжить
+      - generic [ref=f9e120]:
+        - generic [ref=f9e121]:
+          - generic [ref=f9e123]:
+            - generic [ref=f9e124]: "2"
+            - generic [ref=f9e125]: Описание и файлы
+          - generic [ref=f9e126]:
+            - generic [ref=f9e127]:
+              - generic [ref=f9e128]: Описание
+              - generic [ref=f9e129]:
+                - generic [ref=f9e131]:
+                  - generic [ref=f9e132]:
+                    - button "Полужирный (Ctrl + B)" [ref=f9e134] [cursor=pointer]
+                    - button "Курсив (Ctrl + I)" [ref=f9e138] [cursor=pointer]
+                    - button "Нумерованный список" [ref=f9e142] [cursor=pointer]
+                  - textbox "Описание" [ref=f9e146]:
+                    - /placeholder: ""
+                - generic [ref=f9e147]: 0 из 1200 символов (минимум 100)
+                - generic [ref=f9e152]:
+                  - generic [ref=f9e153] [cursor=pointer]: Прикрепить файл
+                  - generic [ref=f9e159]: до 10 файлов не более 100 Мб
+            - generic [ref=f9e160]:
+              - generic [ref=f9e161]: От покупателя нужно
+              - generic [ref=f9e162]:
+                - generic [ref=f9e164]:
+                  - generic [ref=f9e165]:
+                    - button "Полужирный (Ctrl + B)" [ref=f9e167] [cursor=pointer]
+                    - button "Курсив (Ctrl + I)" [ref=f9e171] [cursor=pointer]
+                    - button "Нумерованный список" [ref=f9e175] [cursor=pointer]
+                  - generic [ref=f9e178]: Чтобы выполнить ваш заказ, мне потребуется от вас задание. Опишите, что именно вы хотите получить, какие у вас предпочтения. Пришлите нужные файлы и доступы, если они нужны для выполнения заказа.
+                  - textbox "От покупателя нужно" [ref=f9e179]:
+                    - /placeholder: Чтобы выполнить ваш заказ, мне потребуется от вас задание. Опишите, что именно вы хотите получить, какие у вас предпочтения. Пришлите нужные файлы и доступы, если они нужны для выполнения заказа.
+                - generic [ref=f9e180]: 0 из 500 символов (минимум 100)
+                - generic [ref=f9e185]:
+                  - generic [ref=f9e186] [cursor=pointer]: Прикрепить файл
+                  - generic [ref=f9e192]: до 10 файлов не более 100 Мб
+        - generic: Продолжить
+      - generic [ref=f9e194]:
+        - generic [ref=f9e195]:
+          - generic [ref=f9e197]:
+            - generic [ref=f9e198]: "3"
+            - generic [ref=f9e199]: Стоимость и опции
+          - generic [ref=f9e200]:
+            - generic [ref=f9e201]:
+              - generic [ref=f9e202]:
+                - generic [ref=f9e203]: Объем услуг в 1 кворке
+                - generic [ref=f9e205]:
+                  - generic [ref=f9e206]: Укажите объем
+                  - generic [ref=f9e207]: "Например: 2 фотографии, 1 скрипт, 1000 символов в тексте"
+              - generic [ref=f9e208]:
+                - generic [ref=f9e209]: Стоимость 1 кворка
+                - generic [ref=f9e211]: 400 ₽
+              - generic [ref=f9e213]:
+                - generic [ref=f9e214]: Срок выполнения
+                - generic [ref=f9e216]:
+                  - generic [ref=f9e217] [cursor=pointer]: 1 день
+                  - generic [ref=f9e221]:
+                    - generic:
+                      - textbox
+                    - list
+            - text: Опишите пакет «Эконом»  Опишите пакет «Стандарт»  Опишите пакет «Бизнес»  
+            - generic [ref=f9e223]:
+              - generic [ref=f9e224]: Дополнительные опции
+              - generic [ref=f9e226]:
+                - generic [ref=f9e227]:
+                  - generic [ref=f9e229]:
+                    - generic [ref=f9e231]:
+                      - generic [ref=f9e232]: Название опции
+                      - generic [ref=f9e233]: 0 из 40 символов
+                    - generic [ref=f9e235]:
+                      - generic [ref=f9e237]:
+                        - generic [ref=f9e238] [cursor=pointer]: 80 ₽
+                        - generic [ref=f9e242]:
+                          - generic:
+                            - textbox
+                          - list
+                      - generic [ref=f9e244]:
+                        - generic [ref=f9e245] [cursor=pointer]: 0 дней
+                        - generic [ref=f9e249]:
+                          - generic:
+                            - textbox
+                          - list
+                      - generic "Удалить" [ref=f9e250] [cursor=pointer]
+                    - generic [ref=f9e254]:
+                      - generic [ref=f9e255]: Подсказка для покупателя
+                      - generic [ref=f9e256]: 0 из 100 символов
+                  - link "Добавить еще" [ref=f9e259] [cursor=pointer]:
+                    - /url: javascript:void(0)
+                - text: Название опции Подсказка для покупателя
+        - generic: Продолжить
+      - generic [ref=f9e262]:
+        - generic [ref=f9e264]:
+          - generic [ref=f9e265]: "4"
+          - generic [ref=f9e266]: Ответы на частые вопросы
+        - generic [ref=f9e269]:
+          - generic [ref=f9e270]: Ваши покупатели могут задавать одинаковые вопросы по деталям выполнения услуги. В данном блоке вы можете указать ответы на эти вопросы и увеличивать шансы на заказ.
+          - generic [ref=f9e271] [cursor=pointer]: Добавить вопрос
+  - generic [ref=f9e274]:
+    - generic [ref=f9e275]:
+      - generic [ref=f9e276]:
+        - link [ref=f9e277] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f9e279]:
+          - generic [ref=f9e280]: "Онлайн: 1442"
+          - generic [ref=f9e283]: "Заказ: 26 сек. назад"
+      - generic [ref=f9e287]:
+        - generic [ref=f9e288]:
+          - generic [ref=f9e289]: О Kwork
+          - generic [ref=f9e292]:
+            - link "О проекте" [ref=f9e293] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=f9e294] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=f9e295] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Карьера в Kwork" [ref=f9e296] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=f9e297]:
+          - generic [ref=f9e298]: Сообщество
+          - generic [ref=f9e301]:
+            - link "Блог" [ref=f9e302] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=f9e303] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=f9e304] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=f9e305]:
+          - generic [ref=f9e306]: Полезное
+          - generic [ref=f9e309]:
+            - link "Покупателям" [ref=f9e310] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=f9e311] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=f9e312] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=f9e313] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Мобильное приложение" [ref=f9e314] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=f9e315]:
+          - generic [ref=f9e316]: Помощь
+          - generic [ref=f9e319]:
+            - link "Вопрос — Ответ" [ref=f9e320] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=f9e321] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=f9e322]:
+      - generic [ref=f9e323]:
+        - link [ref=f9e324] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=f9e328] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=f9e332]:
+        - link [ref=f9e333] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=f9e334]
+        - link [ref=f9e335] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=f9e336]

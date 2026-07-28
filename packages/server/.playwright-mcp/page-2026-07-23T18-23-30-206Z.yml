@@ -1,0 +1,53 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - button "Assets" [ref=e6] [cursor=pointer]
+          - button "Tutorials" [ref=e9] [cursor=pointer]
+          - button "FAQ" [ref=e12] [cursor=pointer]
+          - button "Portfolio" [ref=e15] [cursor=pointer]
+        - generic [ref=e18]:
+          - button [ref=e19] [cursor=pointer]
+          - button [ref=e22] [cursor=pointer]
+      - link [ref=e24] [cursor=pointer]:
+        - /url: /index.html
+    - navigation [ref=e26]:
+      - link [ref=e27] [cursor=pointer]:
+        - /url: https://www.patreon.com/quaternius
+  - generic [ref=e29]:
+    - generic [ref=e30]:
+      - link [ref=e32] [cursor=pointer]:
+        - /url: /assets/images/fullres/ultimatestylizednature.jpg
+      - generic [ref=e33]:
+        - link:
+          - /url: /assets/images/fullres/ultimatestylizednature2.jpg
+        - generic [ref=e34]:
+          - text: Models
+          - generic [ref=e36]: "63"
+        - generic [ref=e37]: Animated
+        - generic [ref=e41]: Textured
+        - generic [ref=e45]:
+          - text: Formats
+          - generic [ref=e47]: FBX
+          - generic [ref=e48]: OBJ
+          - generic [ref=e49]: Blend
+          - generic [ref=e50]: glTF
+        - generic [ref=e51]:
+          - text: License
+          - link "CC0" [ref=e54] [cursor=pointer]:
+            - /url: https://creativecommons.org/publicdomain/zero/1.0/
+    - generic [ref=e55]:
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - text: Ultimate Stylized Nature Pack
+          - generic [ref=e58]: May 2022
+        - generic [ref=e59]: This pack includes 60+ nature assets, with seamless textures and normal maps. All in FBX, OBJ, glTF and Blend formats, free to use in personal and commercial projects.
+      - generic [ref=e60]:
+        - generic [ref=e61]: Made possible by Patreon supporters
+        - link "Download" [ref=e62] [cursor=pointer]:
+          - /url: "#inline"
+    - contentinfo [ref=e64]:
+      - link "© Quaternius" [ref=e65] [cursor=pointer]:
+        - /url: https://www.twitter.com/quaternius
+      - generic [ref=e66]: laulhet@gmail.com

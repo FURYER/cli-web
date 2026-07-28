@@ -22,6 +22,11 @@ export type StoredSessionMeta = {
   childStatus?: string;
   childSessionIds?: string[];
   skipParentWake?: boolean;
+  /**
+   * If true, finishing this child wakes the parent immediately even while
+   * sibling sub-agents are still running.
+   */
+  wakeParentEarly?: boolean;
 };
 
 export type StoredSession = StoredSessionMeta & {
@@ -76,7 +81,8 @@ function initSchema(database: DatabaseSync): void {
       agent_base_sha TEXT,
       child_status TEXT,
       child_session_ids TEXT,
-      skip_parent_wake INTEGER
+      skip_parent_wake INTEGER,
+      wake_parent_early INTEGER
     );
 
     CREATE TABLE IF NOT EXISTS messages (
@@ -90,6 +96,17 @@ function initSchema(database: DatabaseSync): void {
     CREATE INDEX IF NOT EXISTS idx_messages_session_created
       ON messages(session_id, created_at);
   `);
+
+  // Additive migrations for existing DBs (CREATE TABLE IF NOT EXISTS skips new cols).
+  for (const ddl of [
+    "ALTER TABLE sessions ADD COLUMN wake_parent_early INTEGER",
+  ]) {
+    try {
+      database.exec(ddl);
+    } catch {
+      /* column already exists */
+    }
+  }
 }
 
 function encodeIds(ids: string[] | undefined): string | null {
@@ -129,6 +146,7 @@ function rowToMeta(row: Record<string, unknown>): StoredSessionMeta {
     childStatus: typeof row.child_status === "string" ? row.child_status : undefined,
     childSessionIds: decodeIds(row.child_session_ids),
     skipParentWake: Number(row.skip_parent_wake) === 1 ? true : undefined,
+    wakeParentEarly: Number(row.wake_parent_early) === 1 ? true : undefined,
   };
 }
 
@@ -173,11 +191,13 @@ export function upsertSessionMeta(meta: StoredSessionMeta): void {
       `INSERT INTO sessions (
         id, agent_id, workspace, model, title, created_at, updated_at, mode,
         parent_session_id, project_workspace, agent_branch, worktree_path,
-        agent_base_sha, child_status, child_session_ids, skip_parent_wake
+        agent_base_sha, child_status, child_session_ids, skip_parent_wake,
+        wake_parent_early
       ) VALUES (
         ?, ?, ?, ?, ?, ?, ?, ?,
         ?, ?, ?, ?,
-        ?, ?, ?, ?
+        ?, ?, ?, ?,
+        ?
       )
       ON CONFLICT(id) DO UPDATE SET
         agent_id = excluded.agent_id,
@@ -194,7 +214,8 @@ export function upsertSessionMeta(meta: StoredSessionMeta): void {
         agent_base_sha = excluded.agent_base_sha,
         child_status = excluded.child_status,
         child_session_ids = excluded.child_session_ids,
-        skip_parent_wake = excluded.skip_parent_wake`,
+        skip_parent_wake = excluded.skip_parent_wake,
+        wake_parent_early = excluded.wake_parent_early`,
     )
     .run(
       meta.id,
@@ -213,6 +234,7 @@ export function upsertSessionMeta(meta: StoredSessionMeta): void {
       meta.childStatus ?? null,
       encodeIds(meta.childSessionIds),
       meta.skipParentWake ? 1 : null,
+      meta.wakeParentEarly ? 1 : null,
     );
 }
 
@@ -302,6 +324,7 @@ function parseJsonSessions(raw: string): StoredSession[] {
       childStatus: item.childStatus,
       childSessionIds: item.childSessionIds,
       skipParentWake: item.skipParentWake,
+      wakeParentEarly: item.wakeParentEarly,
       messages: Array.isArray(item.messages) ? item.messages : [],
     });
   }

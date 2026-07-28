@@ -1,0 +1,588 @@
+- generic [active] [ref=f6e1]:
+  - generic [ref=f6e4]:
+    - generic [ref=f6e6]:
+      - link "Фриланс маркетплейс" [ref=f6e8] [cursor=pointer]:
+        - /url: /
+      - textbox "Найти услуги" [ref=f6e14]
+      - generic [ref=f6e17]:
+        - generic [ref=f6e19]:
+          - link "Кворки" [ref=f6e20] [cursor=pointer]:
+            - /url: /manage_kworks
+          - link "Заказы" [ref=f6e21] [cursor=pointer]:
+            - /url: /manage_orders
+          - link "Биржа" [ref=f6e22] [cursor=pointer]:
+            - /url: /projects
+        - link "Чат" [ref=f6e25] [cursor=pointer]:
+          - /url: /inbox
+        - generic [ref=f6e27]:
+          - link "0" [ref=f6e30] [cursor=pointer]:
+            - /url: /balance
+          - link [ref=f6e36] [cursor=pointer]:
+            - /url: /user/furich
+    - list [ref=f6e42]:
+      - listitem [ref=f6e43]:
+        - link "Дизайн" [ref=f6e44] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/design
+      - listitem [ref=f6e46]:
+        - link "Разработка и IT" [ref=f6e47] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/programming
+      - listitem [ref=f6e49]:
+        - link "Тексты и переводы" [ref=f6e50] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/writing-translations
+      - listitem [ref=f6e52]:
+        - link "SEO и трафик" [ref=f6e53] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/seo
+      - listitem [ref=f6e55]:
+        - link "Соцсети и маркетинг" [ref=f6e56] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/promotion
+      - listitem [ref=f6e58]:
+        - link "Аудио, видео, съемка" [ref=f6e59] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/audio-video
+      - listitem [ref=f6e61]:
+        - link "Бизнес и жизнь" [ref=f6e62] [cursor=pointer]:
+          - /url: https://kwork.ru/categories/business
+  - generic [ref=f6e64]:
+    - generic [ref=f6e67]:
+      - generic [ref=f6e68]:
+        - heading "Биржа проектов" [level=1] [ref=f6e69]
+        - generic [ref=f6e70]:
+          - generic [ref=f6e71]:
+            - link "Мои отклики" [ref=f6e72] [cursor=pointer]:
+              - /url: /offers
+            - link "Проекты" [ref=f6e73] [cursor=pointer]:
+              - /url: /projects
+          - generic [ref=f6e74]:
+            - generic [ref=f6e75]:
+              - generic [ref=f6e77]:
+                - generic [ref=f6e78]: Коннекты
+                - generic [ref=f6e80]: Осталось 30 из 30
+              - generic [ref=f6e84]:
+                - generic [ref=f6e85]: Дата пополнения
+                - generic [ref=f6e86]: 23 августа
+            - generic [ref=f6e87]: Настройка уведомлений
+      - generic [ref=f6e89]:
+        - generic [ref=f6e90]:
+          - generic [ref=f6e91]:
+            - generic [ref=f6e92]:
+              - generic [ref=f6e93]: Рубрики
+              - generic [ref=f6e95]:
+                - generic [ref=f6e96]: Любимые
+                - generic [ref=f6e102]: Все
+              - list [ref=f6e107]:
+                - listitem [ref=f6e108] [cursor=pointer]:
+                  - generic [ref=f6e109]: Разработка и IT(139)
+                  - list [ref=f6e113]:
+                    - listitem [ref=f6e114]:
+                      - generic [ref=f6e115]: Скрипты, боты и mini apps(42)
+                      - list [ref=f6e119]:
+                        - listitem [ref=f6e120]:
+                          - generic [ref=f6e121]: Парсеры
+                        - listitem [ref=f6e123]:
+                          - generic [ref=f6e124]: Чат-боты
+                        - listitem [ref=f6e126]:
+                          - generic [ref=f6e127]: Скрипты
+                        - listitem [ref=f6e129]:
+                          - generic [ref=f6e130]: Telegram Mini Apps
+                        - listitem [ref=f6e132]:
+                          - generic [ref=f6e133]: ИИ-боты
+                        - listitem [ref=f6e135]:
+                          - generic [ref=f6e136]: Машинное обучение
+                        - listitem [ref=f6e138]:
+                          - generic [ref=f6e139]: Интернет вещей (IoT)
+                        - listitem [ref=f6e141]:
+                          - generic [ref=f6e142]: ИИ-агенты
+            - generic [ref=f6e144]:
+              - generic [ref=f6e145]: Бюджет
+              - list [ref=f6e147]:
+                - listitem [ref=f6e148]:
+                  - generic [ref=f6e149] [cursor=pointer]:
+                    - generic [ref=f6e150]: От 1 000 ₽ до 3 000 ₽
+                    - text: (12)
+                - listitem [ref=f6e151]:
+                  - generic [ref=f6e152] [cursor=pointer]:
+                    - generic [ref=f6e153]: От 3 000 ₽ до 10 000 ₽
+                    - text: (9)
+                - listitem [ref=f6e154]:
+                  - generic [ref=f6e155] [cursor=pointer]:
+                    - generic [ref=f6e156]: От 10 000 ₽ до 30 000 ₽
+                    - text: (11)
+                - listitem [ref=f6e157]:
+                  - generic [ref=f6e158] [cursor=pointer]:
+                    - generic [ref=f6e159]: От 30 000 ₽
+                    - text: (18)
+              - generic [ref=f6e160]:
+                - textbox "От руб." [ref=f6e162]
+                - textbox "До руб." [ref=f6e164]
+            - generic [ref=f6e165]:
+              - generic [ref=f6e166]: Нанято, %
+              - textbox "От" [ref=f6e169]
+            - generic [ref=f6e170]:
+              - generic [ref=f6e171]: Ключевые слова
+              - textbox [ref=f6e175]
+            - generic [ref=f6e176]:
+              - generic [ref=f6e177]: Количество предложений
+              - list [ref=f6e178]:
+                - listitem [ref=f6e179]:
+                  - generic [ref=f6e180] [cursor=pointer]: До 5 (13)
+                - listitem [ref=f6e181]:
+                  - generic [ref=f6e182] [cursor=pointer]: От 5 до 10 (8)
+                - listitem [ref=f6e183]:
+                  - generic [ref=f6e184] [cursor=pointer]: От 10 до 15 (3)
+                - listitem [ref=f6e185]:
+                  - generic [ref=f6e186] [cursor=pointer]: От 15 до 20 (3)
+                - listitem [ref=f6e187]:
+                  - generic [ref=f6e188] [cursor=pointer]: От 20 (20)
+          - generic [ref=f6e189]:
+            - strong [ref=f6e191]: Статистика биржиза месяц
+            - generic [ref=f6e193]:
+              - generic [ref=f6e194]: Проектов
+              - generic [ref=f6e195]: 8 317
+            - generic [ref=f6e196]:
+              - generic [ref=f6e197]: На сумму, ₽
+              - generic [ref=f6e198]: 87 585 500
+            - generic [ref=f6e199]:
+              - generic [ref=f6e200]: Заказов
+              - generic [ref=f6e201]: 3 838
+          - generic [ref=f6e204] [cursor=pointer]:
+            - generic [ref=f6e205]:
+              - generic [ref=f6e206]: Узнайте, как получить
+              - generic [ref=f6e207]: первый заказ
+              - generic [ref=f6e208]: на бирже!
+            - button "Открыть урок" [ref=f6e210]
+        - generic [ref=f6e212]:
+          - generic [ref=f6e213]: "Показать:"
+          - generic [ref=f6e214]:
+            - generic [ref=f6e215] [cursor=pointer]: Все предложения
+            - generic [ref=f6e219]:
+              - generic [ref=f6e220] [cursor=pointer]: Все предложения
+              - generic [ref=f6e221] [cursor=pointer]: Новые
+              - generic [ref=f6e222] [cursor=pointer]: Просмотренные
+        - generic [ref=f6e224]:
+          - generic [ref=f6e225]:
+            - generic [ref=f6e226]:
+              - generic [ref=f6e227]:
+                - generic [ref=f6e228]:
+                  - heading [level=1] [ref=f6e229]:
+                    - link "Настроить ТГ аккаунты" [ref=f6e230] [cursor=pointer]:
+                      - /url: /projects/3223346
+                  - generic [ref=f6e232]:
+                    - generic [ref=f6e233]: Настроить и наполнить 120 телеграм...
+                    - text: Показать полностью
+                - generic [ref=f6e235]:
+                  - generic [ref=f6e237]:
+                    - text: "Желаемый бюджет: до"
+                    - generic [ref=f6e238]: 4 000 ₽
+                  - generic [ref=f6e239]:
+                    - text: "Допустимый:"
+                    - generic [ref=f6e240]:
+                      - text: до
+                      - generic [ref=f6e241]: 12 000 ₽
+              - generic [ref=f6e243]:
+                - generic [ref=f6e244]: T
+                - generic [ref=f6e246]:
+                  - generic [ref=f6e248]:
+                    - text: "Покупатель:"
+                    - link "TimurPopov" [ref=f6e249] [cursor=pointer]:
+                      - /url: https://kwork.ru/user/timurpopov
+                  - generic [ref=f6e250]:
+                    - text: "Размещено проектов на бирже: 8"
+                    - generic [ref=f6e251]: "Нанято: 67%"
+              - generic [ref=f6e253]:
+                - generic [ref=f6e254]:
+                  - generic [ref=f6e255]: "Осталось: 23 ч. 48 мин."
+                  - generic [ref=f6e256]: "Предложений: 3"
+                - generic [ref=f6e257]: ПРОСМОТРЕНО
+            - generic [ref=f6e260]:
+              - generic [ref=f6e261]:
+                - generic [ref=f6e262]:
+                  - heading [level=1] [ref=f6e263]:
+                    - link "Магазины в ТГ под \"ключ\" 2 шт" [ref=f6e264] [cursor=pointer]:
+                      - /url: /projects/3223302
+                  - generic [ref=f6e265]: Добрый день, нужно срочно сделать два магазина в ТГ Mini Apps под ключ, футболки и ватные... Показать полностью
+                - generic [ref=f6e269]:
+                  - text: "Цена до:"
+                  - generic [ref=f6e270]: 2 000 ₽
+              - generic [ref=f6e271]:
+                - generic [ref=f6e272]: A
+                - generic [ref=f6e274]:
+                  - generic [ref=f6e275]:
+                    - generic [ref=f6e276]:
+                      - text: "Покупатель:"
+                      - link "AleksNim" [ref=f6e277] [cursor=pointer]:
+                        - /url: https://kwork.ru/user/aleksnim
+                    - img "Сделано более 700 покупок" [ref=f6e278]
+                  - generic [ref=f6e279]:
+                    - text: "Размещено проектов на бирже: 56"
+                    - generic [ref=f6e280]: "Нанято: 77%"
+              - generic [ref=f6e282]:
+                - generic [ref=f6e283]:
+                  - generic [ref=f6e284]: "Осталось: 23 ч. 34 мин."
+                  - generic [ref=f6e285]: "Предложений: 13"
+                  - generic [ref=f6e286]: Низкая оплата
+                - generic [ref=f6e289]: ПРОСМОТРЕНО
+            - generic [ref=f6e292]:
+              - generic [ref=f6e293]:
+                - generic [ref=f6e294]:
+                  - heading [level=1] [ref=f6e295]:
+                    - link "Разработка универсального ИИ-конвейера" [ref=f6e296] [cursor=pointer]:
+                      - /url: /projects/3221969
+                  - generic [ref=f6e298]:
+                    - generic [ref=f6e299]: Добрый день! Требуется разработчик для реализации программного решения по автоматической...
+                    - text: Показать полностью
+                - generic [ref=f6e302]:
+                  - text: "Цена до:"
+                  - generic [ref=f6e303]: 3 000 ₽
+              - generic [ref=f6e306]:
+                - generic [ref=f6e307]:
+                  - generic [ref=f6e308]:
+                    - text: "Покупатель:"
+                    - link "Platinum1403" [ref=f6e309] [cursor=pointer]:
+                      - /url: https://kwork.ru/user/platinum1403
+                  - img "Сделано более 50 покупок" [ref=f6e310]
+                - generic [ref=f6e311]:
+                  - text: "Размещено проектов на бирже: 11"
+                  - generic [ref=f6e312]:
+                    - text: ·
+                    - link "Смотреть открытые (2)" [ref=f6e313] [cursor=pointer]:
+                      - /url: /projects/list/platinum1403
+                  - generic [ref=f6e314]: "Нанято: 44%"
+              - generic [ref=f6e316]:
+                - generic [ref=f6e317]:
+                  - generic [ref=f6e318]: "Осталось: 23 ч. 15 мин."
+                  - generic [ref=f6e319]: "Предложений: 1"
+                - generic [ref=f6e320]: ПРОСМОТРЕНО
+            - generic [ref=f6e323]:
+              - generic [ref=f6e324]:
+                - generic [ref=f6e325]:
+                  - heading [level=1] [ref=f6e326]:
+                    - link "Разработка ИИ ассистента для работы с БД" [ref=f6e327] [cursor=pointer]:
+                      - /url: /projects/3223310
+                  - generic [ref=f6e329]:
+                    - generic [ref=f6e330]: Разработка ИИ ассистента для работы с БД Добрый день! Требуется опытный разработчик для...
+                    - text: Показать полностью
+                - generic [ref=f6e333]:
+                  - text: "Цена до:"
+                  - generic [ref=f6e334]: 3 000 ₽
+              - generic [ref=f6e337]:
+                - generic [ref=f6e338]:
+                  - generic [ref=f6e339]:
+                    - text: "Покупатель:"
+                    - link "Platinum1403" [ref=f6e340] [cursor=pointer]:
+                      - /url: https://kwork.ru/user/platinum1403
+                  - img "Сделано более 50 покупок" [ref=f6e341]
+                - generic [ref=f6e342]:
+                  - text: "Размещено проектов на бирже: 11"
+                  - generic [ref=f6e343]:
+                    - text: ·
+                    - link "Смотреть открытые (2)" [ref=f6e344] [cursor=pointer]:
+                      - /url: /projects/list/platinum1403
+                  - generic [ref=f6e345]: "Нанято: 44%"
+              - generic [ref=f6e348]:
+                - generic [ref=f6e349]: "Осталось: 22 ч. 16 мин."
+                - generic [ref=f6e350]: "Предложений: 4"
+                - generic [ref=f6e351]: Низкая оплата
+            - generic [ref=f6e354]:
+              - generic [ref=f6e355]:
+                - generic [ref=f6e356]:
+                  - heading [level=1] [ref=f6e357]:
+                    - link "Парсинг автомобильных каталогов и аукционов" [ref=f6e358] [cursor=pointer]:
+                      - /url: /projects/3223248
+                  - generic [ref=f6e360]:
+                    - generic [ref=f6e361]: Нужно разработать парсинг автомобилей и мото техники с автомобильных площадок и аукционов....
+                    - text: Показать полностью
+                - generic [ref=f6e363]:
+                  - generic [ref=f6e365]:
+                    - text: "Желаемый бюджет: до"
+                    - generic [ref=f6e366]: 40 000 ₽
+                  - generic [ref=f6e367]:
+                    - text: "Допустимый:"
+                    - generic [ref=f6e368]:
+                      - text: до
+                      - generic [ref=f6e369]: 120 000 ₽
+              - generic [ref=f6e371]:
+                - generic [ref=f6e372]: j
+                - generic [ref=f6e374]:
+                  - generic [ref=f6e376]:
+                    - text: "Покупатель:"
+                    - link "jemalikinkladze" [ref=f6e377] [cursor=pointer]:
+                      - /url: https://kwork.ru/user/jemalikinkladze
+                  - generic [ref=f6e378]: "Размещено проектов на бирже: 1"
+              - generic [ref=f6e380]:
+                - generic [ref=f6e381]: "Осталось: 2 д. 21 ч."
+                - generic [ref=f6e382]: "Предложений: 49"
+            - generic [ref=f6e383]:
+              - generic [ref=f6e384]:
+                - generic [ref=f6e385]:
+                  - heading [level=1] [ref=f6e386]:
+                    - link "Скрипт (бот) для записи в визовый центр Франции" [ref=f6e387] [cursor=pointer]:
+                      - /url: /projects/3207054
+                  - generic [ref=f6e389]:
+                    - generic [ref=f6e390]: Разработка приложения для автоматической записи в визовый центр Франции...
+                    - text: Показать полностью
+                - generic [ref=f6e392]:
+                  - generic [ref=f6e394]:
+                    - text: "Желаемый бюджет: до"
+                    - generic [ref=f6e395]: 10 000 ₽
+                  - generic [ref=f6e396]:
+                    - text: "Допустимый:"
+                    - generic [ref=f6e397]:
+                      - text: до
+                      - generic [ref=f6e398]: 30 000 ₽
+              - generic [ref=f6e402]:
+                - generic [ref=f6e403]:
+                  - generic [ref=f6e404]:
+                    - text: "Покупатель:"
+                    - link "lisogorsky" [ref=f6e405] [cursor=pointer]:
+                      - /url: https://kwork.ru/user/lisogorsky
+                  - img "Сделано более 7 покупок" [ref=f6e406]
+                - generic [ref=f6e407]:
+                  - text: "Размещено проектов на бирже: 15"
+                  - generic [ref=f6e408]: "Нанято: 70%"
+              - generic [ref=f6e411]:
+                - generic [ref=f6e412]: "Осталось: 1 д. 21 ч."
+                - generic [ref=f6e413]: "Предложений: 20"
+                - generic [ref=f6e414]: Низкая оплата
+            - generic [ref=f6e417]:
+              - generic [ref=f6e418]:
+                - generic [ref=f6e419]:
+                  - heading [level=1] [ref=f6e420]:
+                    - link "Telegram Mini App для учёта подписок и платежей" [ref=f6e421] [cursor=pointer]:
+                      - /url: /projects/3223151
+                  - generic [ref=f6e423]:
+                    - generic [ref=f6e424]: Нужно сделать небольшое Telegram Mini App, где пользователь сможет вести свои регулярные платежи:...
+                    - text: Показать полностью
+                - generic [ref=f6e426]:
+                  - generic [ref=f6e428]:
+                    - text: "Желаемый бюджет: до"
+                    - generic [ref=f6e429]: 2 000 ₽
+                  - generic [ref=f6e430]:
+                    - text: "Допустимый:"
+                    - generic [ref=f6e431]:
+                      - text: до
+                      - generic [ref=f6e432]: 6 000 ₽
+              - generic [ref=f6e436]:
+                - generic [ref=f6e438]:
+                  - text: "Покупатель:"
+                  - link "g1tf1ze2023" [ref=f6e439] [cursor=pointer]:
+                    - /url: https://kwork.ru/user/g1tf1ze2023
+                - generic [ref=f6e440]: "Размещено проектов на бирже: 1"
+              - generic [ref=f6e442]:
+                - generic [ref=f6e443]: "Осталось: 18 ч. 48 мин."
+                - generic [ref=f6e444]: "Предложений: 58"
+            - generic [ref=f6e445]:
+              - generic [ref=f6e446]:
+                - generic [ref=f6e447]:
+                  - heading [level=1] [ref=f6e448]:
+                    - link "Telegram-бот для расшифровки голосовых сообщений" [ref=f6e449] [cursor=pointer]:
+                      - /url: /projects/3223140
+                  - generic [ref=f6e451]:
+                    - generic [ref=f6e452]: Здравствуйте. Нужно разработать Telegram-бота, который будет преобразовывать голосовые сообщения...
+                    - text: Показать полностью
+                - generic [ref=f6e454]:
+                  - generic [ref=f6e456]:
+                    - text: "Желаемый бюджет: до"
+                    - generic [ref=f6e457]: 2 500 ₽
+                  - generic [ref=f6e458]:
+                    - text: "Допустимый:"
+                    - generic [ref=f6e459]:
+                      - text: до
+                      - generic [ref=f6e460]: 7 500 ₽
+              - generic [ref=f6e462]:
+                - generic [ref=f6e463]: a
+                - generic [ref=f6e465]:
+                  - generic [ref=f6e467]:
+                    - text: "Покупатель:"
+                    - link "albinadgimesh83" [ref=f6e468] [cursor=pointer]:
+                      - /url: https://kwork.ru/user/albinadgimesh83
+                  - generic [ref=f6e469]: "Размещено проектов на бирже: 1"
+              - generic [ref=f6e471]:
+                - generic [ref=f6e472]: "Осталось: 18 ч. 42 мин."
+                - generic [ref=f6e473]: "Предложений: 59"
+            - generic [ref=f6e474]:
+              - generic [ref=f6e475]:
+                - generic [ref=f6e476]:
+                  - heading [level=1] [ref=f6e477]:
+                    - link "Сделать скрипт или бот для скликивания" [ref=f6e478] [cursor=pointer]:
+                      - /url: /projects/3223130
+                  - generic [ref=f6e480]:
+                    - generic [ref=f6e481]: Нужен скрипт, чтобы он переходил на сайты поиска Яндекс по промо выдаче. По возможности скрипт...
+                    - text: Показать полностью
+                - generic [ref=f6e483]:
+                  - generic [ref=f6e485]:
+                    - text: "Желаемый бюджет: до"
+                    - generic [ref=f6e486]: 10 000 ₽
+                  - generic [ref=f6e487]:
+                    - text: "Допустимый:"
+                    - generic [ref=f6e488]:
+                      - text: до
+                      - generic [ref=f6e489]: 30 000 ₽
+              - generic [ref=f6e491]:
+                - generic [ref=f6e492]: F
+                - generic [ref=f6e494]:
+                  - generic [ref=f6e496]:
+                    - text: "Покупатель:"
+                    - link "Forest2020" [ref=f6e497] [cursor=pointer]:
+                      - /url: https://kwork.ru/user/forest2020
+                  - generic [ref=f6e498]: "Размещено проектов на бирже: 2"
+              - generic [ref=f6e500]:
+                - generic [ref=f6e501]: "Осталось: 1 д. 18 ч."
+                - generic [ref=f6e502]: "Предложений: 15"
+            - generic [ref=f6e503]:
+              - generic [ref=f6e504]:
+                - generic [ref=f6e505]:
+                  - heading [level=1] [ref=f6e506]:
+                    - link "Разработка калькулятора" [ref=f6e507] [cursor=pointer]:
+                      - /url: /projects/3223048
+                  - generic [ref=f6e509]:
+                    - generic [ref=f6e510]: Здравствуйте! У нашей компании сайт на шаблоне. На сайте уже есть калькулятор, но он работает...
+                    - text: Показать полностью
+                - generic [ref=f6e512]:
+                  - generic [ref=f6e514]:
+                    - text: "Желаемый бюджет: до"
+                    - generic [ref=f6e515]: 10 000 ₽
+                  - generic [ref=f6e516]:
+                    - text: "Допустимый:"
+                    - generic [ref=f6e517]:
+                      - text: до
+                      - generic [ref=f6e518]: 30 000 ₽
+              - generic [ref=f6e520]:
+                - generic [ref=f6e521]: d
+                - generic [ref=f6e523]:
+                  - generic [ref=f6e524]:
+                    - generic [ref=f6e525]:
+                      - text: "Покупатель:"
+                      - link "docmos22" [ref=f6e526] [cursor=pointer]:
+                        - /url: https://kwork.ru/user/docmos22
+                    - img "Сделано более 7 покупок" [ref=f6e527]
+                  - generic [ref=f6e528]:
+                    - text: "Размещено проектов на бирже: 10"
+                    - generic [ref=f6e529]: "Нанято: 50%"
+              - generic [ref=f6e532]:
+                - generic [ref=f6e533]: "Осталось: 1 д. 17 ч."
+                - generic [ref=f6e534]: "Предложений: 53"
+            - generic [ref=f6e535]:
+              - generic [ref=f6e536]:
+                - generic [ref=f6e537]:
+                  - heading [level=1] [ref=f6e538]:
+                    - link "Запуск готового Python-скрипта на нашем VPS" [ref=f6e539] [cursor=pointer]:
+                      - /url: /projects/3223029
+                  - generic [ref=f6e541]:
+                    - generic [ref=f6e542]: Описание задачи Ищем специалиста со своими прогретыми Telegram-аккаунтами для запуска готового...
+                    - text: Показать полностью
+                - generic [ref=f6e544]:
+                  - generic [ref=f6e546]:
+                    - text: "Желаемый бюджет: до"
+                    - generic [ref=f6e547]: 2 000 ₽
+                  - generic [ref=f6e548]:
+                    - text: "Допустимый:"
+                    - generic [ref=f6e549]:
+                      - text: до
+                      - generic [ref=f6e550]: 6 000 ₽
+              - generic [ref=f6e554]:
+                - generic [ref=f6e556]:
+                  - text: "Покупатель:"
+                  - link "assist04" [ref=f6e557] [cursor=pointer]:
+                    - /url: https://kwork.ru/user/assist04
+                - generic [ref=f6e558]:
+                  - text: "Размещено проектов на бирже: 35"
+                  - generic [ref=f6e559]: "Нанято: 20%"
+              - generic [ref=f6e562]:
+                - generic [ref=f6e563]: "Осталось: 16 ч. 45 мин."
+                - generic [ref=f6e564]: "Предложений: 3"
+            - generic [ref=f6e565]:
+              - generic [ref=f6e566]:
+                - generic [ref=f6e567]:
+                  - heading [level=1] [ref=f6e568]:
+                    - link "Настроить автоматизации Bitrix24 / MAX / чат-ботам" [ref=f6e569] [cursor=pointer]:
+                      - /url: /projects/3222931
+                  - generic [ref=f6e571]:
+                    - generic [ref=f6e572]: Нужно настроить автоматизацию Bitrix24 / MAX / чат-ботам помочь автоматизировать работу...
+                    - text: Показать полностью
+                - generic [ref=f6e574]:
+                  - generic [ref=f6e576]:
+                    - text: "Желаемый бюджет: до"
+                    - generic [ref=f6e577]: 80 000 ₽
+                  - generic [ref=f6e578]:
+                    - text: "Допустимый:"
+                    - generic [ref=f6e579]:
+                      - text: до
+                      - generic [ref=f6e580]: 200 000 ₽
+              - generic [ref=f6e582]:
+                - generic [ref=f6e583]: c
+                - generic [ref=f6e585]:
+                  - generic [ref=f6e587]:
+                    - text: "Покупатель:"
+                    - link "catsmetanina" [ref=f6e588] [cursor=pointer]:
+                      - /url: https://kwork.ru/user/catsmetanina
+                  - generic [ref=f6e589]: "Размещено проектов на бирже: 1"
+              - generic [ref=f6e591]:
+                - generic [ref=f6e592]: "Осталось: 2 д. 16 ч."
+                - generic [ref=f6e593]: "Предложений: 42"
+          - generic [ref=f6e596]:
+            - generic [ref=f6e597]: "1"
+            - generic [ref=f6e598] [cursor=pointer]: "2"
+            - generic [ref=f6e599] [cursor=pointer]: "3"
+            - generic [ref=f6e600] [cursor=pointer]: "4"
+    - text:  
+  - generic [ref=f6e604]:
+    - generic [ref=f6e605]:
+      - generic [ref=f6e606]:
+        - link [ref=f6e607] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f6e609]:
+          - generic [ref=f6e610]: "Онлайн: 1695"
+          - generic [ref=f6e613]: "Заказ: 1 мин. назад"
+      - generic [ref=f6e617]:
+        - generic [ref=f6e618]:
+          - generic [ref=f6e619]: О Kwork
+          - generic [ref=f6e622]:
+            - link "О проекте" [ref=f6e623] [cursor=pointer]:
+              - /url: /about
+            - link "Пользовательское соглашение" [ref=f6e624] [cursor=pointer]:
+              - /url: /terms_of_service
+            - link "Политика обработки ПД" [ref=f6e625] [cursor=pointer]:
+              - /url: /jdocs/pd_policy
+            - link "Карьера в Kwork" [ref=f6e626] [cursor=pointer]:
+              - /url: /team
+        - generic [ref=f6e627]:
+          - generic [ref=f6e628]: Сообщество
+          - generic [ref=f6e631]:
+            - link "Блог" [ref=f6e632] [cursor=pointer]:
+              - /url: https://blog.kwork.ru
+            - link "Партнерская программа" [ref=f6e633] [cursor=pointer]:
+              - /url: /referral_program
+            - link "Кейсы" [ref=f6e634] [cursor=pointer]:
+              - /url: /cases
+        - generic [ref=f6e635]:
+          - generic [ref=f6e636]: Полезное
+          - generic [ref=f6e639]:
+            - link "Покупателям" [ref=f6e640] [cursor=pointer]:
+              - /url: /for-buyers
+            - link "Фрилансеру" [ref=f6e641] [cursor=pointer]:
+              - /url: /for-sellers
+            - link "Продавайте кворки за $!" [ref=f6e642] [cursor=pointer]:
+              - /url: /worldwide
+            - link "Как зарабатывать на Kwork" [ref=f6e643] [cursor=pointer]:
+              - /url: /kwork_book
+            - link "Мобильное приложение" [ref=f6e644] [cursor=pointer]:
+              - /url: /mobileapp
+        - generic [ref=f6e645]:
+          - generic [ref=f6e646]: Помощь
+          - generic [ref=f6e649]:
+            - link "Вопрос — Ответ" [ref=f6e650] [cursor=pointer]:
+              - /url: /faq
+            - link "Служба поддержки" [ref=f6e651] [cursor=pointer]:
+              - /url: /support
+    - generic [ref=f6e652]:
+      - generic [ref=f6e653]:
+        - link [ref=f6e654] [cursor=pointer]:
+          - /url: https://vk.com/kwork_kwork
+        - link [ref=f6e658] [cursor=pointer]:
+          - /url: https://t.me/kwork_kwork
+      - generic [ref=f6e662]:
+        - link [ref=f6e663] [cursor=pointer]:
+          - /url: https://apps.apple.com/ru/app/kwork/id1456387980
+          - img "appstore" [ref=f6e664]
+        - link [ref=f6e665] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=ru.kwork.app
+          - img "googleplay" [ref=f6e666]

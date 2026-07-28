@@ -33,6 +33,11 @@ export function playwrightUserDataDir(): string {
   return join(dataDir(), "browser-profiles", "default").replace(/\\/g, "/");
 }
 
+/** Stdio bridge: attaches @playwright/mcp to WebCLI's long-lived CDP Chrome. */
+export function playwrightCdpBridgePath(): string {
+  return join(__dirname, "../mcp/playwright-cdp.mjs").replace(/\\/g, "/");
+}
+
 /** Default Playwright args: headed window on the host PC + sticky profile. */
 export function defaultPlaywrightArgs(): string[] {
   return [
@@ -56,7 +61,7 @@ export function defaultMcpServers(): McpServersMap {
       command: "node",
       args: [boardMcpEntryPath()],
     } as McpServerConfig,
-    // Headed Chromium on the host PC so the user can complete OAuth themselves.
+    // Runtime rewrites this to the CDP bridge (see loadMcpServersForAgent).
     playwright: {
       command: "npx",
       args: defaultPlaywrightArgs(),
@@ -134,9 +139,58 @@ export async function readMcpServers(): Promise<McpServersMap> {
   }
 }
 
-/** Resolved servers for the agent runtime. */
+/** Resolved servers for the agent runtime (no side effects). */
 export async function loadMcpServers(): Promise<McpServersMap> {
   return resolveMcpServers(await readMcpServers());
+}
+
+/**
+ * Like loadMcpServers, but ensures a per-root-agent Chromium is up and points
+ * Playwright MCP at it via CDP so stop/end-of-turn does not close the window.
+ * Pass the root agent session id (sub-agents share the parent's browser).
+ */
+export async function loadMcpServersForAgent(
+  browserSessionId: string,
+): Promise<McpServersMap> {
+  const servers = await loadMcpServers();
+  return attachPlaywrightCdpBridge(servers, browserSessionId);
+}
+
+async function attachPlaywrightCdpBridge(
+  servers: McpServersMap,
+  browserSessionId: string,
+): Promise<McpServersMap> {
+  const named = servers.playwright;
+  if (!isPlaywrightEntry(named)) return servers;
+
+  const { ensurePlaywrightBrowser, browserProfileKey } = await import(
+    "./playwright-browser.js"
+  );
+  const meta = await ensurePlaywrightBrowser(browserSessionId);
+  const bridge = playwrightCdpBridgePath();
+  const prevEnv =
+    "env" in named && named.env && typeof named.env === "object"
+      ? (named.env as Record<string, string>)
+      : {};
+
+  return {
+    ...servers,
+    playwright: {
+      command: "node",
+      args: [bridge],
+      env: {
+        ...prevEnv,
+        WEBCLI_PW_CDP: meta.cdpHttp,
+        WEBCLI_PW_META: join(
+          dataDir(),
+          "browser-profiles",
+          "sessions",
+          browserProfileKey(browserSessionId),
+          "browser.json",
+        ),
+      },
+    } as McpServerConfig,
+  };
 }
 
 export async function saveMcpServers(servers: McpServersMap): Promise<void> {

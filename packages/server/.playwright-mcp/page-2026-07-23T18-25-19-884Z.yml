@@ -1,0 +1,75 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - button [ref=e67] [cursor=pointer]: Assets
+          - button [ref=e68] [cursor=pointer]: Tutorials
+          - button [ref=e69] [cursor=pointer]: FAQ
+          - button [ref=e70] [cursor=pointer]: Portfolio
+        - generic [ref=e18]:
+          - button [ref=e71] [cursor=pointer]:
+            - generic [ref=e20]: Join on Discord
+          - button [ref=e22] [cursor=pointer]
+      - link [ref=e24] [cursor=pointer]:
+        - /url: /index.html
+    - navigation [ref=e26]:
+      - link [ref=e27] [cursor=pointer]:
+        - /url: https://www.patreon.com/quaternius
+  - generic [ref=e29]:
+    - generic [ref=e30]:
+      - link [ref=e32] [cursor=pointer]:
+        - /url: /assets/images/fullres/ultimatestylizednature.jpg
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - text: Models
+          - generic [ref=e36]: "63"
+        - generic [ref=e37]: Animated
+        - generic [ref=e41]: Textured
+        - generic [ref=e45]:
+          - text: Formats
+          - generic [ref=e47]: FBX
+          - generic [ref=e48]: OBJ
+          - generic [ref=e49]: Blend
+          - generic [ref=e50]: glTF
+        - generic [ref=e51]:
+          - text: License
+          - link [ref=e72] [cursor=pointer]:
+            - /url: https://creativecommons.org/publicdomain/zero/1.0/
+            - text: CC0
+    - generic [ref=e55]:
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - text: Ultimate Stylized Nature Pack
+          - generic [ref=e58]: May 2022
+        - generic [ref=e59]: This pack includes 60+ nature assets, with seamless textures and normal maps. All in FBX, OBJ, glTF and Blend formats, free to use in personal and commercial projects.
+      - generic [ref=e60]:
+        - generic [ref=e61]: Made possible by Patreon supporters
+        - link [ref=e73] [cursor=pointer]:
+          - /url: "#inline"
+          - text: Download
+    - contentinfo [ref=e64]:
+      - link [ref=e74] [cursor=pointer]:
+        - /url: https://www.twitter.com/quaternius
+        - text: © Quaternius
+      - generic [ref=e66]: laulhet@gmail.com
+  - dialog "Dialog Window (Press escape to close)" [ref=e75]:
+    - document [ref=e76]:
+      - generic [ref=e77]:
+        - generic [ref=e79]:
+          - generic [ref=e80]: Consider supporting me !
+          - generic [ref=e81]: These assets are possible thanks to lovely people like you that support me through Patreon.
+          - generic [ref=e82]: Help me continue making free stuff for everyone.
+          - generic [ref=e83]:
+            - generic [ref=e84]:
+              - generic [ref=e86]: Support on Patreon
+              - generic [ref=e87]: Get 1.5x your pledge each month in credits to claim Source keys (30% off compared to just buying individually) All the packs in one file and exclusive models made just for you.
+              - button "Support" [ref=e88] [cursor=pointer]
+            - generic [ref=e90]:
+              - generic [ref=e92]: Join the Discord
+              - generic [ref=e93]: Don't miss out on new releases! Receive notifications and sneak peeks of upcoming packs.
+              - button "Join" [ref=e94] [cursor=pointer]
+            - generic [ref=e96]:
+              - generic [ref=e98]: Just give me the Download
+              - button "Download" [active] [ref=e99] [cursor=pointer]
+        - button "Close (Press escape to close)" [ref=e101] [cursor=pointer]: ×
